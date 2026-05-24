@@ -1,0 +1,815 @@
+/* === ROOT VARIABLES (style.css) === */
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --secondary: #8b5cf6;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #06b6d4;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --sidebar-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl:
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family:
+        "Outfit",
+        -apple-system,
+        BlinkMacSystemFont,
+        sans-serif;
+    background: var(--bg-secondary);
+    color: var(--gray-800);
+    line-height: 1.6;
+}
+
+/* ============================================================
+       TÁI SỬ DỤNG TỪ pages.css — btn, badge, alert, spinner, form
+    ============================================================ */
+
+/* btn (pages.css) */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    font-family: "Outfit", sans-serif;
+}
+.btn svg {
+    width: 18px;
+    height: 18px;
+}
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+/* badge (pages.css) */
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.badge-active {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+}
+.badge-completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+/* alert (pages.css) */
+.alert {
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+.alert svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+.alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* spinner (pages.css) */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2.5px solid rgba(255, 255, 255, 0.35);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* search-box / form input (pages.css) */
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.form-input {
+    width: 100%;
+    padding: 11px 44px 11px 42px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--gray-700);
+    background: white;
+    transition: var(--transition);
+    font-family: "Outfit", sans-serif;
+}
+.form-input::placeholder {
+    color: var(--gray-400);
+}
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+.form-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--gray-700);
+    background: white;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: "Outfit", sans-serif;
+}
+
+/* id-badge (pages.css) */
+.id-badge {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+    background: var(--gray-100);
+    padding: 3px 8px;
+    border-radius: 5px;
+}
+
+/* ============================================================
+       KEYFRAMES (style.css + manual-exam.css)
+    ============================================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes kenBurns {
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+    50% {
+        transform: scale(1.07) translate(-1%, -1%);
+    }
+    100% {
+        transform: scale(1) translate(0, 0);
+    }
+}
+
+/* ============================================================
+       PAGE LAYOUT — 2 cột (giống split-container của manual-exam.css)
+    ============================================================ */
+.login-page {
+    display: grid;
+    grid-template-columns: 1fr 460px;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ============================================================
+       LEFT — SLIDESHOW (dùng sidebar-bg gradient từ style.css)
+    ============================================================ */
+.slide-panel {
+    position: relative;
+    overflow: hidden;
+    background: #0d0d1a;
+    animation: slideInLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Slides */
+.slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+.slide.active {
+    opacity: 1;
+}
+.slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: kenBurns 14s ease-in-out infinite;
+}
+.slide-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        150deg,
+        rgba(79, 70, 229, 0.72) 0%,
+        rgba(99, 102, 241, 0.45) 35%,
+        rgba(10, 8, 35, 0.85) 100%
+    );
+}
+
+/* Logo — dùng lại logo-icon, logo-text từ style.css */
+.slide-logo {
+    position: absolute;
+    top: 32px;
+    left: 36px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 10;
+    animation: fadeInUp 0.8s 0.3s both;
+}
+.logo-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.logo-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+.logo-text h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+.logo-text span {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 400;
+}
+
+/* Stat chips — dùng lại kiểu stat-card float từ style.css */
+.slide-stats {
+    position: absolute;
+    top: 36px;
+    right: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+    animation: fadeInUp 0.8s 0.5s both;
+}
+.stat-chip {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 155px;
+    transition: var(--transition);
+}
+.stat-chip:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateX(-4px);
+}
+.stat-chip-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.stat-chip-icon svg {
+    width: 18px;
+    height: 18px;
+}
+.stat-chip-val {
+    font-size: 19px;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+    font-family: "JetBrains Mono", monospace;
+}
+.stat-chip-lbl {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 2px;
+}
+
+/* Caption */
+.slide-caption {
+    position: absolute;
+    bottom: 76px;
+    left: 0;
+    right: 0;
+    padding: 0 44px;
+    z-index: 10;
+}
+.caption-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+.caption-dot {
+    width: 7px;
+    height: 7px;
+    background: #34d399;
+    border-radius: 50%;
+    animation: dotPulse 1.6s ease-in-out infinite;
+}
+@keyframes dotPulse {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.75);
+    }
+}
+.slide-caption h2 {
+    font-size: 40px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.18;
+    letter-spacing: -1px;
+    margin-bottom: 14px;
+}
+.slide-caption h2 span {
+    background: linear-gradient(135deg, #a5b4fc, #c4b5fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.slide-caption p {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.6);
+    max-width: 480px;
+    line-height: 1.7;
+}
+
+/* Dots */
+.slide-dots {
+    position: absolute;
+    bottom: 36px;
+    left: 44px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+.slide-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+}
+.slide-dot.active {
+    width: 28px;
+    background: white;
+}
+
+/* ============================================================
+       RIGHT — FORM PANEL (white card, dùng shadow/radius từ style.css)
+    ============================================================ */
+.form-panel {
+    background: var(--bg-primary);
+    border-left: 2px solid var(--gray-200); /* giống panel-header border trong manual-exam.css */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 44px;
+    overflow-y: auto;
+    position: relative;
+    animation: slideInRight 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Subtle accent blobs giống sidebar-bg */
+.form-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(
+        circle,
+        rgba(99, 102, 241, 0.06) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
+}
+.form-panel::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(
+        circle,
+        rgba(139, 92, 246, 0.05) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
+}
+
+.form-inner {
+    width: 100%;
+    max-width: 360px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+.form-header {
+    margin-bottom: 32px;
+    animation: fadeInUp 0.6s 0.2s both;
+}
+.form-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+/* Welcome badge — dùng user-profile từ style.css làm cảm hứng */
+.welcome-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+}
+.welcome-badge svg {
+    width: 14px;
+    height: 14px;
+}
+
+.form-header h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--gray-900);
+    letter-spacing: -0.7px;
+    line-height: 1.2;
+    margin-bottom: 10px;
+}
+.form-header p {
+    font-size: 14px;
+    color: var(--gray-500);
+}
+.form-header p strong {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Form groups — stagger như nav-item trong style.css */
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group:nth-child(1) {
+    animation: fadeInUp 0.5s 0.35s both;
+}
+.form-group:nth-child(2) {
+    animation: fadeInUp 0.5s 0.45s both;
+}
+
+/* input wrapper — dùng search-box từ pages.css */
+.input-wrapper {
+    position: relative;
+}
+.input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--gray-400);
+    pointer-events: none;
+    transition: var(--transition);
+}
+.input-wrapper:focus-within .input-icon {
+    color: var(--primary);
+}
+.input-action {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    color: var(--gray-400);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+}
+.input-action:hover {
+    color: var(--gray-700);
+}
+.input-action svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Remember + Forgot row */
+.form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    animation: fadeInUp 0.5s 0.55s both;
+}
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.checkbox-wrapper input[type="checkbox"] {
+    display: none;
+}
+.checkbox-custom {
+    width: 17px;
+    height: 17px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 4px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+.checkbox-wrapper input:checked ~ .checkbox-custom {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+.checkbox-wrapper input:checked ~ .checkbox-custom::after {
+    content: "";
+    width: 9px;
+    height: 6px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg) translateY(-1px);
+    display: block;
+}
+.checkbox-label {
+    font-size: 13px;
+    color: var(--gray-600);
+    user-select: none;
+}
+.forgot-link {
+    font-size: 13px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+.forgot-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Submit button */
+.btn-submit {
+    width: 100%;
+    padding: 13px 24px;
+    font-size: 15px;
+    justify-content: center;
+    border-radius: var(--radius);
+    animation: fadeInUp 0.5s 0.65s both;
+    position: relative;
+    overflow: hidden;
+}
+.btn-submit::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent
+    );
+    transition: left 0.6s ease;
+}
+.btn-submit:hover::before {
+    left: 100%;
+}
+.btn-submit .btn-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+.btn-submit.loading {
+    pointer-events: none;
+}
+.btn-submit.loading .btn-label {
+    opacity: 0;
+    transform: none;
+}
+.btn-submit .btn-spinner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+.btn-submit.loading .btn-spinner {
+    display: block;
+}
+
+/* Alert area */
+.alert-area {
+    margin-top: 16px;
+    animation: fadeInUp 0.3s ease both;
+}
+.alert-area:empty {
+    display: none;
+}
+
+/* Divider — dùng lại nav-group-title style */
+.form-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 24px 0;
+}
+.form-divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+}
+.form-divider-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-400);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Footer */
+.form-footer {
+    text-align: center;
+    animation: fadeInUp 0.5s 0.75s both;
+}
+.security-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--gray-400);
+}
+.security-note svg {
+    width: 14px;
+    height: 14px;
+    color: var(--success);
+}
+.version-note {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--gray-300);
+    font-family: "JetBrains Mono", monospace;
+}
+
+/* ============================================================
+       RESPONSIVE
+    ============================================================ */
+@media (max-width: 960px) {
+    .login-page {
+        grid-template-columns: 1fr;
+    }
+    .slide-panel {
+        display: none;
+    }
+    .form-panel {
+        border-left: none;
+        padding: 40px 24px;
+    }
+    body {
+        overflow-y: auto;
+    }
+    html,
+    body {
+        height: auto;
+    }
+}

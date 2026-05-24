@@ -1,0 +1,669 @@
+/* ══════════════════════════════════════════════
+   EXAM INDEX PAGE  —  exams-index.css
+   Đặt tại: public/css/exams-index.css
+   Font yêu cầu: Be Vietnam Pro (đã load ở layout)
+══════════════════════════════════════════════ */
+
+/* ── Container dùng lại từ layout ── */
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 28px;
+}
+
+/* ══════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════ */
+.ep-hero {
+    background: linear-gradient(135deg, #06132a 0%, #0f2a4a 55%, #163860 100%);
+    padding: 44px 0 52px;
+    position: relative;
+    overflow: hidden;
+}
+.ep-hero::before {
+    content: "";
+    position: absolute;
+    top: -80px;
+    right: -60px;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(16, 185, 129, 0.15) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
+}
+.ep-hero::after {
+    content: "";
+    position: absolute;
+    bottom: -80px;
+    left: -40px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(37, 99, 235, 0.12) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
+}
+.ep-hero-inner {
+    position: relative;
+    z-index: 1;
+}
+
+/* Badge */
+.ep-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(16, 185, 129, 0.13);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #34d399;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 50px;
+    margin-bottom: 18px;
+    letter-spacing: 0.3px;
+}
+
+/* Heading */
+.ep-hero h1 {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 12px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+.ep-hero-hl {
+    background: linear-gradient(90deg, #10b981, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.ep-hero p {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.95rem;
+    max-width: 500px;
+    line-height: 1.75;
+    margin: 0 0 30px;
+}
+
+/* Stat chips */
+.ep-stats-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.ep-stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 11px 18px;
+}
+.ep-stat-chip-icon {
+    font-size: 0.95rem;
+    color: #34d399;
+    flex-shrink: 0;
+}
+.ep-stat-num {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+}
+.ep-stat-lbl {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 2px;
+}
+
+/* ══════════════════════════════════════════════
+   FILTER BAR  (sticky)
+══════════════════════════════════════════════ */
+.ep-filter-wrap {
+    background: #fff;
+    border-bottom: 1px solid #e8f0fb;
+    padding: 14px 0;
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.06);
+}
+.ep-filter-inner {
+    /* container class handles max-width */
+}
+.ep-filter-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Search */
+.ep-search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+.ep-search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+.ep-search-input {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    border: 1.5px solid #e2eaf6;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    color: #1e293b;
+    background: #f8fafc;
+    outline: none;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+.ep-search-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    background: #fff;
+}
+.ep-search-input::placeholder {
+    color: #94a3b8;
+}
+
+/* Select */
+.ep-select {
+    padding: 10px 14px;
+    border: 1.5px solid #e2eaf6;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    color: #1e293b;
+    background: #f8fafc;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+.ep-select:focus {
+    border-color: #3b82f6;
+}
+
+/* Button lọc */
+.ep-btn-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition:
+        background 0.2s,
+        transform 0.15s;
+    white-space: nowrap;
+}
+.ep-btn-filter:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+/* ══════════════════════════════════════════════
+   SECTION WRAPPER
+══════════════════════════════════════════════ */
+.ep-section {
+    padding: 36px 0 80px;
+}
+.ep-grid-wrap {
+    /* uses .container */
+}
+
+/* Grid header */
+.ep-grid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.ep-grid-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+.ep-count-badge {
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 50px;
+}
+
+/* ══════════════════════════════════════════════
+   EXAM GRID
+══════════════════════════════════════════════ */
+.ep-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+}
+
+/* ══════════════════════════════════════════════
+   EXAM CARD
+══════════════════════════════════════════════ */
+.ep-card {
+    background: #fff;
+    border: 1.5px solid #e2eaf6;
+    border-radius: 18px;
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition:
+        border-color 0.22s,
+        box-shadow 0.22s,
+        transform 0.22s;
+}
+.ep-card:hover {
+    border-color: #bcd4f7;
+    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.1);
+    transform: translateY(-3px);
+}
+.ep-card--closed {
+    opacity: 0.72;
+}
+.ep-card--closed:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Card top */
+.ep-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+.ep-card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+.ep-icon-blue {
+    background: #eff6ff;
+    color: #2563eb;
+}
+.ep-icon-green {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+.ep-icon-amber {
+    background: #fffbeb;
+    color: #d97706;
+}
+
+/* Tags */
+.ep-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: flex-end;
+}
+.ep-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 50px;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+}
+.ep-tag-blue {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+.ep-tag-green-outline {
+    background: #f0fdf4;
+    color: #15803d;
+}
+.ep-tag-success {
+    background: #dcfce7;
+    color: #15803d;
+}
+.ep-tag-warn {
+    background: #fefce8;
+    color: #a16207;
+}
+.ep-tag-danger {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+/* Title & desc */
+.ep-card-title {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1.35;
+    margin: 0 0 6px;
+}
+.ep-card-desc {
+    font-size: 0.82rem;
+    color: #64748b;
+    line-height: 1.65;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ── Stat strip ── */
+.ep-stat-strip {
+    display: flex;
+    border: 1px solid #e8f0fb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.ep-strip-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 8px;
+    gap: 2px;
+    border-right: 1px solid #e8f0fb;
+}
+.ep-strip-item:last-child {
+    border-right: none;
+}
+.ep-strip-val {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+.ep-strip-blue {
+    color: #2563eb;
+}
+.ep-strip-green {
+    color: #10b981;
+}
+.ep-strip-lbl {
+    font-size: 0.68rem;
+    color: #94a3b8;
+}
+
+/* ── Pending notice ── */
+.ep-pending-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 13px;
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: #92400e;
+}
+.ep-pending-notice i {
+    color: #d97706;
+    flex-shrink: 0;
+}
+
+/* ── Best score banner ── */
+.ep-best {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 13px;
+    background: rgba(16, 185, 129, 0.07);
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    border-radius: 10px;
+    font-size: 0.8rem;
+    color: #065f46;
+    flex-wrap: wrap;
+}
+.ep-best-icon {
+    color: #10b981;
+    flex-shrink: 0;
+}
+.ep-best strong {
+    color: #059669;
+    font-weight: 700;
+}
+
+/* ── History ── */
+.ep-history {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 12px 14px;
+    border: 1px solid #e8f0fb;
+}
+.ep-history-head {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ep-history-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+.ep-history-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.ep-history-score {
+    font-weight: 700;
+}
+.ep-score-green {
+    color: #10b981;
+}
+.ep-score-amber {
+    color: #f59e0b;
+}
+.ep-score-red {
+    color: #ef4444;
+}
+.ep-history-time {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+.ep-no-history {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* ── CTA button ── */
+.ep-btn-start {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.22s;
+    margin-top: auto;
+    text-decoration: none;
+}
+.ep-btn-start--active {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+.ep-btn-start--active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+    color: #fff;
+}
+.ep-btn-start--disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+    border: 1.5px solid #e2e8f0;
+}
+
+/* ══════════════════════════════════════════════
+   EMPTY STATE
+══════════════════════════════════════════════ */
+.ep-empty {
+    text-align: center;
+    padding: 72px 20px;
+    color: #94a3b8;
+}
+.ep-empty-icon {
+    font-size: 3rem;
+    opacity: 0.35;
+    display: block;
+    margin-bottom: 16px;
+}
+.ep-empty p {
+    font-size: 0.92rem;
+}
+
+/* ══════════════════════════════════════════════
+   PAGINATION WRAPPER
+══════════════════════════════════════════════ */
+.ep-pagination-wrap {
+    margin-top: 36px;
+    display: flex;
+    justify-content: center;
+}
+/* Style cho Laravel pagination mặc định (Tailwind/Bootstrap) — override nếu cần */
+.ep-pagination-wrap nav {
+    display: flex;
+    justify-content: center;
+}
+.ep-pagination-wrap .pagination {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.ep-pagination-wrap .page-item .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 10px;
+    border: 1.5px solid #e2eaf6;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #475569;
+    background: #fff;
+    text-decoration: none;
+    transition: all 0.18s;
+}
+.ep-pagination-wrap .page-item .page-link:hover {
+    background: #f0f7ff;
+    border-color: #bcd4f7;
+    color: #2563eb;
+}
+.ep-pagination-wrap .page-item.active .page-link {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+    font-weight: 700;
+}
+.ep-pagination-wrap .page-item.disabled .page-link {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .ep-hero {
+        padding: 32px 0 38px;
+    }
+    .ep-hero h1 {
+        font-size: 1.6rem;
+    }
+    .ep-stats-row {
+        gap: 10px;
+    }
+    .ep-stat-chip {
+        padding: 9px 14px;
+    }
+
+    .ep-filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .ep-search-wrap {
+        min-width: unset;
+    }
+    .ep-btn-filter {
+        justify-content: center;
+    }
+
+    .ep-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ep-hero h1 {
+        font-size: 1.35rem;
+    }
+    .ep-hero p {
+        font-size: 0.88rem;
+    }
+    .ep-stat-chip {
+        flex: 1;
+        min-width: 0;
+    }
+}

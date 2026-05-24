@@ -1,0 +1,128 @@
+/*
+ * ╔══════════════════════════════════════════════════════════╗
+ * ║            HERO VISUAL — Ảnh cô gái trang chủ           ║
+ * ║  File này quản lý toàn bộ CSS liên quan đến ảnh hero.   ║
+ * ║  Ảnh hiện tại: hero14 (dùng thẻ <img>)                  ║
+ * ╚══════════════════════════════════════════════════════════╝
+ */
+
+/*
+ * ══════════════════════════════════════════════
+ * [ĐÃ TẮT] — PHƯƠNG PHÁP CŨ: background-image hero11.png
+ * ──────────────────────────────────────────────
+ * Lý do tắt: hero11.png có cô gái lệch phải (vùng trái trong suốt),
+ * rất khó căn chỉnh chính xác bằng background-image.
+ * Chuyển sang dùng thẻ <img> với hero14 để kiểm soát tốt hơn.
+ *
+ * .hero {
+ *     background-image:
+ *         linear-gradient(to right, #f0f7ff 25%, transparent 55%),
+ *         url("../images/hero11.png");
+ *     background-repeat: no-repeat, no-repeat;
+ *     background-position: left top, right center;
+ *     background-size: 100% 100%, contain;
+ * }
+ *
+ * @media (max-width: 900px) {
+ *     .hero { background-image: none; }
+ *     .hero-visual {
+ *         background-image: url("../images/hero11.png");
+ *         background-position: 72% bottom;
+ *         background-size: auto 95%;
+ *     }
+ * }
+ * ══════════════════════════════════════════════
+ */
+
+
+/* ══════════════════════════════════════════════
+   DESKTOP (> 900px)
+   .hero không còn dùng background-image
+   ảnh được hiển thị qua thẻ <img class="hero-student-img">
+   ══════════════════════════════════════════════ */
+
+/* Đảm bảo .hero không có background ảnh thừa */
+.hero {
+    background-image: none;
+}
+
+/* .hero-visual: khung chứa ảnh bên phải */
+.hero-visual {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end; /* Dịch ảnh sang phải trên desktop */
+    overflow: hidden;
+}
+
+/* ── Ảnh <img> chính ── */
+.hero-student-img {
+    width: 100%;
+    height: 100%;
+    max-height: 620px;
+    object-fit: contain;           /* hiện toàn bộ ảnh, không cắt */
+    object-position: right bottom; /* dịch ảnh sang phải */
+    display: block;
+    /* border-radius: 20px;   ← bỏ — không cần khung */
+    /* box-shadow: ...;        ← bỏ — không cần bóng */
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE (≤ 900px)
+   Layout 1 cột: ảnh lên trên — chữ xuống dưới
+   ══════════════════════════════════════════════ */
+@media (max-width: 900px) {
+    .hero .container {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    /* Ảnh lên trên hero-content */
+    .hero-visual {
+        order: -1;
+        width: 100%;
+        max-height: 600px;
+        border-radius: 0;
+        justify-content: center; /* Đưa về giữa trên mobile */
+    }
+
+    .hero-student-img {
+        max-height: 600px;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        object-position: center bottom;
+    }
+}
+
+/* ══════════════════════════════════════════════
+   MOBILE (≤ 640px)
+   ══════════════════════════════════════════════ */
+@media (max-width: 640px) {
+    .hero-visual {
+        max-height: 500px;
+    }
+
+    .hero-student-img {
+        max-height: 500px;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+}
+
+/* ══════════════════════════════════════════════
+   MOBILE NHỎ (≤ 480px)
+   ══════════════════════════════════════════════ */
+@media (max-width: 480px) {
+    .hero-visual {
+        max-height: 450px;
+    }
+
+    .hero-student-img {
+        max-height: 450px;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+}

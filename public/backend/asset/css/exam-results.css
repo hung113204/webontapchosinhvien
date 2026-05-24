@@ -1,0 +1,137 @@
+/* Layout chung */
+.results-container {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  padding: 24px 32px;
+  align-items: start;
+}
+
+/* Sidebar thông tin đề thi */
+.exam-info-sidebar {
+  position: sticky;
+  top: 100px;
+}
+
+.info-card {
+  background: #fff;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  overflow: hidden;
+}
+
+.info-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+
+.info-body {
+  padding: 20px;
+}
+
+.meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.divider {
+  margin: 20px 0;
+  border-top: 1px solid var(--gray-200);
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--gray-700);
+}
+
+.class-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Custom Buttons */
+.btn-outline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  color: var(--gray-700);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--gray-50);
+}
+
+.btn-outline svg {
+  width: 18px;
+}
+
+.btn-full {
+  width: 100%;
+  justify-content: center;
+  margin-top: 10px;
+}
+.btn-success-bg {
+  background-color: var(--success) !important;
+}
+
+/* Table cells styling */
+.student-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar-mini {
+  width: 32px;
+  height: 32px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.student-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-info .id-badge {
+  font-size: 10px;
+  margin-top: 2px;
+}
+.score-danger {
+  color: var(--danger);
+  font-size: 16px;
+}
+.badge-light {
+  background: var(--gray-50);
+  color: var(--gray-600);
+}
+.time-cell {
+  font-size: 13px;
+  color: var(--gray-600);
+}

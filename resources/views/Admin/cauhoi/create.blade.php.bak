@@ -1,0 +1,1027 @@
+@extends('Admin.layouts.admin')
+@section('title', 'Thêm câu hỏi mới')
+
+@section('header_action')
+    <a href="{{ route('admin.cauhoi.index') }}" class="btn btn-secondary"
+        style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; color: #475569; text-decoration: none; font-weight: 500; font-size: 14px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px">
+            <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Quay lại
+    </a>
+@endsection
+
+@section('content')
+    <style>
+        .tab-item {
+            padding: 12px 0;
+            border: none;
+            background: none;
+            color: #64748b;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            font-size: 15px;
+            margin-right: 25px;
+        }
+
+        .tab-item.active {
+            color: #4f46e5;
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #4f46e5;
+        }
+
+        .answer-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+        }
+
+        .ck-editor__editable {
+            min-height: 150px;
+        }
+
+        .btn-delete-ans {
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Preview Styles */
+        .question-preview {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f9fafb;
+            transition: all 0.2s;
+        }
+
+        .question-preview.selected {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .question-checkbox {
+            margin-right: 12px;
+            margin-top: 5px;
+            accent-color: #4f46e5;
+        }
+
+        .question-number {
+            background: #4f46e5;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-right: 12px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .question-content {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .answers-list {
+            margin-left: 75px;
+            margin-bottom: 15px;
+        }
+
+        .answer-option {
+            padding: 10px 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .answer-option.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+        }
+
+        .answer-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #6b7280;
+            color: white;
+            border-radius: 50%;
+            margin-right: 12px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .answer-option.correct .answer-letter {
+            background: #22c55e;
+        }
+
+        .answer-text {
+            flex: 1;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .answer-selector {
+            margin-left: 75px;
+            margin-top: 10px;
+        }
+
+        .answer-selector label {
+            font-weight: 600;
+            color: #1e293b;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .btn-group {
+            display: inline-flex;
+            gap: 5px;
+        }
+
+        .btn-answer {
+            padding: 6px 14px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .btn-answer.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .btn-answer:hover {
+            border-color: #4f46e5;
+        }
+    </style>
+    <div class="form-section" style="padding: 24px 32px;">
+        @if ($errors->any())
+            <div class="alert alert-error"
+                style="background: #fee2e2; color: #ef4444; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fecaca;">
+                <ul style="margin: 0; padding-left: 20px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div class="tabs" style="display: flex; gap: 20px; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9;">
+            <button class="tab-item active" onclick="switchTab('manual')" id="tab-manual">Thêm thủ công</button>
+            <button class="tab-item" onclick="switchTab('file')" id="tab-file">Thêm từ file Word</button>
+        </div>
+
+        <div class="table-card"
+            style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; padding: 25px;">
+
+            {{-- TAB 1: THÊM THỦ CÔNG --}}
+            <div id="manual-form" class="tab-content">
+                <form action="{{ route('admin.cauhoi.save') }}" method="POST" enctype="multipart/form-data"
+                    id="question-form" novalidate>
+                    @csrf
+                    <input type="hidden" name="id" value="">
+
+                    <div class="form-grid"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Môn học
+                                <span style="color:red">*</span></label>
+                            <select class="form-select" name="mon_hoc_id" id="mon_hoc_id" required
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <option value="">-- Chọn môn học --</option>
+                                @foreach ($dsMonHoc as $mon)
+                                    <option value="{{ $mon->id }}"
+                                        {{ isset($chuongHoc) && $chuongHoc->mon_hoc_id == $mon->id ? 'selected' : '' }}>
+                                        {{ $mon->ten_mon_hoc }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Chương học
+                                <span style="color:red">*</span></label>
+                            <select class="form-select" name="chuong_hoc_id" id="chuong_hoc_id" required
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <option value="">-- Chọn chương --</option>
+                                @foreach ($dsChuong as $chuong)
+                                    <option value="{{ $chuong->id }}" data-mon="{{ $chuong->mon_hoc_id }}"
+                                        {{ isset($chuong_hoc_id) && $chuong_hoc_id == $chuong->id ? 'selected' : '' }}>
+                                        {{ $chuong->ten_chuong }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                                Thuộc Bài học (Tùy chọn)
+                            </label>
+                            <select class="form-select" name="bai_hoc_id" id="bai_hoc_id"
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <option value="">-- Dùng chung cho Chương --</option>
+                                @foreach ($dsBaiHoc as $bai)
+                                    <option value="{{ $bai->id }}" data-chuong="{{ $bai->chuong_hoc_id }}"
+                                        {{ (isset($cauHoi) && $cauHoi->bai_hoc_id == $bai->id) ? 'selected' : '' }}>
+                                        {{ $bai->thu_tu }}: {{ $bai->ten_bai_hoc }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Mức
+                                độ</label>
+                            <select class="form-select" name="muc_do"
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <option value="1">Dễ</option>
+                                <option value="2">Trung bình</option>
+                                <option value="3">Khó</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Loại câu
+                                hỏi</label>
+                            <select class="form-select" name="loai_cau_hoi"
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <option value="1">Trắc nghiệm</option>
+                                <option value="2">Đúng/Sai</option>
+                                <option value="3">Điền khuyết</option>
+                                <option value="4">Tự luận</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Nội dung câu
+                            hỏi <span style="color:red">*</span></label>
+                        <textarea id="editor-cau-hoi" name="noi_dung"></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Hình ảnh đính
+                            kèm (nếu có)</label>
+                        <input type="file" name="hinh_anh" class="form-input" accept="image/*">
+                    </div>
+
+                    <div class="answers-outer" style="margin-top: 40px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0;">DANH SÁCH ĐÁP ÁN</h3>
+                            <button type="button" class="btn btn-secondary" onclick="addAnswer()"
+                                style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 8px; color: #4f46e5; cursor: pointer;">+
+                                Thêm đáp án</button>
+                        </div>
+                        <div id="answers-container"></div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 30px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Giải thích đáp
+                            án</label>
+                        <textarea id="editor-giai-thich" name="giai_thich"></textarea>
+                    </div>
+
+                    <div class="form-actions"
+                        style="margin-top: 30px; display: flex; justify-content: flex-end; border-top: 1px solid #f1f5f9; padding-top: 20px;">
+                        <button type="submit" class="btn btn-primary"
+                            style="padding: 12px 48px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Lưu
+                            câu hỏi</button>
+                    </div>
+                </form>
+            </div>
+
+            {{-- TAB 2: THÊM TỪ FILE WORD - CẢI TIẾN VỚI PREVIEW --}}
+            <div id="file-form" class="tab-content" style="display: none;">
+                <form id="uploadForm" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="form-grid"
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Môn học
+                                <span style="color:red">*</span></label>
+                            <select class="form-select" id="file_mon_hoc_id" name="mon_hoc_id" required
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <option value="">-- Chọn môn học --</option>
+                                @foreach ($dsMonHoc as $mon)
+                                    <option value="{{ $mon->id }}">{{ $mon->ten_mon_hoc }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Chương
+                                <span style="color:red">*</span></label>
+                            <select class="form-select" name="chuong_hoc_id" id="file_chuong_hoc_id" required
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <option value="">-- Chọn chương --</option>
+                                @foreach ($dsChuong as $chuong)
+                                    <option value="{{ $chuong->id }}" data-mon="{{ $chuong->mon_hoc_id }}">
+                                        {{ $chuong->ten_chuong }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Loại câu
+                                hỏi</label>
+                            <select class="form-select" name="loai_cau_hoi" required
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <option value="1">Trắc nghiệm</option>
+                                <option value="2">Đúng/Sai</option>
+                                <option value="3">Điền khuyết</option>
+                                <option value="4">Tự luận</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Mức
+                                độ</label>
+                            <select class="form-select" name="muc_do" required
+                                style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <option value="1">Dễ</option>
+                                <option value="2" selected>Trung bình</option>
+                                <option value="3">Khó</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Nội
+                            dung</label>
+                        <div class="custom-file-upload"
+                            style="border: 2px dashed #e2e8f0; border-radius: 8px; padding: 30px; text-align: center; background: #f8fafc;">
+                            <input type="file" id="wordFile" name="file" accept=".doc,.docx" required
+                                style="display: none;">
+                            <label for="wordFile" style="cursor: pointer;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"
+                                    style="width: 48px; height: 48px; margin: 0 auto 10px;">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="12" y1="18" x2="12" y2="12" />
+                                    <polyline points="9 15 12 12 15 15" />
+                                </svg>
+                                <div id="fileLabel" style="color: #64748b; font-size: 14px;">Click để chọn file Word
+                                    (.docx)</div>
+                            </label>
+                        </div>
+                        <small class="form-text"
+                            style="display: block; margin-top: 8px; color: #64748b; font-style: italic;">
+                            Vui lòng soạn câu hỏi theo đúng định dạng. <a href="#" style="color: #4f46e5;">Tải về
+                                file mẫu Docx</a>
+                        </small>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <button type="button" class="btn btn-primary" id="btnPreview"
+                            style="padding: 12px 24px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            Xem trước
+                        </button>
+                    </div>
+                </form>
+
+                {{-- Preview Area --}}
+                <div id="previewArea" style="display: none; margin-top: 30px;">
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h4 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0;">
+                            Danh sách câu hỏi đã đọc được (<span id="totalQuestions">0</span> câu)
+                        </h4>
+                    </div>
+
+                    <div class="alert alert-info"
+                        style="background: #dbeafe; border: 1px solid #93c5fd; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"
+                            style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                        </svg>
+                        <span style="color: #1e40af; font-size: 14px;">Vui lòng kiểm tra kỹ các câu hỏi bên dưới. Bỏ chọn
+                            những câu không chính xác trước khi import.</span>
+                    </div>
+
+                    <div class="form-check" style="margin-bottom: 20px;">
+                        <input type="checkbox" id="selectAll" checked style="margin-right: 8px; accent-color: #4f46e5;">
+                        <label for="selectAll" style="font-weight: 600; cursor: pointer;">Chọn tất cả</label>
+                    </div>
+
+                    <div id="questionsList"></div>
+
+                    <div style="margin-top: 30px; display: flex; gap: 12px;">
+                        <button type="button" class="btn btn-success" id="btnImport"
+                            style="padding: 12px 32px; background: #22c55e; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Thêm vào hệ thống
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="btnCancel"
+                            style="padding: 12px 32px; background: #6b7280; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        let editors = {};
+        let answerCount = 0;
+        let previewData = null;
+        let tempFile = null;
+
+        // Cấu hình MathJax
+        window.MathJax = {
+            tex: {
+                inlineMath: [
+                    ['$', '$'],
+                    ['\\(', '\\)']
+                ],
+                displayMath: [
+                    ['$$', '$$'],
+                    ['\\[', '\\]']
+                ]
+            },
+            startup: {
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    MathJax.startup.promise.then(() => {
+                        console.log('MathJax is ready');
+                    });
+                }
+            }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+
+    <script>
+
+        // Hàm xử lý LaTeX content
+        function processLatexContent(content) {
+            if (!content) return content;
+            
+            // Wrap các pattern LaTeX phổ biến
+            let processed = content;
+            
+            // Xử lý \begin{cases}...\end{cases}
+            processed = processed.replace(/\\begin\{cases\}([\s\S]*?)\\end\{cases\}/g, 
+                '\\[\\begin{cases}$1\\end{cases}\\]');
+            
+            // Xử lý các dấu \\ trong LaTeX (line break)
+            processed = processed.replace(/\\\\/g, '\\\\');
+            
+            return processed;
+        }
+
+        // Cấu hình CKEditor với xử lý paste
+        function initEditors() {
+            const editorConfig = {
+                toolbar: [
+                    'heading', '|',
+                    'bold', 'italic', '|',
+                    'link', 'insertTable', '|',
+                    'bulletedList', 'numberedList', '|',
+                    'undo', 'redo'
+                ],
+                language: 'vi',
+                // Cho phép giữ lại HTML khi paste
+                htmlSupport: {
+                    allow: [
+                        {
+                            name: /.*/,
+                            attributes: true,
+                            classes: true,
+                            styles: true
+                        }
+                    ]
+                }
+            };
+
+            // Editor câu hỏi chính
+            ClassicEditor.create(document.querySelector('#editor-cau-hoi'), editorConfig)
+                .then(editor => {
+                    editors['main-question'] = editor;
+                    
+                    // Xử lý khi paste vào editor
+                    editor.editing.view.document.on('clipboardInput', (evt, data) => {
+                        const content = data.dataTransfer.getData('text/html') || data.dataTransfer.getData('text/plain');
+                        if (content) {
+                            const processed = processLatexContent(content);
+                            data.dataTransfer.setData('text/html', processed);
+                        }
+                    });
+                    
+                    // Render MathJax sau khi editor thay đổi
+                    editor.model.document.on('change:data', () => {
+                        setTimeout(() => {
+                            if (window.MathJax && window.MathJax.typesetPromise) {
+                                MathJax.typesetPromise();
+                            }
+                        }, 100);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error initializing main question editor:', error);
+                });
+
+            // Editor giải thích
+            ClassicEditor.create(document.querySelector('#editor-giai-thich'), editorConfig)
+                .then(editor => {
+                    editors['main-explain'] = editor;
+                    
+                    editor.editing.view.document.on('clipboardInput', (evt, data) => {
+                        const content = data.dataTransfer.getData('text/html') || data.dataTransfer.getData('text/plain');
+                        if (content) {
+                            const processed = processLatexContent(content);
+                            data.dataTransfer.setData('text/html', processed);
+                        }
+                    });
+                    
+                    editor.model.document.on('change:data', () => {
+                        setTimeout(() => {
+                            if (window.MathJax && window.MathJax.typesetPromise) {
+                                MathJax.typesetPromise();
+                            }
+                        }, 100);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error initializing explain editor:', error);
+                });
+        }
+
+        function addAnswer() {
+            answerCount++;
+            const index = answerCount - 1;
+            const id = `ans_${answerCount}`;
+            const html = `
+            <div class="answer-item" id="container_${id}">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; font-size: 14px; color: #475569;">
+                        <input type="radio" name="dap_an_dung" value="${index}" ${index === 0 ? 'checked' : ''} style="accent-color: #4f46e5;"> Đáp án đúng ${answerCount}
+                    </label>
+                    <button type="button" class="btn-delete-ans" onclick="removeAnswer('${id}')">Xóa</button>
+                </div>
+                <textarea name="dap_ans[${index}][noi_dung]" id="editor_${id}"></textarea>
+            </div>`;
+            
+            document.getElementById('answers-container').insertAdjacentHTML('beforeend', html);
+            
+            const editorConfig = {
+                toolbar: ['bold', 'italic', '|', 'undo', 'redo'],
+                language: 'vi',
+                htmlSupport: {
+                    allow: [
+                        {
+                            name: /.*/,
+                            attributes: true,
+                            classes: true,
+                            styles: true
+                        }
+                    ]
+                }
+            };
+            
+            ClassicEditor.create(document.querySelector(`#editor_${id}`), editorConfig)
+                .then(editor => {
+                    editors[id] = editor;
+                    
+                    // Xử lý paste cho editor đáp án
+                    editor.editing.view.document.on('clipboardInput', (evt, data) => {
+                        const content = data.dataTransfer.getData('text/html') || data.dataTransfer.getData('text/plain');
+                        if (content) {
+                            const processed = processLatexContent(content);
+                            data.dataTransfer.setData('text/html', processed);
+                        }
+                    });
+                    
+                    editor.model.document.on('change:data', () => {
+                        setTimeout(() => {
+                            if (window.MathJax && window.MathJax.typesetPromise) {
+                                MathJax.typesetPromise();
+                            }
+                        }, 100);
+                    });
+                })
+                .catch(error => {
+                    console.error(`Error initializing answer editor ${id}:`, error);
+                });
+        }
+
+        function removeAnswer(id) {
+            if (editors[id]) {
+                editors[id].destroy().then(() => {
+                    delete editors[id];
+                    document.getElementById(`container_${id}`).remove();
+                });
+            } else {
+                document.getElementById(`container_${id}`).remove();
+            }
+        }
+
+        document.getElementById('question-form').addEventListener('submit', function(e) {
+            // Lưu nội dung từ editor vào hidden input
+            if (editors['main-question']) {
+                let content = editors['main-question'].getData();
+                content = processLatexContent(content);
+                document.getElementsByName('noi_dung')[0].value = content;
+            }
+            
+            if (editors['main-explain']) {
+                let content = editors['main-explain'].getData();
+                content = processLatexContent(content);
+                document.getElementsByName('giai_thich')[0].value = content;
+            }
+
+            document.querySelectorAll('textarea[name^="dap_ans"]').forEach((textarea) => {
+                const id = textarea.id;
+                if (editors[id]) {
+                    let content = editors[id].getData();
+                    content = processLatexContent(content);
+                    textarea.value = content;
+                }
+            });
+        });
+
+        // Lọc chương theo môn học - Tab thủ công
+        document.getElementById('mon_hoc_id').addEventListener('change', function() {
+            const monId = this.value;
+            const chuongSelect = document.getElementById('chuong_hoc_id');
+            chuongSelect.querySelectorAll('option').forEach(opt => {
+                if (opt.value === "") opt.style.display = "block";
+                else opt.style.display = opt.getAttribute('data-mon') == monId ? "block" : "none";
+            });
+            chuongSelect.value = "";
+        });
+
+        // Lọc chương theo môn học - Tab file
+        document.getElementById('file_mon_hoc_id').addEventListener('change', function() {
+            const monId = this.value;
+            const chuongSelect = document.getElementById('file_chuong_hoc_id');
+            chuongSelect.querySelectorAll('option').forEach(opt => {
+                if (opt.value === "") opt.style.display = "block";
+                else opt.style.display = opt.getAttribute('data-mon') == monId ? "block" : "none";
+            });
+            chuongSelect.value = "";
+        });
+
+        // Custom file input label
+        document.getElementById('wordFile').addEventListener('change', function() {
+            const fileName = this.files[0]?.name || 'Click để chọn file Word (.docx)';
+            document.getElementById('fileLabel').textContent = fileName;
+        });
+
+        // Preview file Word
+        document.getElementById('btnPreview').addEventListener('click', async function() {
+            const form = document.getElementById('uploadForm');
+            const formData = new FormData(form);
+
+            // Kiểm tra required fields
+            if (!formData.get('chuong_hoc_id')) {
+                alert('Vui lòng chọn chương học');
+                return;
+            }
+
+            if (!formData.get('file') || formData.get('file').size === 0) {
+                alert('Vui lòng chọn file Word');
+                return;
+            }
+
+            // Show loading
+            Swal.fire({
+                title: 'Đang đọc file...',
+                text: 'Vui lòng đợi',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                const response = await fetch('{{ route('admin.cauhoi.import.preview.word') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                const responseText = await response.text();
+                
+                if (responseText.includes('<!DOCTYPE') || responseText.includes('<html') || response.status === 404) {
+                    throw new Error(`Server returned HTML instead of JSON. Status: ${response.status}`);
+                }
+
+                const data = JSON.parse(responseText);
+                Swal.close();
+
+                if (data.success) {
+                    previewData = data.data;
+                    tempFile = data.data.temp_file;
+                    displayPreview(data.data.questions);
+                } else {
+                    Swal.fire('Lỗi', data.message || 'Có lỗi xảy ra', 'error');
+                }
+            } catch (error) {
+                Swal.close();
+                console.error('Fetch error:', error);
+                Swal.fire({
+                    title: 'Lỗi kết nối',
+                    html: `
+                        <div style="text-align: left; font-family: monospace; font-size: 12px;">
+                            <strong>Error:</strong> ${error.message}<br><br>
+                            <strong>Possible causes:</strong><br>
+                            1. Route not found (404)<br>
+                            2. Server error (500)<br>
+                            3. CSRF token mismatch<br>
+                            4. File too large<br>
+                        </div>
+                    `,
+                    icon: 'error'
+                });
+            }
+        });
+
+        // Display preview với MathJax rendering
+        function displayPreview(questions) {
+            document.getElementById('totalQuestions').textContent = questions.length;
+
+            let html = '';
+            questions.forEach((q, index) => {
+                const correctAnswer = q.answers.find(a => a.is_correct);
+                const correctLetter = correctAnswer ? String.fromCharCode(65 + correctAnswer.index) : 'A';
+
+                html += `
+                    <div class="question-preview selected" data-index="${index}">
+                        <div class="question-header">
+                            <input type="checkbox" class="question-checkbox" data-index="${index}" checked>
+                            <span class="question-number">${q.question_number || (index + 1)}</span>
+                            <div class="question-content">${q.noi_dung}</div>
+                        </div>
+                        
+                        ${q.answers.length > 0 ? `
+                            <div class="answers-list">
+                                ${q.answers.map(ans => {
+                                    const letter = String.fromCharCode(65 + ans.index);
+                                    const isCorrect = ans.is_correct ? 'correct' : '';
+                                    return `
+                                        <div class="answer-option ${isCorrect}">
+                                            <span class="answer-letter">${letter}</span>
+                                            <span class="answer-text">${ans.text}</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <div class="answer-selector">
+                                <label>Đáp án của bạn:</label>
+                                <div class="btn-group">
+                                    ${['A', 'B', 'C', 'D'].slice(0, q.answers.length).map((letter, idx) => {
+                                        const active = letter === correctLetter ? 'active' : '';
+                                        return `<button type="button" class="btn-answer ${active}" onclick="selectAnswer(${index}, ${idx})">${letter}</button>`;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${q.giai_thich ? `
+                            <div style="margin-left: 75px; margin-top: 15px; padding: 10px; background: #fef3c7; border-left: 3px solid #f59e0b; border-radius: 4px;">
+                                <small style="color: #92400e;"><strong>Giải thích:</strong> ${q.giai_thich}</small>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            document.getElementById('questionsList').innerHTML = html;
+            document.getElementById('previewArea').style.display = 'block';
+
+            // Render MathJax cho preview
+            setTimeout(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    MathJax.typesetPromise().catch((err) => console.log('MathJax error:', err));
+                }
+            }, 100);
+
+            // Scroll to preview
+            document.getElementById('previewArea').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Select answer
+        function selectAnswer(questionIndex, answerIndex) {
+            const questionDiv = document.querySelector(`[data-index="${questionIndex}"]`);
+            const buttons = questionDiv.querySelectorAll('.btn-answer');
+            const answers = questionDiv.querySelectorAll('.answer-option');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            answers.forEach(ans => ans.classList.remove('correct'));
+
+            buttons[answerIndex].classList.add('active');
+            answers[answerIndex].classList.add('correct');
+
+            if (previewData && previewData.questions[questionIndex]) {
+                previewData.questions[questionIndex].answers.forEach((ans, idx) => {
+                    ans.is_correct = idx === answerIndex;
+                });
+            }
+        }
+
+        // Select all checkbox
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checked = this.checked;
+            document.querySelectorAll('.question-checkbox').forEach(cb => {
+                cb.checked = checked;
+                cb.closest('.question-preview').classList.toggle('selected', checked);
+            });
+        });
+
+        // Individual checkbox
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('question-checkbox')) {
+                const preview = e.target.closest('.question-preview');
+                preview.classList.toggle('selected', e.target.checked);
+
+                const total = document.querySelectorAll('.question-checkbox').length;
+                const checked = document.querySelectorAll('.question-checkbox:checked').length;
+                document.getElementById('selectAll').checked = total === checked;
+            }
+        });
+
+        // Import confirmed
+        document.getElementById('btnImport').addEventListener('click', function() {
+            const selectedIndexes = [];
+            document.querySelectorAll('.question-checkbox:checked').forEach(cb => {
+                selectedIndexes.push(parseInt(cb.dataset.index));
+            });
+
+            if (selectedIndexes.length === 0) {
+                Swal.fire('Lỗi', 'Vui lòng chọn ít nhất 1 câu hỏi để import', 'warning');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Xác nhận import',
+                text: `Bạn có chắc muốn import ${selectedIndexes.length} câu hỏi vào hệ thống?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Có, import ngay',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#4f46e5'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performImport(selectedIndexes);
+                }
+            });
+        });
+
+        function performImport(selectedIndexes) {
+            Swal.fire({
+                title: 'Đang import...',
+                text: `Đang xử lý ${selectedIndexes.length} câu hỏi`,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('chuong_hoc_id', document.getElementById('file_chuong_hoc_id').value);
+            formData.append('loai_cau_hoi', document.querySelector('#file-form [name="loai_cau_hoi"]').value);
+            formData.append('muc_do', document.querySelector('#file-form [name="muc_do"]').value);
+            formData.append('temp_file', tempFile);
+
+            selectedIndexes.forEach(index => {
+                formData.append('selected_questions[]', index);
+            });
+
+            fetch('{{ route('admin.cauhoi.import.word.confirmed') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                })
+                .then(async response => {
+                    const responseText = await response.text();
+                    if (!response.ok) {
+                        throw new Error(`Server error ${response.status}`);
+                    }
+                    return JSON.parse(responseText);
+                })
+                .then(data => {
+                    Swal.close();
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonColor: '#4f46e5'
+                        }).then(() => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            }
+                        });
+                    } else {
+                        Swal.fire('Lỗi', data.message || 'Có lỗi xảy ra', 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Import error:', error);
+                    Swal.fire('Lỗi', 'Có lỗi xảy ra khi import: ' + error.message, 'error');
+                });
+        }
+
+        // Cancel
+        document.getElementById('btnCancel').addEventListener('click', function() {
+            document.getElementById('previewArea').style.display = 'none';
+            document.getElementById('uploadForm').reset();
+            document.getElementById('fileLabel').textContent = 'Click để chọn file Word (.docx)';
+            previewData = null;
+            tempFile = null;
+        });
+
+        function switchTab(type) {
+            document.getElementById('manual-form').style.display = type === 'manual' ? 'block' : 'none';
+            document.getElementById('file-form').style.display = type === 'file' ? 'block' : 'none';
+            document.getElementById('tab-manual').classList.toggle('active', type === 'manual');
+            document.getElementById('tab-file').classList.toggle('active', type === 'file');
+        }
+
+        window.onload = () => {
+            initEditors();
+            for (let i = 0; i < 4; i++) addAnswer();
+            document.getElementById('mon_hoc_id').dispatchEvent(new Event('change'));
+        };
+        // Lọc bài học theo chương học
+        document.getElementById('chuong_hoc_id').addEventListener('change', function() {
+            const chuongId = this.value;
+            const baiHocSelect = document.getElementById('bai_hoc_id');
+            
+            baiHocSelect.querySelectorAll('option').forEach(opt => {
+                // Luôn hiện dòng option rỗng "-- Dùng chung --"
+                if (opt.value === "") {
+                    opt.style.display = "block";
+                } else {
+                    // Chỉ hiện các bài học thuộc chương đã chọn
+                    opt.style.display = (opt.getAttribute('data-chuong') == chuongId) ? "block" : "none";
+                }
+            });
+            // Reset giá trị bài học về mặc định khi đổi chương
+            baiHocSelect.value = "";
+        });
+    </script>
+@endsection
