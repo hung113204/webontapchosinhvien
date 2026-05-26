@@ -166,7 +166,12 @@ ul {
 
 /* ══ NAV BAR ════════════════════════════════ */
 .header-nav {
-    background: linear-gradient(120deg, #ffc76b 0%, #fff1cc 23% 76%, #ffa24d 100%);
+    background: linear-gradient(
+        120deg,
+        #ffc76b 0%,
+        #fff1cc 23% 76%,
+        #ffa24d 100%
+    );
 }
 .navbar {
     width: 100%;
@@ -220,7 +225,7 @@ ul {
     transform: translateX(-50%) scaleX(1);
 } */
 .nav-menu li a.active {
-    color:#1e293b;
+    color: #1e293b;
 }
 /* .nav-menu li a.active::after {
     transform: translateX(-50%) scaleX(1);
@@ -470,7 +475,6 @@ ul {
     padding: 0 20px;
 }
 
-
 .hero-feature-icon {
     width: 34px;
     height: 34px;
@@ -511,7 +515,7 @@ ul {
     gap: 16px; /* Khoảng cách giữa 3 khối */
     width: 100%;
     max-width: 780px;
-    
+
     /* Xóa background/border của container tổng */
     background: transparent;
     border: none;
@@ -526,14 +530,16 @@ ul {
     display: flex;
     align-items: center;
     gap: 13px;
-    
+
     /* Box Styles */
     background: #ffffff;
     border-radius: 8px; /* Bo góc nhẹ giống thiết kế */
     padding: 14px 14px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 /* Viền màu riêng cho từng ô */
@@ -558,7 +564,7 @@ ul {
         overflow-x: auto; /* Cuộn ngang nếu quá dài */
         padding-bottom: 12px; /* Không gian cho thanh cuộn */
         gap: 12px;
-        
+
         /* Ẩn thanh cuộn trên một số trình duyệt để đẹp hơn */
         scrollbar-width: none;
         -ms-overflow-style: none;
@@ -598,7 +604,10 @@ ul {
     justify-content: center;
     font-size: 1.2rem;
     flex-shrink: 0;
-    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 /* Màu icon riêng cho từng ô */
@@ -633,7 +642,7 @@ ul {
     font-weight: 800;
     line-height: 1.15;
     margin-bottom: 2px;
-    
+
     /* Gradient Text */
     background: linear-gradient(90deg, #4f46e5, #a855f7);
     -webkit-background-clip: text;
@@ -654,8 +663,6 @@ ul {
 .hero-feature-divider {
     display: none !important;
 }
-
-
 
 .hero-stats {
     display: flex;
@@ -1389,12 +1396,12 @@ footer .container {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     background: linear-gradient(135deg, var(--blue), #1d4ed8);
     color: white;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    padding: 13px 20px;
+    padding: 10px 16px;
     border-radius: 50px;
     border: none;
     cursor: pointer;
@@ -1926,7 +1933,7 @@ footer .container {
 /* Page header banner */
 .subjects-page-header {
     background: white;
-    
+
     /* padding: 0 0 42px; */
     position: relative;
     overflow: hidden;
@@ -2258,19 +2265,19 @@ footer .container {
 /* Action buttons */
 .subject-card-actions {
     display: flex;
-    gap: 10px;
+    gap: 7px;
     margin-top: auto;
 }
 .btn-theory {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     background: #fff;
     border: 1.5px solid #e2eaf6;
     color: #374151;
-    font-size: 0.83rem;
+    font-size: 0.78rem;
     font-weight: 600;
-    padding: 10px 16px;
+    padding: 8px 12px;
     border-radius: 50px;
     cursor: pointer;
     font-family: inherit;
@@ -2286,12 +2293,12 @@ footer .container {
 .btn-practice {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     background: linear-gradient(135deg, var(--blue), #1d4ed8);
     color: white;
-    font-size: 0.83rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    padding: 10px 16px;
+    padding: 8px 12px;
     border-radius: 50px;
     cursor: pointer;
     font-family: inherit;
@@ -2384,7 +2391,7 @@ footer .container {
 .breadcrumb-transparent .breadcrumb-bar {
     background: transparent;
     border-bottom: none;
-   /* padding-top: 24px;  Thay thế top padding của header */
+    /* padding-top: 24px;  Thay thế top padding của header */
     padding-bottom: 4px; /* Thu hẹp khoảng cách với title */
 }
 .breadcrumb-transparent .breadcrumb {
@@ -2621,7 +2628,7 @@ footer .container {
 }
 
 .chapter-lessons::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 39px;
     top: 24px;
@@ -2665,7 +2672,7 @@ footer .container {
     position: relative;
 }
 .chapter-lessons a.active::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 8px;
@@ -5458,13 +5465,20 @@ footer .container {
         left: -280px;
         width: 280px;
         height: 100vh;
-        background: linear-gradient(120deg, #ffc76b 0%, #fff1cc 23% 76%, #ffa24d 100%);
-        transition: left 0.3s ease-in-out, visibility 0.3s;
+        background: linear-gradient(
+            120deg,
+            #ffc76b 0%,
+            #fff1cc 23% 76%,
+            #ffa24d 100%
+        );
+        transition:
+            left 0.3s ease-in-out,
+            visibility 0.3s;
         display: block;
         visibility: hidden;
         border-top: 1px solid rgba(255, 255, 255, 0.08);
         border-right: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
     }
 
     /* When open */
@@ -5472,7 +5486,7 @@ footer .container {
         left: 0;
         visibility: visible;
     }
-    
+
     .mobile-overlay {
         position: fixed;
         top: 0;
@@ -5483,14 +5497,16 @@ footer .container {
         z-index: -1;
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
+        transition:
+            opacity 0.3s ease,
+            visibility 0.3s ease;
     }
 
     .mobile-overlay.active {
         opacity: 1;
         visibility: visible;
     }
-    
+
     .header-nav .navbar {
         flex-direction: column;
         height: auto;
@@ -5525,10 +5541,10 @@ footer .container {
 
     /* Exam topbar info */
     .exam-topbar-info h2 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--white);
-}
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--white);
+    }
     .timer-circle-wrap {
         width: 60px;
         height: 60px;
