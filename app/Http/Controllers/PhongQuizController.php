@@ -858,4 +858,37 @@ class PhongQuizController extends FrontendController
         }
         return response()->json(['success' => true]);
     }
+
+    /**
+     * Tái thiết lập phòng chơi để chơi lại (chỉ chủ phòng mới có quyền)
+     */
+    public function clientResetRoom($ma_phong)
+    {
+        $room = PhongQuiz::where('ma_phong', $ma_phong)->firstOrFail();
+        
+        if ($room->chu_phong_id !== $this->getQuizUserId()) {
+            return response()->json(['success' => false, 'message' => 'Bạn không phải là chủ phòng đấu này.'], 403);
+        }
+
+        // 1. Reset trạng thái phòng về 1 (chờ) và xóa câu hỏi hiện tại
+        $room->update([
+            'trang_thai' => 1,
+            'cau_hoi_hien_tai_id' => null,
+            'thoi_gian_bat_dau_cau_hoi' => null
+        ]);
+
+        // 2. Reset điểm số và số câu đúng của tất cả thành viên trong phòng về 0
+        ThanhVienPhong::where('phong_quiz_id', $room->id)->update([
+            'tong_diem' => 0,
+            'so_cau_dung' => 0
+        ]);
+
+        // 3. Xóa các chi tiết trả lời câu hỏi của phòng này để chơi lại từ đầu
+        ChiTietTraLoiRealtime::where('phong_quiz_id', $room->id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Đã thiết lập lại phòng chơi thành công!'
+        ]);
+    }
 }

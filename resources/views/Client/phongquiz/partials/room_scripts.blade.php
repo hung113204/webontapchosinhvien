@@ -26,6 +26,7 @@
     const SUBMIT_URL = "{{ route('client.phongquiz.submit', $room->ma_phong) }}";
     const START_ROOM_URL = "{{ route('client.phongquiz.start', $room->ma_phong) }}";
     const NEXT_QUESTION_URL = "{{ route('client.phongquiz.next', $room->ma_phong) }}";
+    const is_host = {{ $room->chu_phong_id === $member->user_id ? 'true' : 'false' }};
     
     let current_state = null;
     let room_data = null;
@@ -34,6 +35,7 @@
     let selected_choice_id = null;
     let last_submit_result = null;
     let auto_advance_timeout = null; // Timeout cho auto-advance khi hết giờ
+    let ended_countdown_interval = null; // Interval cho auto-redirect khi kết thúc game
 
     // Beautiful shapes and colors for options matching modern kahoot style
     const option_styles = [
@@ -51,6 +53,7 @@
                 
                 room_data = data;
                 const state = data.room.trang_thai;
+                const stateChanged = (current_state !== state);
                 
                 switchState(state);
                 
@@ -59,7 +62,7 @@
                 } else if (state === 2) {
                     updatePlaying(data);
                 } else if (state === 3) {
-                    updateEnded(data);
+                    updateEnded(data, stateChanged);
                 }
             })
             .catch(err => console.error("Lỗi đồng bộ Realtime học viên: ", err));
@@ -72,6 +75,36 @@
     function switchState(state) {
         if (current_state === state) return;
         current_state = state;
+
+        // Reset variables when transitioning back to lobby
+        if (state === 1) {
+            is_submitted = false;
+            selected_choice_id = null;
+            active_question_id = null;
+            last_submit_result = null;
+            is_requesting_next = false;
+            
+            if (auto_advance_timeout) {
+                clearTimeout(auto_advance_timeout);
+                auto_advance_timeout = null;
+            }
+            if (ended_countdown_interval) {
+                clearInterval(ended_countdown_interval);
+                ended_countdown_interval = null;
+            }
+
+            // Reset UI state for play buttons / host controls if host
+            const hostBtn = document.getElementById('host-start-btn');
+            if (hostBtn) {
+                hostBtn.disabled = false;
+                hostBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="white" stroke="none">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    Chơi ngay
+                `;
+            }
+        }
 
         document.getElementById('student-lobby').style.display = state === 1 ? 'block' : 'none';
         document.getElementById('student-playing').style.display = state === 2 ? 'flex' : 'none';
@@ -415,10 +448,10 @@
             // Add class 'show' to trigger entry transition
             iconWrapper.classList.add('show');
             
-            // After 3 seconds, remove class 'show' to trigger exit transition
+            // After 1 second, remove class 'show' to trigger exit transition
             window.bombTimeoutId = setTimeout(() => {
                 iconWrapper.classList.remove('show');
-            }, 3000);
+            }, 1000);
         } else {
             iconWrapper.classList.remove('show');
         }
@@ -569,8 +602,8 @@
             });
     }
 
-    function updateEnded(data) {
-        clearInterval(status_poll_interval);
+    function updateEnded(data, stateChanged) {
+        if (!stateChanged) return;
         
         // Clear auto-advance timeout khi phòng kết thúc
         if (auto_advance_timeout) {
@@ -604,6 +637,64 @@
         }
 
         switchState(3);
+
+        // Tự động quay về phòng chờ sau 30 giây
+        let countdownSeconds = 30;
+        const countdownEl = document.getElementById('ended-countdown-seconds');
+        if (countdownEl) {
+            countdownEl.textContent = countdownSeconds;
+        }
+
+        if (ended_countdown_interval) {
+            clearInterval(ended_countdown_interval);
+        }
+
+        ended_countdown_interval = setInterval(() => {
+            countdownSeconds--;
+            if (countdownEl) {
+                countdownEl.textContent = countdownSeconds;
+            }
+            if (countdownSeconds <= 0) {
+                clearInterval(ended_countdown_interval);
+                goBackToLobby(null);
+            }
+        }, 1000);
+    }
+
+    function goBackToLobby(event) {
+        if (event) event.preventDefault();
+        if (ended_countdown_interval) {
+            clearInterval(ended_countdown_interval);
+            ended_countdown_interval = null;
+        }
+
+        if (is_host) {
+            resetRoomByHost();
+        } else {
+            // Player: Switch local state to waiting lobby
+            switchState(1);
+        }
+    }
+
+    function resetRoomByHost() {
+        const resetUrl = "{{ route('client.phongquiz.reset', $room->ma_phong) }}";
+        fetch(resetUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Host switches state back to lobby immediately, others will follow via polling
+                switchState(1);
+            } else {
+                alert("Không thể thiết lập lại phòng: " + data.message);
+            }
+        })
+        .catch(err => console.error("Lỗi reset phòng: ", err));
     }
 
     // ============ Student Host Game Control triggers ============
@@ -692,6 +783,10 @@
         if (auto_advance_timeout) {
             clearTimeout(auto_advance_timeout);
             auto_advance_timeout = null;
+        }
+        if (ended_countdown_interval) {
+            clearInterval(ended_countdown_interval);
+            ended_countdown_interval = null;
         }
         
         const data = new FormData();

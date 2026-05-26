@@ -225,33 +225,14 @@
                             @enderror
                         </div>
 
-                        <div class="bf-grid-2">
-                            <div class="bf-form-group">
-                                <label class="bf-label">Thời lượng (Phút)</label>
-                                <input type="number" name="thoi_luong_phut"
-                                    class="bf-input {{ $errors->has('thoi_luong_phut') ? 'is-invalid' : '' }}"
-                                    value="{{ old('thoi_luong_phut', 0) }}" min="0">
-                                @error('thoi_luong_phut')
-                                    <div class="bf-error-message">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="bf-form-group">
-                                <label class="bf-label">Thứ tự hiển thị</label>
-                                <input type="number" name="thu_tu"
-                                    class="bf-input {{ $errors->has('thu_tu') ? 'is-invalid' : '' }}"
-                                    value="{{ old('thu_tu', 0) }}" min="0">
-                                @error('thu_tu')
-                                    <div class="bf-error-message">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="bf-form-group bf-checkbox-wrap">
-                            <label class="bf-checkbox-label">
-                                <input type="checkbox" name="cho_phep_hoc_thu" value="1"
-                                    {{ old('cho_phep_hoc_thu') ? 'checked' : '' }}>
-                                Cho phép Học thử miễn phí
-                            </label>
+                        <div class="bf-form-group">
+                            <label class="bf-label">Thứ tự hiển thị</label>
+                            <input type="number" name="thu_tu"
+                                class="bf-input {{ $errors->has('thu_tu') ? 'is-invalid' : '' }}"
+                                value="{{ old('thu_tu', 0) }}" min="0">
+                            @error('thu_tu')
+                                <div class="bf-error-message">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="bf-form-group">

@@ -110,6 +110,7 @@ Route::prefix('quiz-vui')->group(function () {
     Route::post('/room/{ma_phong}/start', [\App\Http\Controllers\PhongQuizController::class, 'clientStartRoom'])->name('client.phongquiz.start');
     Route::post('/room/{ma_phong}/next', [\App\Http\Controllers\PhongQuizController::class, 'clientNextQuestion'])->name('client.phongquiz.next');
     Route::post('/room/{ma_phong}/leave', [\App\Http\Controllers\PhongQuizController::class, 'clientLeaveRoom'])->name('client.phongquiz.leave');
+    Route::post('/room/{ma_phong}/reset', [\App\Http\Controllers\PhongQuizController::class, 'clientResetRoom'])->name('client.phongquiz.reset');
     Route::post('/nickname', [\App\Http\Controllers\PhongQuizController::class, 'updateSessionNickname'])->name('client.phongquiz.nickname');
     Route::get('/leaderboard', [\App\Http\Controllers\PhongQuizController::class, 'getLeaderboard'])->name('client.phongquiz.leaderboard');
 });

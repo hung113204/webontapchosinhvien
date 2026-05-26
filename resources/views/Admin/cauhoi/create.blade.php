@@ -206,12 +206,7 @@
             <button class="tab-item" onclick="switchTab('file')" id="tab-file">Thêm từ file Word</button>
             <button class="tab-item" onclick="switchTab('excel')" id="tab-excel">Thêm từ file Excel</button>
             <button class="tab-item" onclick="switchTab('ai')" id="tab-ai" style="display: inline-flex; align-items: center; gap: 8px; color: #4f46e5; border-color: transparent; font-weight: 600;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
-                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
-                    <path d="M12 6v6l4 2"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
+                <img src="{{ asset('frontend/asset/images/t2.png') }}" style="width: 18px; height: 18px; border-radius: 4px; object-fit: cover;" alt="AI">
                 Tạo bằng AI
             </button>
         </div>

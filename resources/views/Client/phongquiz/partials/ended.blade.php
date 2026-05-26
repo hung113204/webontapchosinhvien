@@ -30,11 +30,15 @@
             Thoát
         </a>
         
-        <a href="{{ route('client.phongquiz.join') }}" class="qv-ended-btn-lobby" onclick="leaveRoom(event)">
+        <a href="#" class="qv-ended-btn-lobby" onclick="goBackToLobby(event)">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
                 <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
             </svg>
             Về phòng chờ
         </a>
+    </div>
+
+    <div id="ended-auto-redirect-tip" style="margin-top: 24px; font-size: 14px; color: #64748b; font-weight: 500;">
+        Tự động quay lại phòng chờ sau <span id="ended-countdown-seconds" style="font-weight: 700; color: #ef4444;">30</span> giây...
     </div>
 </div>

@@ -232,8 +232,11 @@
                                 </div>
 
                                 <div class="subject-card-actions">
-                                    <a href="{{ url('/hoc-phan/' . $mon->id) }}" class="btn-detail">
-                                        <i class="fas fa-eye"></i> Xem chi tiết
+                                    <a href="{{ url('/hoc-phan/' . $mon->id) }}" class="btn-detail-link">
+                                        <span class="btn-detail-text">BẮT ĐẦU NGAY</span>
+                                        <span class="btn-detail-circle">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </span>
                                     </a>
                                 </div>
                             </div>

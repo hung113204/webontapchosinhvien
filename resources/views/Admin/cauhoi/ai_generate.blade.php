@@ -21,13 +21,8 @@
         {{-- Header mô tả --}}
         <div style="display: flex; align-items: center; gap: 14px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
                     border-radius: 12px; padding: 20px 24px; margin-bottom: 28px; color: white;">
-            <div style="background: rgba(255,255,255,0.2); border-radius: 10px; padding: 10px; flex-shrink: 0;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:28px;height:28px;">
-                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
-                    <path d="M12 6v6l4 2"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
+            <div style="flex-shrink: 0;">
+                <img src="{{ asset('frontend/asset/images/t2.png') }}" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover;" alt="AI">
             </div>
             <div>
                 <div style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">✨ Tạo câu hỏi bằng AI</div>

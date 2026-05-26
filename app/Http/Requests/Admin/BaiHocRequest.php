@@ -36,9 +36,7 @@ class BaiHocRequest extends FormRequest
             'tai_lieu_dinh_kem.*'=> 'nullable|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:10240', 
             
             // Cấu hình
-            'thoi_luong_phut'    => 'nullable|integer|min:0',
             'thu_tu'             => 'nullable|integer|min:0',
-            'cho_phep_hoc_thu'   => 'nullable|boolean',
             'trang_thai'         => 'required|in:0,1',
         ];
     }
@@ -63,9 +61,6 @@ class BaiHocRequest extends FormRequest
             
             'tai_lieu_dinh_kem'         => 'nullable|array',
             'tai_lieu_dinh_kem.*'       => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:10240',
-            
-            'thoi_luong_phut.integer'   => 'Thời lượng phải là một số nguyên.',
-            'thoi_luong_phut.min'       => 'Thời lượng không được nhỏ hơn 0.',
             
             'thu_tu.integer'            => 'Thứ tự phải là một số nguyên.',
             'thu_tu.min'                => 'Thứ tự không được nhỏ hơn 0.',

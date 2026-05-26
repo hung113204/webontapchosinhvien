@@ -25,9 +25,7 @@ class BaiHoc extends Model
         
         'video_url',
         'tai_lieu_dinh_kem',
-        'thoi_luong_phut',
         'thu_tu',
-        'cho_phep_hoc_thu',
         'trang_thai',
     ];
 
@@ -38,10 +36,8 @@ class BaiHoc extends Model
         // Biến chuỗi JSON trong DB thành Mảng (Array) trong PHP để dễ dùng vòng lặp
         'giai_thich_code'  => 'array', 
         
-        'cho_phep_hoc_thu' => 'boolean',
         'trang_thai'       => 'boolean',
         'thu_tu'           => 'integer',
-        'thoi_luong_phut'  => 'integer',
     ];
 
     // ==========================================

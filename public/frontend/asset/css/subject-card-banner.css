@@ -606,6 +606,54 @@
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
+/* Nút xem chi tiết kiểu link BẮT ĐẦU NGAY -> */
+.subject-card-actions .btn-detail-link {
+    grid-column: span 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    width: fit-content;
+    transition: all 0.25s;
+    padding: 4px 0;
+}
+
+.subject-card-actions .btn-detail-link .btn-detail-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #3b82f6;
+    letter-spacing: 0.5px;
+    transition: color 0.25s;
+}
+
+.subject-card-actions .btn-detail-link .btn-detail-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.85rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.25);
+}
+
+.subject-card-actions .btn-detail-link:hover .btn-detail-text {
+    color: #1d4ed8;
+}
+
+.subject-card-actions .btn-detail-link:hover .btn-detail-circle {
+    background-color: #1d4ed8;
+    transform: translateX(4px);
+    box-shadow: 0 5px 15px rgba(29, 78, 216, 0.4);
+}
+
+
 @media (max-width: 1024px) {
     .subjects-list-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));

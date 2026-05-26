@@ -107,9 +107,6 @@
                             
                             <td>
                                 <strong>{{ $item->ten_bai_hoc }}</strong>
-                                @if($item->cho_phep_hoc_thu)
-                                    <span style="font-size: 0.75rem; background: #dbeafe; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">Học thử</span>
-                                @endif
                             </td>
                             
                             <td>
@@ -124,7 +121,6 @@
                                 @if($item->tai_lieu_dinh_kem)
                                     <div style="margin-bottom: 3px; color: #059669;"><i class="fas fa-file-pdf"></i> Có tài liệu</div>
                                 @endif
-                                <div><i class="far fa-clock"></i> {{ $item->thoi_luong_phut }} phút</div>
                             </td>
 
                             <td>

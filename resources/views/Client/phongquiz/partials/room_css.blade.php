@@ -464,7 +464,6 @@
         font-size: 130px !important;
         color: #dc2626 !important;
         filter: drop-shadow(0 12px 24px rgba(220, 38, 38, 0.5)) !important;
-        animation: bombPulseWiggle 1.2s ease-in-out infinite alternate;
         display: inline-block;
     }
     @keyframes bombPulseWiggle {
