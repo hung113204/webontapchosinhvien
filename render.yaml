@@ -1,7 +1,7 @@
 services:
   - type: web
     name: student-course-review-web
-    env: php
+    runtime: php
     plan: free
     buildCommand: composer install --no-dev --optimize-autoloader && npm install && npm run build
     startCommand: vendor/bin/heroku-php-apache2 public/
