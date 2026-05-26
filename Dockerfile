@@ -9,6 +9,9 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 # Bật Apache Rewrite Module để chạy được Route Laravel
 RUN a2enmod rewrite
 
+# Expose port 80
+EXPOSE 80
+
 # Cấu hình chỉ thẳng vào thư mục public của Laravel
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf

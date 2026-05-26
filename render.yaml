@@ -3,3 +3,11 @@ services:
     name: student-course-review-web
     runtime: docker
     plan: free
+    buildCommand: composer install --no-dev --optimize-autoloader
+    startCommand: apache2-foreground
+    healthCheckPath: /
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
