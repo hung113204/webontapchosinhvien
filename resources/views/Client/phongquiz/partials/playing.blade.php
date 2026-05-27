@@ -55,6 +55,7 @@
         <div id="playing-grade-result" class="qv-grade-card" style="display: none;">
             <div id="grade-icon-wrapper" class="grade-icon-wrapper">
                 <i class="fa-solid fa-bomb text-red-500 text-8xl bomb-icon"></i>
+                <span class="check">✔</span>
             </div>
             <h2 class="qv-grade-title" id="grade-title">CHÍNH XÁC!</h2>
             <div class="qv-grade-pts" id="grade-points">Bạn đã gửi đáp án.</div>

@@ -77,12 +77,6 @@
                     </div>
                 </div>
                 {{-- Thêm các field bị thiếu từ migration --}}
-                <div class="form-group" style="grid-column: span 2">
-                    <label>Mô tả chi tiết/Đề cương môn học</label>
-                    <textarea name="mo_ta_chi_tiet" id="input_mo_ta_chi_tiet" class="form-input" rows="4"></textarea>
-                    <small class="text-muted">Có thể sử dụng HTML để định dạng</small>
-                </div>
-
                 <div class="form-group">
                     <label>Thứ tự hiển thị</label>
                     <input type="number" name="thu_tu" id="input_thu_tu" class="form-input" value="0"

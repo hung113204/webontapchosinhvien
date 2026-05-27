@@ -10,6 +10,7 @@ use App\Http\Controllers\Client\PracticeController;
 use App\Http\Controllers\Client\ExamController;
 use App\Http\Controllers\Client\GoogleController;
 use App\Http\Controllers\Client\AiAssistantController;
+Route::get('/healthz', fn () => response('ok', 200))->name('healthz');
 /*
 |--------------------------------------------------------------------------
 | WEB ROUTES (Dành cho Sinh viên và Khách truy cập)

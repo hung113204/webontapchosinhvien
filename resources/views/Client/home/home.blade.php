@@ -2,6 +2,10 @@
 
 @section('title', 'Trang chủ - IT Study Support Khoa CNTT')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('frontend/asset/css/subject-brand-hover.css') }}">
+@endsection
+
 @section('content')
     <section class="hero">
         <div class="container">
@@ -151,8 +155,10 @@
                     @foreach ($monHocNoiBat as $mon)
                         @php
                             $imageUrl = !empty($mon->hinh_anh) ? asset('storage/' . $mon->hinh_anh) : asset('frontend/asset/images/default_subject.png');
+                            $brandColor = $mon->mau_sac ?? '#3b82f6';
                         @endphp
                         <div class="subject-item-card"
+                            style="--subject-brand-color: {{ $brandColor }};"
                             data-banner-height="large">
                             {{-- Banner --}}
                             <div class="subject-card-banner has-image">

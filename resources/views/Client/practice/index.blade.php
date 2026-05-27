@@ -2,7 +2,11 @@
 
 @section('title', 'Trung tâm Luyện tập - IT Study')
 
-
+@section('styles')
+    {{-- BEGIN SUBJECT BRAND HOVER CSS - doi mau ten va nut theo mau backend --}}
+    <link rel="stylesheet" href="{{ asset('frontend/asset/css/subject-brand-hover.css') }}">
+    {{-- END SUBJECT BRAND HOVER CSS --}}
+@endsection
 
 @section('content')
     {{-- ══ PAGE HEADER ══ --}}
@@ -106,9 +110,12 @@
                     @php
                         $imageUrl = !empty($mon->hinh_anh) ? asset('storage/' . $mon->hinh_anh) : asset('frontend/asset/images/default_subject.png');
                     @endphp
-                    <div class="subject-item-card" data-danhmuc="{{ $mon->danh_muc_id }}"
+                    {{-- BEGIN SUBJECT BRAND HOVER - mau hover lay tu cot mau_sac backend --}}
+                    <div class="subject-item-card" style="--subject-brand-color: {{ $brandColor }};"
+                        data-danhmuc="{{ $mon->danh_muc_id }}"
                         data-mucdo="{{ $mon->muc_do_mon_hoc }}" data-id="{{ $mon->id }}"
                         data-banner-height="large">
+                    {{-- END SUBJECT BRAND HOVER --}}
 
                         {{-- ── BANNER (CÓ THỂ TÙY CHỈNH CHIỀU CAO) ── --}}
                         <div class="subject-card-banner has-image">
@@ -144,6 +151,7 @@
                         {{-- ── CARD BODY ── --}}
                         <div class="subject-card-body">
                             <div class="card-header-row">
+                                {{-- SUBJECT BRAND HOVER TARGET: ten mon hoc doi mau khi hover card --}}
                                 <h3>{{ Str::limit($mon->ten_mon_hoc, 35) }}</h3>
                                 <span class="badge-level {{ $levelClass }}">{{ $levelText }}</span>
                             </div>
@@ -176,6 +184,7 @@
                             </div>
 
                             <div class="subject-card-actions">
+                                {{-- SUBJECT BRAND HOVER TARGET: cac nut doi mau khi hover card --}}
                                 <a href="{{ route('client.subjects.show', $mon->id) }}" class="btn-theory">
                                     <i class="fas fa-book-open"></i> Lý thuyết
                                 </a>

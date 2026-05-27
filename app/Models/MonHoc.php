@@ -12,7 +12,7 @@ class MonHoc extends Model
 
     protected $table = 'mon_hoc';
 
-    protected $fillable = ['ten_mon_hoc', 'ma_mon_hoc', 'mo_ta_ngan', 'mo_ta_chi_tiet', 'icon_class', 'hinh_anh', 'mau_sac', 'so_tin_chi', 'muc_do_mon_hoc', 'thu_tu', 'is_popular', 'is_featured', 'so_luong_bai_hoc', 'so_luong_cau_hoi', 'so_luong_nguoi_hoc', 'trang_thai', 'nguoi_tao_id'];
+    protected $fillable = ['ten_mon_hoc', 'ma_mon_hoc', 'mo_ta_ngan', 'icon_class', 'hinh_anh', 'mau_sac', 'so_tin_chi', 'muc_do_mon_hoc', 'thu_tu', 'is_popular', 'is_featured', 'so_luong_bai_hoc', 'so_luong_cau_hoi', 'so_luong_nguoi_hoc', 'trang_thai', 'nguoi_tao_id'];
 
     const STATUS_PUBLIC = 1;
     const STATUS_PRIVATE = 0;

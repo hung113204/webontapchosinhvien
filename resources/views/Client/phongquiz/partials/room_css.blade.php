@@ -460,11 +460,113 @@
         transform: translateX(-50%) scale(1.1) rotate(0deg);
         opacity: 1;
     }
+    .grade-icon-wrapper .bomb-icon,
+    .grade-icon-wrapper .check {
+        display: none;
+    }
+    .grade-icon-wrapper.is-bomb .bomb-icon,
+    .grade-icon-wrapper.is-check .check {
+        display: inline-flex;
+    }
+    .grade-icon-wrapper.is-exploding::after {
+        content: "";
+        position: absolute;
+        inset: 50%;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        border: 4px solid rgba(239, 68, 68, 0.45);
+        transform: translate(-50%, -50%) scale(0.2);
+        animation: bombShockwave 0.75s ease-out forwards;
+        pointer-events: none;
+    }
+    .grade-icon-wrapper.is-checking::after {
+        content: "";
+        position: absolute;
+        inset: 50%;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 4px solid rgba(16, 185, 129, 0.45);
+        transform: translate(-50%, -50%) scale(0.2);
+        animation: checkShockwave 0.75s ease-out forwards;
+        pointer-events: none;
+    }
     .bomb-icon {
         font-size: 130px !important;
         color: #dc2626 !important;
         filter: drop-shadow(0 12px 24px rgba(220, 38, 38, 0.5)) !important;
-        display: inline-block;
+        align-items: center;
+        justify-content: center;
+    }
+    .check {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #22c55e, #10b981);
+        color: #ffffff;
+        font-size: 78px;
+        font-weight: 900;
+        line-height: 1;
+        box-shadow: 0 16px 28px rgba(16, 185, 129, 0.35);
+    }
+    .grade-icon-wrapper.is-exploding .bomb-icon {
+        animation: bombPopOnce 0.75s cubic-bezier(0.2, 0.9, 0.25, 1.35) both;
+    }
+    .grade-icon-wrapper.is-checking .check {
+        animation: checkPopOnce 0.75s cubic-bezier(0.2, 0.9, 0.25, 1.35) both;
+    }
+    @keyframes bombPopOnce {
+        0% {
+            transform: scale(0.35) rotate(-20deg);
+            filter: drop-shadow(0 0 0 rgba(220, 38, 38, 0));
+        }
+        45% {
+            transform: scale(1.18) rotate(8deg);
+            filter: drop-shadow(0 16px 28px rgba(220, 38, 38, 0.55));
+        }
+        70% {
+            transform: scale(0.96) rotate(-4deg);
+        }
+        100% {
+            transform: scale(1) rotate(0deg);
+        }
+    }
+    @keyframes bombShockwave {
+        0% {
+            opacity: 0.75;
+            transform: translate(-50%, -50%) scale(0.2);
+        }
+        100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.3);
+        }
+    }
+    @keyframes checkPopOnce {
+        0% {
+            transform: scale(0.35) rotate(-12deg);
+        }
+        45% {
+            transform: scale(1.12) rotate(5deg);
+        }
+        70% {
+            transform: scale(0.96) rotate(-2deg);
+        }
+        100% {
+            transform: scale(1) rotate(0deg);
+        }
+    }
+    @keyframes checkShockwave {
+        0% {
+            opacity: 0.75;
+            transform: translate(-50%, -50%) scale(0.2);
+        }
+        100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.25);
+        }
     }
     @keyframes bombPulseWiggle {
         0% {

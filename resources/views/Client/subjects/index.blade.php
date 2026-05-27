@@ -2,6 +2,12 @@
 
 @section('title', 'Tất cả học phần - IT Study Support')
 
+@section('styles')
+    {{-- BEGIN SUBJECT BRAND HOVER CSS - doi mau ten va nut theo mau backend --}}
+    <link rel="stylesheet" href="{{ asset('frontend/asset/css/subject-brand-hover.css') }}">
+    {{-- END SUBJECT BRAND HOVER CSS --}}
+@endsection
+
 @push('meta')
     <meta name="base-url" content="{{ url('') }}">
 @endpush
@@ -93,9 +99,12 @@
                         $imageUrl = !empty($mon->hinh_anh) ? asset('storage/' . $mon->hinh_anh) : asset('frontend/asset/images/default_subject.png');
                     @endphp
 
+                    {{-- BEGIN SUBJECT BRAND HOVER - mau hover lay tu cot mau_sac backend --}}
                     <a href="{{ route('client.subjects.show', $mon->id) }}" class="subject-item-card"
+                        style="--subject-brand-color: {{ $brandColor }};"
                         data-danhmuc="{{ $mon->danh_muc_id }}" data-mucdo="{{ $mon->muc_do_mon_hoc }}"
                         data-id="{{ $mon->id }}" data-banner-height="large">
+                    {{-- END SUBJECT BRAND HOVER --}}
 
                         {{-- ── BANNER ── --}}
                         <div class="subject-card-banner has-image">
@@ -128,6 +137,7 @@
                         {{-- ── CARD BODY ── --}}
                         <div class="subject-card-body">
                             <div class="card-header-row">
+                                {{-- SUBJECT BRAND HOVER TARGET: ten mon hoc doi mau khi hover card --}}
                                 <h3>{{ Str::limit($mon->ten_mon_hoc, 35) }}</h3>
                                 <span class="badge-level {{ $levelClass }}">{{ $levelText }}</span>
                             </div>
@@ -164,6 +174,7 @@
                             </div>
 
                             <div class="subject-card-actions">
+                                {{-- SUBJECT BRAND HOVER TARGET: nut doi mau khi hover card --}}
                                 <span class="btn-theory">
                                     <i class="fas fa-book-open"></i> Lý thuyết
                                 </span>
@@ -245,7 +256,7 @@
         if (clearBtn) {
             clearBtn.addEventListener('click', () => {
                 if (searchInput) searchInput.value = '';
-                if (dmFilter) dmFilter.value = 'all';
+                if (mhFilter) mhFilter.value = 'all';
                 if (mdFilter) mdFilter.value = 'all';
                 applyFilters();
             });

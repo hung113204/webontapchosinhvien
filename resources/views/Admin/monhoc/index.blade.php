@@ -398,7 +398,6 @@
                     data.muc_do_mon_hoc.toString() : '';
                 document.getElementById('input_mau_sac').value = data.mau_sac || '#4f46e5';
                 document.getElementById('input_mo_ta_ngan').value = data.mo_ta_ngan || '';
-                document.getElementById('input_mo_ta_chi_tiet').value = data.mo_ta_chi_tiet || '';
                 document.getElementById('input_thu_tu').value = data.thu_tu || 0;
                 document.getElementById('input_icon_class').value = data.icon_class || '';
                 document.getElementById('input_is_featured').checked = !!data.is_featured;

@@ -28,7 +28,6 @@ class MonHocRequest extends FormRequest
                 Rule::unique('mon_hoc', 'ma_mon_hoc')->ignore($id),
             ],
             'mo_ta_ngan'         => 'nullable|string|max:500',
-            'mo_ta_chi_tiet'     => 'nullable|string',
             'muc_do_mon_hoc'     => 'required|in:1,2,3,4',
             'icon_class'         => 'nullable|string|max:100',
             'hinh_anh'           => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',

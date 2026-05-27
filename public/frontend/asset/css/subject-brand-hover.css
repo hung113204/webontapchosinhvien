@@ -1,0 +1,91 @@
+.subject-item-card {
+    --subject-brand-color: #3b82f6;
+}
+
+.subject-item-card,
+.subject-item-card .subject-card-body h3,
+.subject-item-card .btn-theory,
+.subject-item-card .btn-theory i,
+.subject-item-card .btn-practice,
+.subject-item-card .btn-detail-link .btn-detail-text,
+.subject-item-card .btn-detail-link .btn-detail-circle {
+    transition:
+        color 0.25s ease,
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+}
+
+.subject-item-card .subject-card-actions {
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.subject-item-card .btn-theory,
+.subject-item-card .btn-practice {
+    min-width: 0;
+    height: 36px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.subject-item-card .btn-theory i,
+.subject-item-card .btn-practice i {
+    font-size: 0.76rem;
+}
+
+.subject-item-card .btn-detail-link {
+    gap: 8px;
+    padding: 2px 0;
+}
+
+.subject-item-card .btn-detail-link .btn-detail-text {
+    font-size: 0.82rem;
+    line-height: 1;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.subject-item-card .btn-detail-link .btn-detail-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.78rem;
+}
+
+.subject-item-card:hover {
+    border-color: var(--subject-brand-color);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+}
+
+.subject-item-card:hover .subject-card-body h3 {
+    color: var(--subject-brand-color);
+}
+
+.subject-item-card:hover .btn-theory {
+    border-color: var(--subject-brand-color);
+    color: var(--subject-brand-color);
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+}
+
+.subject-item-card:hover .btn-theory i {
+    color: var(--subject-brand-color);
+}
+
+.subject-item-card:hover .btn-practice {
+    background: linear-gradient(135deg, var(--subject-brand-color), var(--subject-brand-color)) !important;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.18);
+}
+
+.subject-item-card:hover .btn-detail-link .btn-detail-text {
+    color: var(--subject-brand-color);
+}
+
+.subject-item-card:hover .btn-detail-link .btn-detail-circle {
+    background-color: var(--subject-brand-color);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.18);
+}

@@ -36,6 +36,8 @@
     let last_submit_result = null;
     let auto_advance_timeout = null; // Timeout cho auto-advance khi hết giờ
     let ended_countdown_interval = null; // Interval cho auto-redirect khi kết thúc game
+    let last_bomb_effect_question_id = null;
+    let last_check_effect_question_id = null;
 
     // Beautiful shapes and colors for options matching modern kahoot style
     const option_styles = [
@@ -219,6 +221,7 @@
 
             document.getElementById('playing-grade-result').style.display = 'none';
             triggerBombIcon(false);
+            triggerCheckIcon(false);
             document.getElementById('playing-submitted-lobby').style.display = 'none';
             document.getElementById('playing-workspace').style.display = 'block';
 
@@ -441,19 +444,51 @@
         }
         
         if (show) {
+            if (last_bomb_effect_question_id === active_question_id) {
+                return;
+            }
+            last_bomb_effect_question_id = active_question_id;
+
             // First hide it immediately (in case it was showing)
-            iconWrapper.classList.remove('show');
+            iconWrapper.classList.remove('show', 'is-bomb', 'is-check', 'is-exploding', 'is-checking');
             void iconWrapper.offsetWidth; // trigger reflow
             
             // Add class 'show' to trigger entry transition
-            iconWrapper.classList.add('show');
+            iconWrapper.classList.add('show', 'is-bomb', 'is-exploding');
             
             // After 1 second, remove class 'show' to trigger exit transition
             window.bombTimeoutId = setTimeout(() => {
-                iconWrapper.classList.remove('show');
-            }, 1000);
+                iconWrapper.classList.remove('show', 'is-bomb', 'is-exploding');
+            }, 1100);
         } else {
-            iconWrapper.classList.remove('show');
+            iconWrapper.classList.remove('show', 'is-bomb', 'is-exploding');
+        }
+    }
+
+    function triggerCheckIcon(show) {
+        const iconWrapper = document.getElementById('grade-icon-wrapper');
+        if (!iconWrapper) return;
+
+        if (window.checkTimeoutId) {
+            clearTimeout(window.checkTimeoutId);
+            window.checkTimeoutId = null;
+        }
+
+        if (show) {
+            if (last_check_effect_question_id === active_question_id) {
+                return;
+            }
+            last_check_effect_question_id = active_question_id;
+
+            iconWrapper.classList.remove('show', 'is-bomb', 'is-check', 'is-exploding', 'is-checking');
+            void iconWrapper.offsetWidth;
+            iconWrapper.classList.add('show', 'is-check', 'is-checking');
+
+            window.checkTimeoutId = setTimeout(() => {
+                iconWrapper.classList.remove('show', 'is-check', 'is-checking');
+            }, 1100);
+        } else {
+            iconWrapper.classList.remove('show', 'is-check', 'is-checking');
         }
     }
 
@@ -499,6 +534,7 @@
             title.textContent = 'Chúc mừng! Bạn trả lời đúng.';
             points.textContent = `Bạn đã gửi đáp án. Bấm tiếp tục để sang câu mới ngay khi mọi người trong phòng đều sẵn sàng.`;
             triggerBombIcon(false);
+            triggerCheckIcon(true);
         } else {
             gradeCard.classList.add('wrong');
             const correctStr = (submitData && submitData.correct_choice)
@@ -506,6 +542,7 @@
                 : '';
             title.textContent = 'Tiếc quá! Bạn trả lời sai.';
             points.textContent = `Bạn đã gửi đáp án. Bấm tiếp tục để sang câu mới ngay khi mọi người trong phòng đều sẵn sàng.${correctStr}`;
+            triggerCheckIcon(false);
             triggerBombIcon(true);
         }
 
@@ -573,16 +610,19 @@
                         title.textContent = 'Chúc mừng! Bạn trả lời đúng.';
                         points.textContent = `Bạn đã gửi đáp án. Bấm tiếp tục để sang câu mới ngay khi mọi người trong phòng đều sẵn sàng.`;
                         triggerBombIcon(false);
+                        triggerCheckIcon(true);
                     } else {
                         gradeCard.classList.add('wrong');
                         title.textContent = 'Tiếc quá! Bạn trả lời sai.';
                         points.textContent = `Bạn đã gửi đáp án. Bấm tiếp tục để sang câu mới ngay khi mọi người trong phòng đều sẵn sàng. (Đáp án đúng: ${correctChar} - ${correctText})`;
+                        triggerCheckIcon(false);
                         triggerBombIcon(true);
                     }
                 } else {
                     gradeCard.classList.add('timeout');
                     title.textContent = 'Hết giờ suy nghĩ! ⏱️';
                     points.textContent = `Bạn đã không đưa ra đáp án. Đáp án đúng là: ${correctChar} - ${correctText}`;
+                    triggerCheckIcon(false);
                     triggerBombIcon(true);
                 }
 
