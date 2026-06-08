@@ -80,7 +80,12 @@
                         return `
                             <div class="qv-lb-row">
                                 <div class="qv-lb-rank ${rankClass}">${rank}</div>
-                                <div class="qv-lb-name">${item.name}</div>
+                                <div class="qv-lb-name">
+                                    ${item.name}
+                                    <div style="font-size: 13px; color: #64748b; font-weight: normal; margin-top: 3px;">
+                                        <strong style="color: #475569;">${item.matches}</strong> trận
+                                    </div>
+                                </div>
                                 <div class="qv-lb-score">${item.score.toLocaleString('vi-VN')}</div>
                             </div>
                         `;

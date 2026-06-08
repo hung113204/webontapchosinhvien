@@ -60,7 +60,7 @@
             <div class="qv-main-content-wrapper">
                 {{-- Leaderboard Area --}}
                 <div class="qv-leaderboard-title">
-                    <span>🏆</span>
+                    <i class="fas fa-trophy text-yellow-400 drop-shadow-md text-2xl mr-1" style="color: #facc15;"></i>
                     <span>Top leaderboard (global)</span>
                 </div>
 
@@ -75,7 +75,7 @@
                 </div>
                 
                 <div class="qv-leaderboard-title" style="margin-top: 40px;">
-                    <i class="fa-solid fa-door-open text-sky-600 mr-2 md:mr-3 text-xl md:text-2xl"></i>
+                    <i class="fa-solid fa-door-open text-sky-600 mr-2 md:mr-3 text-xl md:text-2xl" style="color: #0284c7;"></i>
                     <span>Danh sách phòng thi đấu đang mở</span>
                 </div>
 

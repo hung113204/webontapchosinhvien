@@ -1,0 +1,82 @@
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 16px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+        .stat-icon.indigo { background: rgba(79, 70, 229, 0.1); color: #4F46E5; }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: #059669; }
+        .stat-icon.yellow { background: rgba(245, 158, 11, 0.1); color: #D97706; }
+        .stat-icon.red { background: rgba(239, 68, 68, 0.1); color: #DC2626; }
+        .stat-val { font-size: 26px; font-weight: 700; color: #111827; line-height: 1; }
+        .stat-lbl { font-size: 13px; color: #6B7280; margin-top: 4px; }
+        
+        .filters-section { /* background: white; */ border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */ }
+        .filter-group { display: grid; gap: 16px; align-items: end; }
+        .search-box { position: relative; display: flex; align-items: center; }
+        .search-box input { width: 100%; padding: 10px 12px 10px 40px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 14px; }
+        .form-select { width: 100%; padding: 10px 12px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 14px; }
+
+        .table-section { /* background: white; */ border-radius: 12px; padding: 24px; /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */ }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table thead th { background: #F9FAFB; padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: #6B7280; border-bottom: 2px solid #E5E7EB; }
+        .data-table tbody td { padding: 14px 12px; border-bottom: 1px solid #F3F4F6; font-size: 14px; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; backdrop-filter: blur(4px); }
+        .modal-overlay.show { display: flex; align-items: center; justify-content: center; }
+        .modal-card { background: white; border-radius: 12px; width: 90%; max-width: 960px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; }
+        
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .badge-indigo { background: rgba(79, 70, 229, 0.1); color: #4F46E5; }
+        .score-bar-bg { flex: 1; height: 7px; background: #F3F4F6; border-radius: 10px; overflow: hidden; }
+        .score-bar-fill { height: 100%; border-radius: 10px; }
+        .score-bar-fill.high { background: #10B981; }
+        .score-bar-fill.mid { background: #F59E0B; }
+        .score-bar-fill.low { background: #EF4444; }
+
+        /* ===== PAGINATION ===== */
+        .pagination-wrapper nav { display: flex; justify-content: center; }
+        .pagination-wrapper .pagination {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .pagination-wrapper .pagination li { list-style: none; }
+        .pagination-wrapper .pagination li a,
+        .pagination-wrapper .pagination li span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            line-height: 1;
+        }
+        .pagination-wrapper .pagination li a:hover {
+            background: #eef2ff;
+            border-color: #c7d2fe;
+            color: #4338ca;
+        }
+        .pagination-wrapper .pagination li.active span,
+        .pagination-wrapper .pagination li.active a {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            border-color: #4f46e5;
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+        }
+        .pagination-wrapper .pagination li.disabled span {
+            background: #f9fafb;
+            border-color: #f3f4f6;
+            color: #d1d5db;
+            cursor: not-allowed;
+        }

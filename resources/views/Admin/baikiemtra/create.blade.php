@@ -57,6 +57,14 @@
                     </div>
 
                     <div class="form-group" style="grid-column: span 2;">
+                        <label>Mô tả bài kiểm tra</label>
+                        <textarea name="mo_ta" id="mo_ta" class="form-input"
+                            placeholder="VD: Bài kiểm tra giữa kỳ, bao gồm các câu hỏi về..."
+                            rows="3" style="resize: vertical;">{{ old('mo_ta') }}</textarea>
+                        <span class="form-help">Không bắt buộc. Mô tả sẽ hiển thị với sinh viên trước khi vào thi.</span>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
                         <label>Chương học <span class="required">*</span></label>
                         <div class="multi-select-container" id="chapter-tags-container">
                             <div class="tags-wrapper" id="selected-chapters"></div>
@@ -72,24 +80,21 @@
 
                                 <div
                                     style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px; text-align:center;">
-                                    <div style="font-size:11px; color:#15803d; font-weight:600; margin-bottom:6px;">🟢 Câu
-                                        dễ</div>
+                                    <div style="font-size:11px; color:#15803d; font-weight:600; margin-bottom:6px;">🟢 Nhận biết</div>
                                     <div id="stat-de" style="font-size:26px; font-weight:700; color:#15803d;">0</div>
                                     <div style="font-size:11px; color:#86efac; margin-top:2px;">câu có sẵn</div>
                                 </div>
 
                                 <div
                                     style="background:#fefce8; border:1px solid #fde68a; border-radius:10px; padding:12px; text-align:center;">
-                                    <div style="font-size:11px; color:#a16207; font-weight:600; margin-bottom:6px;">🟡 Trung
-                                        bình</div>
+                                    <div style="font-size:11px; color:#a16207; font-weight:600; margin-bottom:6px;">🟡 Thông hiểu</div>
                                     <div id="stat-tb" style="font-size:26px; font-weight:700; color:#a16207;">0</div>
                                     <div style="font-size:11px; color:#fbbf24; margin-top:2px;">câu có sẵn</div>
                                 </div>
 
                                 <div
                                     style="background:#fff1f2; border:1px solid #fecdd3; border-radius:10px; padding:12px; text-align:center;">
-                                    <div style="font-size:11px; color:#be123c; font-weight:600; margin-bottom:6px;">🔴 Câu
-                                        khó</div>
+                                    <div style="font-size:11px; color:#be123c; font-weight:600; margin-bottom:6px;">🔴 Vận dụng</div>
                                     <div id="stat-kho" style="font-size:26px; font-weight:700; color:#be123c;">0</div>
                                     <div style="font-size:11px; color:#fca5a5; margin-top:2px;">câu có sẵn</div>
                                 </div>
@@ -117,9 +122,9 @@
                                         <thead>
                                             <tr style="background: #f8fafc;">
                                                 <th style="padding: 10px 12px; text-align: left; font-size: 12px; color: #475569; border-bottom: 1px solid #e5e7eb;">Chương</th>
-                                                <th style="padding: 10px 12px; text-align: center; font-size: 12px; color: #15803d; border-bottom: 1px solid #e5e7eb;">Dễ</th>
-                                                <th style="padding: 10px 12px; text-align: center; font-size: 12px; color: #a16207; border-bottom: 1px solid #e5e7eb;">Trung bình</th>
-                                                <th style="padding: 10px 12px; text-align: center; font-size: 12px; color: #be123c; border-bottom: 1px solid #e5e7eb;">Khó</th>
+                                                <th style="padding: 10px 12px; text-align: center; font-size: 12px; color: #15803d; border-bottom: 1px solid #e5e7eb;">Nhận biết</th>
+                                                <th style="padding: 10px 12px; text-align: center; font-size: 12px; color: #a16207; border-bottom: 1px solid #e5e7eb;">Thông hiểu</th>
+                                                <th style="padding: 10px 12px; text-align: center; font-size: 12px; color: #be123c; border-bottom: 1px solid #e5e7eb;">Vận dụng</th>
                                                 <th style="padding: 10px 12px; text-align: center; font-size: 12px; color: #1d4ed8; border-bottom: 1px solid #e5e7eb;">Tổng</th>
                                             </tr>
                                         </thead>
@@ -232,33 +237,33 @@
                         </h5>
                         <div class="form-grid" style="grid-template-columns: repeat(3, 1fr); gap: 16px;">
                             <div class="form-group" style="margin-bottom: 0">
-                                <label style="color: white; font-weight: 600;">🟢 Số câu dễ</label>
+                                <label style="color: white; font-weight: 600;">🟢 Nhận biết</label>
                                 <input type="number" name="so_cau_de" class="form-input" id="so-cau-de"
                                     value="{{ old('so_cau_de', 5) }}" min="0"
                                     style="font-size: 18px; font-weight: 600; text-align: center;" />
                                 <div id="hint-so-cau-de"
                                     style="margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.85); text-align: center;">
-                                    Có sẵn 0 câu dễ
+                                    Có sẵn 0 câu Nhận biết
                                 </div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0">
-                                <label style="color: white; font-weight: 600;">🟡 Số câu trung bình</label>
+                                <label style="color: white; font-weight: 600;">🟡 Thông hiểu</label>
                                 <input type="number" name="so_cau_tb" class="form-input" id="so-cau-tb"
                                     value="{{ old('so_cau_tb', 10) }}" min="0"
                                     style="font-size: 18px; font-weight: 600; text-align: center;" />
                                 <div id="hint-so-cau-tb"
                                     style="margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.85); text-align: center;">
-                                    Có sẵn 0 câu trung bình
+                                    Có sẵn 0 câu Thông hiểu
                                 </div>
                             </div>
                             <div class="form-group" style="margin-bottom: 0">
-                                <label style="color: white; font-weight: 600;">🔴 Số câu khó</label>
+                                <label style="color: white; font-weight: 600;">🔴 Vận dụng</label>
                                 <input type="number" name="so_cau_kho" class="form-input" id="so-cau-kho"
                                     value="{{ old('so_cau_kho', 5) }}" min="0"
                                     style="font-size: 18px; font-weight: 600; text-align: center;" />
                                 <div id="hint-so-cau-kho"
                                     style="margin-top: 8px; font-size: 12px; color: rgba(255,255,255,0.85); text-align: center;">
-                                    Có sẵn 0 câu khó
+                                    Có sẵn 0 câu Vận dụng
                                 </div>
                             </div>
                         </div>
@@ -558,10 +563,10 @@
                 }
 
                 function updateQuestionHints(stats) {
-                    document.getElementById('hint-so-cau-de').textContent = `Có sẵn ${stats.de || 0} câu dễ`;
+                    document.getElementById('hint-so-cau-de').textContent = `Có sẵn ${stats.de || 0} câu Nhận biết`;
                     document.getElementById('hint-so-cau-tb').textContent =
-                        `Có sẵn ${stats.tb || 0} câu trung bình`;
-                    document.getElementById('hint-so-cau-kho').textContent = `Có sẵn ${stats.kho || 0} câu khó`;
+                        `Có sẵn ${stats.tb || 0} câu Thông hiểu`;
+                    document.getElementById('hint-so-cau-kho').textContent = `Có sẵn ${stats.kho || 0} câu Vận dụng`;
                 }
 
                 function checkOverLimit() {

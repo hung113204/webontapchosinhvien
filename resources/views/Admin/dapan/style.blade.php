@@ -1,711 +1,782 @@
 <style>
-    /* ============================================
-       BASE STYLES - TABLE & CONTENT
-    ============================================ */
-    .content-section {
-        padding: 24px 32px;
+    .answers-page {
+        padding: 24px 32px 32px;
     }
 
-    .table-card {
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        overflow: hidden;
-        border: 1px solid #f3f4f6;
+    .answer-alert {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+        border-radius: 8px;
+        border: 1px solid;
+        background: #fff;
     }
 
-    .table-header-gradient {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 28px 32px;
-        color: white;
+    .answer-alert i {
+        margin-top: 3px;
+        font-size: 18px;
     }
 
-    .header-content {
+    .answer-alert strong,
+    .answer-alert span {
+        display: block;
+    }
+
+    .answer-alert ul {
+        margin: 4px 0 0;
+        padding-left: 18px;
+    }
+
+    .answer-alert-success {
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+        color: #166534;
+    }
+
+    .answer-alert-danger {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+    }
+
+    .answers-hero {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        gap: 20px;
+        align-items: flex-start;
+        gap: 24px;
+        padding: 28px;
+        border-radius: 8px;
+        color: #fff;
+        background: linear-gradient(135deg, #2563eb 0%, #0f766e 100%);
+        box-shadow: var(--shadow-md);
     }
 
-    .header-text {
+    .answers-hero-main {
+        min-width: 0;
         flex: 1;
     }
 
-    .header-title {
-        font-size: 26px;
-        font-weight: 700;
-        margin-bottom: 8px;
-        letter-spacing: -0.5px;
-    }
-
-    .question-display {
-        font-size: 15px;
-        opacity: 0.95;
-        line-height: 1.6;
-        margin-top: 8px;
-        padding: 12px 16px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        backdrop-filter: blur(10px);
-    }
-
-    .btn-add-white {
+    .answers-eyebrow {
         display: inline-flex;
         align-items: center;
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        opacity: .86;
+    }
+
+    .answers-hero h2 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0;
+    }
+
+    .answers-hero-copy {
+        max-width: 720px;
+        margin: 10px 0 0;
+        color: rgba(255, 255, 255, .88);
+    }
+
+    .answers-question-card {
+        margin-top: 16px;
+        padding: 16px;
+        border: 1px solid rgba(255, 255, 255, .24);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, .12);
+    }
+
+    .answers-question-meta {
+        display: flex;
+        flex-wrap: wrap;
         gap: 8px;
-        padding: 12px 24px;
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .answers-question-meta span {
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .16);
+        font-size: 12px;
         font-weight: 600;
-        font-size: 14px;
-        transition: all 0.3s ease;
+    }
+
+    .answers-question-content {
+        max-height: 160px;
+        overflow: auto;
+        line-height: 1.65;
+        color: rgba(255, 255, 255, .96);
+    }
+
+    .answers-question-content p {
+        margin: 0 0 6px;
+    }
+
+    .answers-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .answers-light-btn,
+    .answers-add-inline {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 40px;
+        padding: 10px 14px;
+        border: 1px solid rgba(255, 255, 255, .28);
+        border-radius: 8px;
+        color: #fff;
+        background: rgba(255, 255, 255, .13);
         text-decoration: none;
+        font-weight: 700;
+        transition: var(--transition-fast);
+        cursor: pointer;
     }
 
-    .btn-add-white:hover {
-        background: rgba(255, 255, 255, 0.25);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    .answers-light-btn:hover {
+        background: rgba(255, 255, 255, .22);
+        color: #fff;
     }
 
-    /* ============================================
-       TABLE STYLES
-    ============================================ */
-    .table-responsive {
+    .answers-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+    }
+
+    .answers-stat {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+        padding: 18px;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: var(--shadow);
+    }
+
+    .answers-stat-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        flex: 0 0 auto;
+    }
+
+    .answers-stat-total {
+        color: #2563eb;
+        background: #eff6ff;
+    }
+
+    .answers-stat-correct {
+        color: #059669;
+        background: #ecfdf5;
+    }
+
+    .answers-stat-hidden {
+        color: #d97706;
+        background: #fffbeb;
+    }
+
+    .answers-stat-image {
+        color: #0891b2;
+        background: #ecfeff;
+    }
+
+    .answers-stat strong {
+        display: block;
+        font-size: 22px;
+        line-height: 1.1;
+        color: var(--gray-900);
+    }
+
+    .answers-stat span:last-child {
+        display: block;
+        margin-top: 4px;
+        color: var(--gray-500);
+        font-size: 13px;
+    }
+
+    .answers-filter-card,
+    .answers-table-card {
+        margin-top: 16px;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .answers-filter-form {
+        display: grid;
+        grid-template-columns: minmax(280px, 1fr) 180px 180px auto;
+        gap: 16px;
+        align-items: end;
+        padding: 18px;
+    }
+
+    .answers-filter-item label,
+    .answers-form-group label,
+    .answers-modal-question label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--gray-700);
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .answers-search-box {
+        position: relative;
+    }
+
+    .answers-search-box i {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+    }
+
+    .answers-search-box input,
+    .answers-form-group input,
+    .answers-form-group textarea {
+        width: 100%;
+        min-height: 42px;
+        padding: 10px 12px;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        color: var(--gray-800);
+        font-family: inherit;
+        font-size: 14px;
+        transition: var(--transition-fast);
+    }
+
+    .answers-search-box input {
+        padding-left: 40px;
+    }
+
+    .answers-search-box input:focus,
+    .answers-form-group input:focus,
+    .answers-form-group textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .answers-filter-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .answers-table-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 22px;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .answers-table-header h3 {
+        margin: 0;
+        color: var(--gray-900);
+        font-size: 18px;
+    }
+
+    .answers-table-header p {
+        margin: 4px 0 0;
+        color: var(--gray-500);
+        font-size: 13px;
+    }
+
+    .answers-add-inline {
+        border-color: #2563eb;
+        color: #fff;
+        background: #2563eb;
+    }
+
+    .answers-add-inline:hover {
+        background: #1d4ed8;
+    }
+
+    .answers-table-wrap {
         overflow-x: auto;
     }
 
-    .data-table {
+    .answers-table {
         width: 100%;
+        min-width: 1060px;
         border-collapse: collapse;
     }
 
-    .data-table th {
-        background: #f8fafc;
-        padding: 16px 20px;
+    .answers-table th {
+        padding: 14px 18px;
+        background: var(--gray-50);
+        border-bottom: 1px solid var(--gray-200);
+        color: var(--gray-600);
         text-align: left;
-        font-size: 13px;
-        font-weight: 700;
-        color: #374151;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .04em;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-bottom: 2px solid #e5e7eb;
     }
 
-    .data-table td {
-        padding: 16px 20px;
-        border-bottom: 1px solid #f3f4f6;
+    .answers-table td {
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--gray-100);
+        vertical-align: middle;
+        color: var(--gray-700);
         font-size: 14px;
-        color: #4b5563;
     }
 
-    .data-table tbody tr {
-        transition: all 0.2s ease;
-        border-left: 3px solid transparent;
+    .answers-table tbody tr:hover {
+        background: #f8fafc;
     }
 
-    .data-table tbody tr:hover {
-        background: #f9fafb;
-        border-left: 3px solid #667eea;
+    .answers-id {
+        display: inline-flex;
+        padding: 5px 9px;
+        border-radius: 6px;
+        background: var(--gray-100);
+        color: var(--gray-700);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
     }
 
-    .id-text {
-        font-weight: 600;
-        color: #6366f1;
-        font-family: 'Courier New', monospace;
-    }
-
-    /* ============================================
-       ANSWER LABELS
-    ============================================ */
-    .answer-label-container {
+    .answers-answer-cell {
         display: flex;
-        align-items: center;
+        gap: 12px;
+        align-items: flex-start;
+        min-width: 0;
     }
 
-    .answer-label {
+    .answers-letter {
         display: inline-flex;
         align-items: center;
-        padding: 8px 16px;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
         border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        background: #eef2ff;
+        color: #3730a3;
+        flex: 0 0 auto;
+        font-weight: 800;
     }
 
-    .answer-correct {
-        background: #ecfdf5;
-        color: #065f46;
-        border: 2px solid #34d399;
-        box-shadow: 0 2px 4px rgba(52, 211, 153, 0.2);
+    .answers-answer-body {
+        min-width: 0;
     }
 
-    .answer-wrong {
-        background: #fff1f2;
-        color: #9f1239;
-        border: 1px solid #fda4af;
-        opacity: 0.8;
+    .answers-answer-text {
+        max-width: 440px;
+        line-height: 1.55;
+        color: var(--gray-900);
+        word-break: break-word;
     }
 
-    tr:hover .answer-correct {
-        transform: scale(1.02);
-        box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3);
+    .answers-answer-text p {
+        margin: 0 0 6px;
     }
 
-    .question-text {
+    .answers-image-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        color: #0891b2;
+        text-decoration: none;
         font-size: 13px;
-        color: #6b7280;
-        line-height: 1.5;
+        font-weight: 700;
     }
 
-    /* ============================================
-       TOGGLE SWITCH
-    ============================================ */
-    .switch {
+    .answers-question-cell {
+        display: grid;
+        gap: 4px;
+        max-width: 420px;
+    }
+
+    .answers-question-cell strong {
+        color: var(--gray-900);
+        font-size: 13px;
+    }
+
+    .answers-question-cell span {
+        color: var(--gray-500);
+        line-height: 1.45;
+    }
+
+    .answers-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 30px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .answers-pill-correct {
+        color: #047857;
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+    }
+
+    .answers-pill-muted {
+        color: var(--gray-600);
+        background: var(--gray-100);
+        border-color: var(--gray-200);
+        cursor: pointer;
+    }
+
+    .answers-pill-muted:hover {
+        color: #2563eb;
+        border-color: #bfdbfe;
+        background: #eff6ff;
+    }
+
+    .answers-switch {
+        display: inline-flex;
         position: relative;
-        display: inline-block;
-        width: 50px;
+        width: 46px;
         height: 26px;
+        vertical-align: middle;
     }
 
-    .switch input {
+    .answers-switch input {
         opacity: 0;
         width: 0;
         height: 0;
     }
 
-    .slider {
+    .answers-switch span {
         position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #d1d5db;
-        transition: 0.3s;
-    }
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 18px;
-        width: 18px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: 0.3s;
-    }
-
-    input:checked+.slider {
-        background-color: #10b981;
-    }
-
-    input:checked+.slider:before {
-        transform: translateX(24px);
-    }
-
-    .slider.round {
-        border-radius: 26px;
-    }
-
-    .slider.round:before {
-        border-radius: 50%;
-    }
-
-    .status-label {
-        margin-top: 4px;
-        font-size: 13px;
-        color: #6b7280;
-    }
-
-    .date-text {
-        font-size: 13px;
-        color: #6b7280;
-    }
-
-    /* ============================================
-       ACTION BUTTONS
-    ============================================ */
-    .action-buttons {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-    }
-
-    .btn-action {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        border: 1px solid #e5e7eb;
-        background: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .btn-action svg {
-        width: 18px;
-        height: 18px;
-    }
-
-    .btn-edit {
-        color: #3b82f6;
-    }
-
-    .btn-edit:hover {
-        background: #eff6ff;
-        border-color: #3b82f6;
-        transform: scale(1.05);
-    }
-
-    .btn-delete {
-        color: #ef4444;
-    }
-
-    .btn-delete:hover {
-        background: #fef2f2;
-        border-color: #ef4444;
-        transform: scale(1.05);
-    }
-
-    /* ============================================
-       TABLE FOOTER & PAGINATION
-    ============================================ */
-    .table-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 32px;
-        border-top: 1px solid #f3f4f6;
-    }
-
-    .showing-info {
-        font-size: 14px;
-        color: #6b7280;
-    }
-
-    /* ============================================
-       MODAL STYLES - THIẾT KẾ MỚI THEO ẢNH
-    ============================================ */
-    .modal-overlay {
-        display: none;
-        position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
-        z-index: 9999;
-
-        
-        align-items: flex-start;
-        /* QUAN TRỌNG */
-        justify-content: center;
-
-        overflow-y: auto;
-        /* QUAN TRỌNG */
-        padding: 40px 0;
-        /* tạo khoảng cách trên dưới */
-    }
-
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-
-        to {
-            opacity: 1;
-        }
-    }
-
-    .modal-card {
-        background: white;
-        border-radius: 16px;
-        width: 90%;
-        max-width: 700px;
-        max-height: 90vh;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-        animation: slideUp 0.3s ease;
-        position: relative;
-        transition: box-shadow 0.3s ease;
-    }
-
-    .modal-card:hover {
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
-    }
-
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px) scale(0.95);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-
-    /* ============================================
-       MODAL HEADER - GRADIENT + DRAGGABLE
-    ============================================ */
-    .modal-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 24px 32px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        cursor: grab;
-    }
-
-    .modal-header:active {
-        cursor: grabbing;
-    }
-
-    .modal-title {
-        font-size: 22px;
-        font-weight: 700;
-        color: white;
-        margin: 0;
-        letter-spacing: -0.3px;
-        pointer-events: none;
-    }
-
-    .close-btn {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        border-radius: 999px;
+        background: var(--gray-300);
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: var(--transition-fast);
     }
 
-    .close-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: rotate(90deg);
-    }
-
-    /* ============================================
-       MODAL BODY
-    ============================================ */
-    .modal-body {
-        padding: 32px;
-        overflow-y: auto;
-        flex: 1;
-    }
-
-    /* ============================================
-       FORM STYLES
-    ============================================ */
-    .form-group {
-        margin-bottom: 24px;
-    }
-
-    .form-label {
-        display: block;
-        font-size: 14px;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 8px;
-    }
-
-    .form-label.required::after {
-        content: " *";
-        color: #ef4444;
-        font-weight: 700;
-    }
-
-    .form-input,
-    .form-textarea {
-        width: 100%;
-        padding: 12px 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 14px;
-        color: #374151;
-        transition: all 0.2s ease;
-        font-family: inherit;
-    }
-
-    .form-input:focus,
-    .form-textarea:focus {
-        outline: none;
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
-
-    .form-textarea {
-        resize: vertical;
-        min-height: 100px;
-    }
-
-    /* ============================================
-       FORM ROW - 2 CỘT
-    ============================================ */
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-
-    /* ============================================
-       CHECKBOX WRAPPER
-    ============================================ */
-    .checkbox-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        cursor: pointer;
-        padding: 12px;
-        border-radius: 8px;
-        background: #f9fafb;
-        transition: all 0.2s ease;
-    }
-
-    .checkbox-wrapper:hover {
-        background: #f3f4f6;
-    }
-
-    .checkbox-wrapper input[type="checkbox"] {
+    .answers-switch span::before {
+        content: "";
+        position: absolute;
         width: 20px;
         height: 20px;
-        border-radius: 6px;
-        border: 2px solid #d1d5db;
-        cursor: pointer;
-        accent-color: #6366f1;
+        left: 3px;
+        top: 3px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-fast);
     }
 
-    .checkbox-label {
-        font-size: 14px;
-        color: #374151;
-        font-weight: 600;
+    .answers-switch input:checked + span {
+        background: #059669;
     }
 
-    /* ============================================
-       IMAGE PREVIEW
-    ============================================ */
-    .image-preview {
-        margin-top: 12px;
+    .answers-switch input:checked + span::before {
+        transform: translateX(20px);
     }
 
-    .image-preview img {
-        max-width: 150px;
-        border-radius: 8px;
-        border: 2px solid #e5e7eb;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    .answers-status-text,
+    .answers-date {
+        display: block;
+        margin-top: 5px;
+        color: var(--gray-500);
+        font-size: 12px;
     }
 
-    /* ============================================
-       QUESTION DISPLAY IN MODAL
-    ============================================ */
-    .question-display-box {
-        margin-bottom: 24px;
-        padding: 16px;
-        background: linear-gradient(135deg, #f0f4ff 0%, #e5edff 100%);
-        border-radius: 12px;
-        border: 2px solid #c7d2fe;
-    }
-
-    .question-content-display {
-        margin-top: 8px;
-        padding: 12px;
-        background: white;
-        border-radius: 8px;
-        font-size: 14px;
-        line-height: 1.6;
-        color: #374151;
-        min-height: 50px;
-    }
-
-    .question-content-display p {
-        margin: 0;
-    }
-
-    /* ============================================
-       MODAL FOOTER
-    ============================================ */
-    .modal-footer {
+    .answers-table .action-buttons {
         display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        padding: 20px 32px;
-        border-top: 1px solid #e5e7eb;
-        background: #f9fafb;
+        gap: 6px;
+        justify-content: flex-start;
     }
 
-    /* ============================================
-       BUTTONS
-    ============================================ */
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px 28px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
+    .answers-table .btn-action {
+        width: 32px;
+        height: 32px;
         border: none;
-        font-family: inherit;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
     }
 
-    .btn-secondary {
-        background: #e5e7eb;
-        color: #374151;
+    .answers-table .btn-action i {
+        font-size: 14px;
+        line-height: 1;
     }
 
-    .btn-secondary:hover {
-        background: #d1d5db;
-        transform: translateY(-1px);
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    /* ============================================
-       RESPONSIVE
-    ============================================ */
-    @media (max-width: 768px) {
-        .content-section {
-            padding: 16px;
-        }
-
-        .header-content {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .modal-card {
-            width: 95%;
-            margin: 10px;
-        }
-
-        .modal-header,
-        .modal-body,
-        .modal-footer {
-            padding: 20px;
-        }
-
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-
-        .table-footer {
-            flex-direction: column;
-            gap: 16px;
-            align-items: flex-start;
-        }
-    }
-
-    /* ============================================
-       TEXT UTILITIES
-    ============================================ */
-    .text-center {
+    .answers-empty {
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        padding: 34px 16px;
+        color: var(--gray-500);
         text-align: center;
     }
 
-    .text-success {
-        color: #10b981;
+    .answers-empty i {
+        font-size: 28px;
+        color: var(--gray-400);
     }
 
-    .text-muted {
-        color: #9ca3af;
+    .answers-empty strong {
+        color: var(--gray-800);
     }
 
-    /* Tối ưu phần thân Modal để hỗ trợ cuộn */
-    .modal-body {
-        padding: 24px 32px;
-        max-height: calc(90vh - 150px);
-        /* Giới hạn chiều cao trừ đi header và footer */
+    .answers-table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 22px;
+    }
+
+    .answers-table-footer > span {
+        color: var(--gray-500);
+        font-size: 13px;
+    }
+
+    .answers-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 34px 18px;
         overflow-y: auto;
-        /* Hiện thanh cuộn khi nội dung dài */
-        scroll-behavior: smooth;
-        /* Hiệu ứng cuộn mượt mà */
+        background: rgba(15, 23, 42, .58);
     }
 
-    /* Tùy chỉnh thanh cuộn (Scrollbar) cho đẹp hơn */
-    .modal-body::-webkit-scrollbar {
-        width: 6px;
+    .answers-modal {
+        width: min(760px, 100%);
+        height: min(720px, calc(100vh - 68px));
+        max-height: calc(100vh - 68px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: var(--shadow-xl);
     }
 
-    .modal-body::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
+    .answers-modal form {
+        display: flex;
+        flex: 1 1 auto;
+        min-height: 0;
+        flex-direction: column;
     }
 
-    .modal-body::-webkit-scrollbar-thumb {
-        background: #ccc;
-        border-radius: 10px;
+    .answers-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--gray-200);
+        background: #f8fafc;
     }
 
-    .modal-body::-webkit-scrollbar-thumb:hover {
-        background: #764ba2;
-        /* Màu theo tông tím của header */
+    .answers-modal-header span {
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
     }
 
-    /* style.blade.php */
-</style>
+    .answers-modal-header h3 {
+        margin: 2px 0 0;
+        color: var(--gray-900);
+        font-size: 20px;
+    }
 
-{{-- CKEDITOR SCRIPT --}}
-<script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
-<script>
-    let dapanEditor;
+    .answers-modal-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--gray-600);
+        cursor: pointer;
+    }
 
-    // Khởi tạo CKEditor khi trang load
-    document.addEventListener('DOMContentLoaded', function() {
-        ClassicEditor
-            .create(document.querySelector('#editor-dapan'), {
-                toolbar: ['bold', 'italic', 'link', 'undo', 'redo'],
-                language: 'vi'
-            })
-            .then(editor => {
-                window.dapanEditor = editor;
-            })
-            .catch(error => {
-                console.error('Error initializing CKEditor:', error);
-            });
-    });
-</script>
+    .answers-modal-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        padding: 22px 24px;
+        overflow-y: auto;
+    }
 
-{{-- MATHJAX SCRIPT --}}
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-    MathJax = {
-        tex: {
-            inlineMath: [
-                ['$', '$'],
-                ['\\(', '\\)']
-            ],
-            displayMath: [
-                ['$$', '$$'],
-                ['\\[', '\\]']
-            ]
-        },
-        svg: {
-            fontCache: 'global'
+    .answers-modal-question {
+        margin-bottom: 18px;
+        padding: 14px;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        background: #eff6ff;
+    }
+
+    .answers-modal-question > div {
+        max-height: 140px;
+        overflow: auto;
+        color: var(--gray-800);
+        line-height: 1.55;
+    }
+
+    .answers-form-group {
+        margin-bottom: 16px;
+    }
+
+    .answers-form-group label span {
+        color: #dc2626;
+    }
+
+    .answers-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .answers-preview {
+        margin-top: 10px;
+    }
+
+    .answers-preview img {
+        max-width: 180px;
+        max-height: 130px;
+        border-radius: 8px;
+        border: 1px solid var(--gray-200);
+        object-fit: cover;
+    }
+
+    .answers-option-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .answers-check-option {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        background: var(--gray-50);
+        cursor: pointer;
+    }
+
+    .answers-check-option input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: #2563eb;
+    }
+
+    .answers-check-option strong {
+        display: block;
+        color: var(--gray-800);
+        font-size: 14px;
+    }
+
+    .answers-check-option small {
+        display: block;
+        margin-top: 2px;
+        color: var(--gray-500);
+        line-height: 1.35;
+    }
+
+    .answers-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 16px 24px;
+        border-top: 1px solid var(--gray-200);
+        background: #f8fafc;
+    }
+
+    .ck-editor__editable_inline {
+        min-height: 140px;
+    }
+
+    @media (max-width: 1180px) {
+        .answers-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
-    };
-</script>
+
+        .answers-filter-form {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .answers-filter-search,
+        .answers-filter-actions {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .answers-page {
+            padding: 16px;
+        }
+
+        .answers-hero,
+        .answers-table-header,
+        .answers-table-footer {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .answers-hero h2 {
+            font-size: 23px;
+        }
+
+        .answers-hero-actions {
+            justify-content: flex-start;
+        }
+
+        .answers-stats,
+        .answers-filter-form,
+        .answers-form-grid,
+        .answers-option-row {
+            grid-template-columns: 1fr;
+        }
+
+        .answers-filter-actions {
+            flex-direction: column;
+        }
+
+        .answers-modal-overlay {
+            padding: 12px;
+        }
+
+        .answers-modal {
+            height: calc(100vh - 24px);
+            max-height: calc(100vh - 24px);
+        }
+    }
+</style>

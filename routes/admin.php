@@ -129,6 +129,7 @@ Route::middleware('admin')->group(function () {
             // CRUD Actions
             Route::post('/save/{id?}', [CauHoiController::class, 'save'])->name('save');
             Route::delete('/{id}', [CauHoiController::class, 'destroy'])->name('destroy');
+            Route::post('/bulk-delete', [CauHoiController::class, 'bulkDelete'])->name('bulkDelete');
             Route::get('/{id}/show', [CauHoiController::class, 'show'])->name('show');
 
             // Special Actions
@@ -286,6 +287,11 @@ Route::middleware('admin')->group(function () {
 
         // Xóa bài học
         Route::delete('/xoa/{id}', [BaiHocController::class, 'destroy'])->name('destroy');
+
+        // Gán câu hỏi
+        Route::get('/api/available-questions', [BaiHocController::class, 'getAvailableQuestions'])->name('api.available-questions');
+        Route::post('/api/assign-questions', [BaiHocController::class, 'assignQuestions'])->name('api.assign-questions');
+        Route::post('/api/remove-question', [BaiHocController::class, 'removeQuestion'])->name('api.remove-question');
     });
     Route::group(['prefix' => 'phien-luyen-tap', 'as' => 'phienluyentap.'], function () {
         // Danh sách phiên luyện tập
@@ -348,6 +354,17 @@ Route::middleware('admin')->group(function () {
             Route::post('/room/{ma_phong}/next', [\App\Http\Controllers\PhongQuizController::class, 'adminNextQuestion'])->name('next');
             Route::post('/room/{ma_phong}/end', [\App\Http\Controllers\PhongQuizController::class, 'adminEndRoom'])->name('end');
             Route::delete('/destroy/{id}', [\App\Http\Controllers\PhongQuizController::class, 'destroy'])->name('destroy');
+        });
+
+    // === NHÓM ROUTE FAQ (Admin) ===
+    Route::prefix('faq')
+        ->name('faq.')
+        ->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\FaqController::class, 'index'])->name('index');
+            Route::post('/save', [\App\Http\Controllers\Admin\FaqController::class, 'storeOrUpdate'])->name('save');
+            Route::get('/show/{id}', [\App\Http\Controllers\Admin\FaqController::class, 'show'])->name('show');
+            Route::delete('/delete/{id}', [\App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('destroy');
+            Route::post('/toggle-status/{id}', [\App\Http\Controllers\Admin\FaqController::class, 'toggleStatus'])->name('toggleStatus');
         });
 });
 //rogu rdrn wqqg pjiu gmail

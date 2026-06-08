@@ -15,14 +15,11 @@ class TienDoBaiHoc extends Model
         'user_id',
         'bai_hoc_id',
         'trang_thai',
-        'thoi_gian_da_hoc',
         'phan_tram_hoan_thanh',
-        'ngay_bat_dau',
         'ngay_hoan_thanh',
     ];
 
     protected $casts = [
-        'ngay_bat_dau' => 'datetime',
         'ngay_hoan_thanh' => 'datetime',
     ];
 

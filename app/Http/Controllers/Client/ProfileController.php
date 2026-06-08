@@ -29,18 +29,78 @@ class ProfileController extends FrontendController
             ->latest()
             ->get();
 
-        $tienDoMonHoc = $phienLuyenTaps->groupBy('mon_hoc_id')->map(function ($items) {
-            $monHoc = $items->first()->monHoc;
+        $completedLessonIds = \App\Models\TienDoBaiHoc::where('user_id', $user->id)
+            ->where('trang_thai', 2)
+            ->pluck('bai_hoc_id')
+            ->toArray();
+
+        $userLessonIds = \App\Models\TienDoBaiHoc::where('user_id', $user->id)
+            ->pluck('bai_hoc_id')
+            ->toArray();
+
+        $phienLuyenTapsGrouped = $phienLuyenTaps->groupBy('mon_hoc_id');
+
+        $monHocs = \App\Models\MonHoc::where('trang_thai', 1)
+            ->with([
+                'chuongHocs' => function ($q) {
+                    $q->where('trang_thai', 1)->with(['baiHocs' => function ($q2) {
+                        $q2->where('trang_thai', 1);
+                    }]);
+                }
+            ])
+            ->get();
+
+        $tienDoMonHoc = $monHocs->map(function ($monHoc) use ($completedLessonIds, $phienLuyenTapsGrouped, $userLessonIds) {
+            $tongBaiHoc = 0;
+            foreach ($monHoc->chuongHocs as $chuong) {
+                $tongBaiHoc += $chuong->baiHocs->count();
+            }
+
+            $baiHocDaXong = 0;
+            if ($tongBaiHoc > 0) {
+                foreach ($monHoc->chuongHocs as $chuong) {
+                    foreach ($chuong->baiHocs as $bh) {
+                        if (in_array($bh->id, $completedLessonIds)) {
+                            $baiHocDaXong++;
+                        }
+                    }
+                }
+            }
+
+            $tienDoHocTapPercent = $tongBaiHoc > 0 ? round(($baiHocDaXong / $tongBaiHoc) * 100, 1) : 0;
+
+            $items = $phienLuyenTapsGrouped->get($monHoc->id) ?? collect();
+            $soPhienLuyenTap = $items->count();
             $tongCauMonNay = (int) $items->sum(fn($item) => is_numeric($item->so_cau_hoi) ? $item->so_cau_hoi : 0);
             $diemTbMon = (float) $items->avg(fn($item) => is_numeric($item->diem_so) ? $item->diem_so : 0);
+            
+            $tienDoLuyenTapPercent = min($tongCauMonNay, 100);
+
+            $hasProgress = false;
+            if ($soPhienLuyenTap > 0 || $baiHocDaXong > 0) {
+                $hasProgress = true;
+            } else {
+                foreach ($monHoc->chuongHocs as $chuong) {
+                    foreach ($chuong->baiHocs as $bh) {
+                        if (in_array($bh->id, $userLessonIds)) {
+                            $hasProgress = true;
+                            break 2;
+                        }
+                    }
+                }
+            }
 
             return [
-                'id' => $monHoc->id ?? 0,
-                'ten_mon_hoc' => $monHoc->ten_mon_hoc ?? 'N/A',
-                'so_bai' => $items->count(),
-                'tong_cau' => $tongCauMonNay,
-                'diem_tb' => round($diemTbMon, 1),
-                'phan_tram' => min($tongCauMonNay, 100),
+                'id' => $monHoc->id,
+                'ten_mon_hoc' => $monHoc->ten_mon_hoc,
+                'tong_bai' => $tongBaiHoc,
+                'bai_da_xong' => $baiHocDaXong,
+                'phan_tram' => $tienDoHocTapPercent,
+                'so_phien_luyen_tap' => $soPhienLuyenTap,
+                'tong_cau_luyen_tap' => $tongCauMonNay,
+                'diem_tb_luyen_tap' => round($diemTbMon, 1),
+                'tien_do_luyen_tap_percent' => $tienDoLuyenTapPercent,
+                'has_progress' => $hasProgress,
             ];
         });
 
@@ -63,8 +123,22 @@ class ProfileController extends FrontendController
             ->map
             ->count();
 
-        $weekLabels = ['Tuan 1', 'Tuan 2', 'Tuan 3', 'Tuan 4'];
-        $weekScores = [0, 0, 0, $stats['diem_trung_binh']];
+        $weekLabels = [];
+        $weekScores = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $start = now()->subWeeks($i)->startOfWeek();
+            $end = now()->subWeeks($i)->endOfWeek();
+            
+            $examsInWeek = $ketQuaThis->filter(function($kq) use ($start, $end) {
+                $date = $kq->thoi_gian_nop_bai ?? $kq->created_at;
+                return $date >= $start && $date <= $end;
+            });
+            
+            $avg = $examsInWeek->count() > 0 ? $examsInWeek->avg('diem') : 0;
+            
+            $weekLabels[] = "Tuần " . $start->format('d/m');
+            $weekScores[] = round($avg, 1);
+        }
 
         // --- THÊM THỐNG KÊ SO SÁNH VỚI MỌI NGƯỜI ---
         $allUsers = \App\Models\User::where('vai_tro_id', '!=', 1)->get();
@@ -113,6 +187,7 @@ class ProfileController extends FrontendController
                 'ho_ten' => 'required|string|max:255',
                 'so_dien_thoai' => 'nullable|string|max:20',
                 'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'ghi_chu' => 'nullable|string',
             ],
             [
                 'ho_ten.required' => 'Vui lòng nhập họ và tên.',
@@ -126,6 +201,7 @@ class ProfileController extends FrontendController
 
         $user->ho_ten = $request->ho_ten;
         $user->so_dien_thoai = $request->so_dien_thoai;
+        $user->ghi_chu = $request->ghi_chu;
 
         if ($request->hasFile('avatar')) {
             if ($user->avatar_url && Storage::disk('public')->exists($user->avatar_url)) {

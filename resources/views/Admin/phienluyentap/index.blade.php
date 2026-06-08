@@ -12,6 +12,126 @@
 @endsection --}}
 
 @section('content')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* CSS Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 1200px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-header {
+            padding: 20px 24px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .modal-close-btn {
+            border: none;
+            background: #f1f5f9;
+            color: #64748b;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .modal-close-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Premium Code Block Styling */
+        #detailContent pre {
+            background: #1e1e2f !important;
+            color: #abb2bf !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding: 16px 20px !important;
+            border-radius: 8px !important;
+            overflow-x: auto !important;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            margin: 14px 0 !important;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
+        }
+        #detailContent code {
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+            font-size: 14px;
+        }
+        #detailContent pre code {
+            background: transparent !important;
+            color: inherit !important;
+            padding: 0 !important;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+            font-size: 14px !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+
     {{-- Thông báo --}}
     @if (session('success'))
         <div class="alert alert-success"
@@ -112,7 +232,7 @@
                     </thead>
                     <tbody>
                         @forelse($phienLuyenTaps as $index => $item)
-                            <tr>
+                            <tr onclick="openDetailModal({{ $item->id }})" style="cursor: pointer;">
                                 <td>{{ $phienLuyenTaps->firstItem() + $index }}</td>
                                 <td>
                                     <strong>{{ $item->user->ho_ten ?? 'N/A' }}</strong>
@@ -168,18 +288,18 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>
+                                <td onclick="event.stopPropagation()">
                                     <div class="action-buttons">
                                         {{-- Chỉ giữ nút xem --}}
-                                        <a href="{{ route('admin.phienluyentap.show', $item->id) }}"
-                                            class="btn-action btn-edit" title="Xem chi tiết">
+                                        <button type="button" onclick="event.stopPropagation(); openDetailModal({{ $item->id }})"
+                                            class="btn-action btn-edit" title="Xem chi tiết" style="border: none; background: transparent; cursor: pointer; padding: 0;">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                 style="width:20px;height:20px;">
                                                 <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path
                                                     d="M2.458 12C3.732 7.943 7.523 5 12 5 16.477 5 20.268 7.943 21.542 12 20.268 16.057 16.477 19 12 19 7.523 19 3.732 16.057 2.458 12z" />
                                             </svg>
-                                        </a>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -208,4 +328,86 @@
             </div>
         </div>
     </section>
+
+    {{-- Modal Chi tiết bài làm sinh viên --}}
+    <div id="modalDetail" class="modal-overlay" onclick="closeDetailModal()">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="detailModalTitle">Chi tiết bài làm của sinh viên</h3>
+                <button onclick="closeDetailModal()" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="detailLoading" style="text-align:center; padding:40px; display:none;">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color:#4F46E5;"></i>
+                    <p style="margin-top:12px; color:#6B7280;">Đang tải chi tiết bài làm...</p>
+                </div>
+                <div id="detailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openDetailModal(id) {
+            const modal = document.getElementById('modalDetail');
+            const content = document.getElementById('detailContent');
+            const loading = document.getElementById('detailLoading');
+            
+            // Set title
+            document.getElementById('detailModalTitle').textContent = `Chi tiết bài làm của sinh viên #${id}`;
+            
+            loading.style.display = 'block';
+            content.style.display = 'none';
+            modal.classList.add('show');
+            
+            // Fetch partial view via AJAX
+            const url = `{{ route('admin.phienluyentap.show', '') }}/${id}`;
+            
+            fetch(url, {
+                headers: {
+                    'Accept': 'text/html',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+                return r.text();
+            })
+            .then(html => {
+                loading.style.display = 'none';
+                content.innerHTML = html;
+                content.style.display = 'block';
+                
+                // Highlight syntax
+                if (typeof hljs !== 'undefined') {
+                    content.querySelectorAll('pre code').forEach((el) => {
+                        hljs.highlightElement(el);
+                    });
+                }
+
+                // Render MathJax
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([content]).catch((err) => console.log('MathJax error:', err));
+                }
+            })
+            .catch(err => {
+                loading.style.display = 'none';
+                content.innerHTML = `<div style="color:#ef4444; padding:20px; text-align:center; background:#fef2f2; border-radius:8px; border:1px solid #fee2e2;">
+                    <strong>❌ Lỗi:</strong> Không thể tải chi tiết bài làm. Vui lòng thử lại.<br>
+                    <small>${err.message}</small>
+                </div>`;
+                content.style.display = 'block';
+            });
+        }
+
+        function closeDetailModal() {
+            document.getElementById('modalDetail').classList.remove('show');
+        }
+
+        // Close on ESC keypress
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeDetailModal();
+            }
+        });
+    </script>
 @endsection

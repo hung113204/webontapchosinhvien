@@ -62,9 +62,9 @@
                 <label>Mức độ</label>
                 <select name="muc_do" class="form-select" onchange="this.form.submit()">
                     <option value="">Tất cả mức độ</option>
-                    <option value="1" {{ request('muc_do') == '1' ? 'selected' : '' }}>Dễ</option>
-                    <option value="2" {{ request('muc_do') == '2' ? 'selected' : '' }}>Trung bình</option>
-                    <option value="3" {{ request('muc_do') == '3' ? 'selected' : '' }}>Khó</option>
+                    <option value="1" {{ request('muc_do') == '1' ? 'selected' : '' }}>Nhận biết</option>
+                    <option value="2" {{ request('muc_do') == '2' ? 'selected' : '' }}>Thông hiểu</option>
+                    <option value="3" {{ request('muc_do') == '3' ? 'selected' : '' }}>Vận dụng</option>
                 </select>
             </div>
 
@@ -79,6 +79,10 @@
             <div class="filter-item">
                 <label>Tìm kiếm</label>
                 <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
                     <input type="text" name="search" placeholder="Nhấn Enter để tìm..."
                         value="{{ request('search') }}" />
                 </div>
@@ -99,7 +103,16 @@
                     </h3>
                     <span class="count-badge">{{ $cauHois->total() ?? 0 }} câu hỏi</span>
                 </div>
-                <div class="table-actions">
+                <div class="table-actions" style="display: flex; gap: 10px; align-items: center;">
+                    {{-- Nút Xóa Nhiều ẩn/hiện tự động --}}
+                    <button type="button" class="btn btn-danger" id="btn-bulk-delete" style="display: none; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 6px; font-weight: 500; height: 38px; border: none; background: #ef4444; color: white; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" onclick="bulkDelete()" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                        Xóa đã chọn (<span id="selected-count">0</span>)
+                    </button>
+
                     <button class="btn-icon" title="Import"
                         onclick="window.location.href='{{ route('admin.cauhoi.create') }}'">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -159,7 +172,7 @@
                                 <td>
                                     @php
                                         $badges = [1 => 'badge-easy', 2 => 'badge-medium', 3 => 'badge-hard'];
-                                        $labels = [1 => 'Dễ', 2 => 'Trung bình', 3 => 'Khó'];
+                                        $labels = [1 => 'Nhận biết', 2 => 'Thông hiểu', 3 => 'Vận dụng', 4 => 'Vận dụng cao'];
                                     @endphp
                                     <span class="badge {{ $badges[$item->muc_do] ?? 'badge-draft' }}">
                                         {{ $labels[$item->muc_do] ?? 'N/A' }}
@@ -331,12 +344,6 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 20px;" id="view_goi_y_group" style="display: none;">
-                    <label style="font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 8px;">Gợi ý</label>
-                    <div id="view_goi_y" style="background: #fffbeb; padding: 15px; border-left: 4px solid #f59e0b; border-radius: 4px;">
-                    </div>
-                </div>
-
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label style="font-weight: 600; color: var(--gray-700); display: block; margin-bottom: 8px;">Đáp án</label>
                     <div id="view_dap_an_list"></div>
@@ -383,6 +390,80 @@
             }
         }
 
+        // Xử lý ẩn/hiện nút Xóa Nhanh
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('input[name="ids[]"]');
+            const bulkDeleteBtn = document.getElementById('btn-bulk-delete');
+            const selectedCount = document.getElementById('selected-count');
+
+            function updateBulkDeleteButton() {
+                const checkedBoxes = document.querySelectorAll('input[name="ids[]"]:checked');
+                const count = checkedBoxes.length;
+                
+                if (count > 0) {
+                    bulkDeleteBtn.style.display = 'flex';
+                    selectedCount.innerText = count;
+                } else {
+                    bulkDeleteBtn.style.display = 'none';
+                }
+                
+                if (selectAll) {
+                    selectAll.checked = count === checkboxes.length && checkboxes.length > 0;
+                }
+            }
+
+            if (selectAll) {
+                selectAll.addEventListener('change', function() {
+                    checkboxes.forEach(cb => {
+                        cb.checked = selectAll.checked;
+                    });
+                    updateBulkDeleteButton();
+                });
+            }
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', updateBulkDeleteButton);
+            });
+        });
+
+        // Hàm xử lý khi bấm Xóa nhiều
+        function bulkDelete() {
+            const checkedBoxes = document.querySelectorAll('input[name="ids[]"]:checked');
+            if (checkedBoxes.length === 0) return;
+
+            if (confirm(`Bạn có chắc chắn muốn xóa ${checkedBoxes.length} mục đã chọn?`)) {
+                const ids = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+                const isTrashed = {{ request('trashed') == '1' ? 'true' : 'false' }};
+                
+                fetch('{{ route('admin.cauhoi.bulkDelete') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ids: ids,
+                        is_trashed: isTrashed
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Đã xảy ra lỗi trong quá trình xử lý!');
+                });
+            }
+        }
+
         // JS cũ giữ nguyên
         function viewQuestion(item) {
             const modal = document.getElementById('modalViewQuestion');
@@ -393,7 +474,7 @@
             if (elBaiHoc) {
                 elBaiHoc.innerText = item.bai_hoc?.ten_bai_hoc || 'Dùng chung cho Chương';
             }
-            const mucDoLabels = { 1: 'Dễ', 2: 'Trung bình', 3: 'Khó' };
+            const mucDoLabels = { 1: 'Nhận biết', 2: 'Thông hiểu', 3: 'Vận dụng', 4: 'Vận dụng cao' };
             document.getElementById('view_muc_do').innerText = mucDoLabels[item.muc_do] || 'N/A';
             document.getElementById('view_noi_dung').innerHTML = item.noi_dung;
 
@@ -434,8 +515,8 @@
 
             modal.classList.add('show');
 
-            if (window.MathJax) {
-                MathJax.typesetPromise();
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch((err) => console.log('MathJax error:', err));
             }
         }
 

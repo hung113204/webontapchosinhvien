@@ -63,7 +63,7 @@ class MonHoc extends Model
      */
     public function danhMucTrangChus()
     {
-        //   return $this->belongsToMany(DanhMucTrangChu::class, 'danh_muc_mon_hoc', 'mon_hoc_id', 'danh_muc_id');
+        return $this->belongsToMany(\App\Models\danhmuctrangchu::class, 'danh_muc_mon_hoc', 'mon_hoc_id', 'danh_muc_id');
     }
 
     public function cauHois()

@@ -38,7 +38,9 @@
     let ended_countdown_interval = null; // Interval cho auto-redirect khi kết thúc game
     let last_bomb_effect_question_id = null;
     let last_check_effect_question_id = null;
-
+    let local_seconds_left = null;
+    let local_timer_interval = null;
+ 
     // Beautiful shapes and colors for options matching modern kahoot style
     const option_styles = [
         { color: '#e53935', icon: '▲' }, // Ruby Red
@@ -46,32 +48,52 @@
         { color: '#ffb300', icon: '●' }, // Amber Yellow
         { color: '#43a047', icon: '■' }  // Emerald Green
     ];
-
+ 
+    let is_polling = false;
+    let poll_timeout_id = null;
+ 
     function fetchStatus() {
+        if (is_polling) return;
+        is_polling = true;
+ 
         fetch(STATUS_URL)
             .then(res => res.json())
             .then(data => {
-                if (!data.success) return;
-                
-                room_data = data;
-                const state = data.room.trang_thai;
-                const stateChanged = (current_state !== state);
-                
-                switchState(state);
-                
-                if (state === 1) {
-                    updateLobby(data);
-                } else if (state === 2) {
-                    updatePlaying(data);
-                } else if (state === 3) {
-                    updateEnded(data, stateChanged);
+                is_polling = false;
+                if (data.success) {
+                    room_data = data;
+                    const state = data.room.trang_thai;
+                    const stateChanged = (current_state !== state);
+ 
+                    switchState(state);
+ 
+                    if (state === 1) {
+                        updateLobby(data);
+                    } else if (state === 2) {
+                        updatePlaying(data);
+                    } else if (state === 3) {
+                        updateEnded(data, stateChanged);
+                    }
                 }
+                
+                if (poll_timeout_id) clearTimeout(poll_timeout_id);
+                poll_timeout_id = setTimeout(fetchStatus, 1500);
             })
-            .catch(err => console.error("Lỗi đồng bộ Realtime học viên: ", err));
+            .catch(err => {
+                is_polling = false;
+                console.error("Lỗi đồng bộ Realtime học viên: ", err);
+                
+                if (poll_timeout_id) clearTimeout(poll_timeout_id);
+                poll_timeout_id = setTimeout(fetchStatus, 3000);
+            });
     }
-
-    // Active polling interval
-    const status_poll_interval = setInterval(fetchStatus, 1500);
+ 
+    function forceFetchStatus() {
+        is_polling = false;
+        if (poll_timeout_id) clearTimeout(poll_timeout_id);
+        fetchStatus();
+    }
+ 
     fetchStatus();
 
     function switchState(state) {
@@ -94,15 +116,18 @@
                 clearInterval(ended_countdown_interval);
                 ended_countdown_interval = null;
             }
+            if (local_timer_interval) {
+                clearInterval(local_timer_interval);
+                local_timer_interval = null;
+            }
+            local_seconds_left = null;
 
             // Reset UI state for play buttons / host controls if host
             const hostBtn = document.getElementById('host-start-btn');
             if (hostBtn) {
                 hostBtn.disabled = false;
                 hostBtn.innerHTML = `
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="white" stroke="none">
-                        <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
+                    <i class="fas fa-play"></i>
                     Chơi ngay
                 `;
             }
@@ -123,9 +148,9 @@
         const levelBadge = document.getElementById('lobby-level');
         if (levelBadge) {
             let mucDoText = 'Tất cả mức độ';
-            if (data.room?.muc_do_cau_hoi == 1) mucDoText = 'Mức độ: Dễ';
-            else if (data.room?.muc_do_cau_hoi == 2) mucDoText = 'Mức độ: Trung bình';
-            else if (data.room?.muc_do_cau_hoi == 3) mucDoText = 'Mức độ: Khó';
+            if (data.room?.muc_do_cau_hoi == 1) mucDoText = 'Mức độ: Nhận biết';
+            else if (data.room?.muc_do_cau_hoi == 2) mucDoText = 'Mức độ: Thông hiểu';
+            else if (data.room?.muc_do_cau_hoi == 3) mucDoText = 'Mức độ: Vận dụng';
             levelBadge.textContent = mucDoText;
         }
         
@@ -170,9 +195,23 @@
         const statusMsg = document.getElementById('lobby-status-message');
         if (statusMsg) {
             @if($room->chu_phong_id === $member->user_id)
-                statusMsg.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Bạn sẵn sàng!';
+                const globalStatus = document.getElementById('lobby-global-status');
+                if (data.all_ready) {
+                    if (globalStatus) {
+                        globalStatus.style.display = 'block';
+                        globalStatus.innerHTML = '<div style="display:flex; justify-content:center; align-items:center;"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#d97706" stroke-width="2.5" style="margin-right: 10px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> <span style="color:#d97706; font-weight:900; font-size: 19px; text-transform: uppercase; letter-spacing: 0.5px;">Tất cả thành viên đã sẵn sàng - Host hãy bấm chơi ngay</span></div>';
+                    }
+                    statusMsg.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> <span style="color:#10b981; font-weight:700;">Mọi người đã sẵn sàng!</span>';
+                } else {
+                    if (globalStatus) globalStatus.style.display = 'none';
+                    statusMsg.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Bạn sẵn sàng. Đang chờ người chơi...';
+                }
             @else
-                statusMsg.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="animation:spin 2s linear infinite;"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v6"/></svg> Đang chờ Host bắt đầu...';
+                if (data.members.find(m => m.user_id === current_user_id)?.is_ready) {
+                    statusMsg.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> <span style="color:#10b981;">Đã sẵn sàng. Đang đợi Host bắt đầu...</span>';
+                } else {
+                    statusMsg.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="animation:spin 2s linear infinite;"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v6"/></svg> Đang chờ Host bắt đầu...';
+                }
             @endif
         }
     }
@@ -182,7 +221,26 @@
         if (!q) return;
 
         const secondsLeft = data.seconds_remaining;
-        document.getElementById('playing-timer').textContent = secondsLeft;
+        
+        // Synchronize local timer with server if not initialized or drift is > 1s
+        if (local_seconds_left === null || Math.abs(local_seconds_left - secondsLeft) > 1) {
+            local_seconds_left = secondsLeft;
+            document.getElementById('playing-timer').textContent = local_seconds_left;
+        }
+
+        // Start smooth local countdown interval
+        if (!local_timer_interval && local_seconds_left > 0) {
+            local_timer_interval = setInterval(() => {
+                if (local_seconds_left > 0) {
+                    local_seconds_left--;
+                    document.getElementById('playing-timer').textContent = local_seconds_left;
+                    if (local_seconds_left === 0) {
+                        clearInterval(local_timer_interval);
+                        local_timer_interval = null;
+                    }
+                }
+            }, 1000);
+        }
 
         // Update my score pill
         const player = data.members.find(m => m.user_id === current_user_id);
@@ -201,6 +259,11 @@
                 clearTimeout(auto_advance_timeout);
                 auto_advance_timeout = null;
             }
+            if (local_timer_interval) {
+                clearInterval(local_timer_interval);
+                local_timer_interval = null;
+            }
+            local_seconds_left = null;
 
             active_question_id = q.id;
             is_submitted = false;
@@ -211,6 +274,7 @@
             if (confirmBtn) {
                 confirmBtn.disabled = true;
                 confirmBtn.textContent = 'Xác nhận';
+                confirmBtn.style.display = 'inline-block';
             }
 
             const grid = document.getElementById('playing-options-grid');
@@ -250,6 +314,11 @@
                     `;
                 }).join('');
             }
+            
+            // Re-render MathJax
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch(err => console.log('MathJax error:', err));
+            }
         }
 
         // Check if current user has already answered on another tab or device
@@ -266,6 +335,7 @@
             if (confirmBtn) {
                 confirmBtn.disabled = true;
                 confirmBtn.textContent = 'Đã trả lời';
+                confirmBtn.style.display = 'none';
             }
         }
 
@@ -290,8 +360,15 @@
 
         // When timer hits 0 OR everyone has answered: show full grade result below workspace
         if (secondsLeft === 0 || data.all_answered) {
+            if (local_timer_interval) {
+                clearInterval(local_timer_interval);
+                local_timer_interval = null;
+            }
+            local_seconds_left = 0;
+            document.getElementById('playing-timer').textContent = 0;
+
             document.getElementById('playing-submitted-lobby').style.display = 'none';
-            fetchGradeResult(q.id, data.members);
+            showGradeResult(data);
 
             // Auto-advance: Sau 2 giây, tự động sang câu tiếp theo nếu bạn là host
             @if($room->chu_phong_id === $member->user_id)
@@ -378,6 +455,7 @@
         if (confirmBtn) {
             confirmBtn.disabled = true;
             confirmBtn.textContent = 'Đã xác nhận';
+            confirmBtn.style.display = 'none';
         }
 
         fetch(SUBMIT_URL, {
@@ -410,11 +488,15 @@
                 if (confirmBtn) {
                     confirmBtn.disabled = false;
                     confirmBtn.textContent = 'Xác nhận';
+                    confirmBtn.style.display = 'inline-block';
                 }
             } else {
                 last_submit_result = data;
                 // Show inline grade result immediately after submitting
                 showInlineGradeResult(data);
+                
+                // Force status sync immediately to show updated user scores/stats
+                forceFetchStatus();
             }
         })
         .catch(err => {
@@ -430,6 +512,7 @@
             if (confirmBtn) {
                 confirmBtn.disabled = false;
                 confirmBtn.textContent = 'Xác nhận';
+                confirmBtn.style.display = 'inline-block';
             }
         });
     }
@@ -547,8 +630,11 @@
         }
 
         if (submitData && submitData.giai_thich) {
-            explainText.textContent = submitData.giai_thich;
+            explainText.innerHTML = submitData.giai_thich;
             explainBox.style.display = 'block';
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([explainText]).catch(err => console.log('MathJax error:', err));
+            }
         } else {
             explainBox.style.display = 'none';
         }
@@ -571,75 +657,79 @@
     }
 
     let active_grade_id = null;
-    function fetchGradeResult(question_id, members) {
-        if (active_grade_id === question_id) return;
-        active_grade_id = question_id;
+    function showGradeResult(data) {
+        const q = data.current_question;
+        if (!q) return;
 
-        const player = members.find(m => m.user_id === current_user_id);
+        if (active_grade_id === q.id) return;
+        active_grade_id = q.id;
 
-        fetch(STATUS_URL)
-            .then(res => res.json())
-            .then(data => {
-                const q = data.current_question;
-                const correctChoice = q.choices.find(c => c.is_dung);
-                const correctChar = correctChoice ? correctChoice.ky_hieu : '';
-                const correctText = correctChoice ? correctChoice.noi_dung : '';
-                const correctChoiceId = correctChoice ? correctChoice.id : null;
+        const correctChoice = q.choices.find(c => c.is_dung);
+        const correctChar = correctChoice ? correctChoice.ky_hieu : '';
+        const correctText = correctChoice ? correctChoice.noi_dung : '';
+        const correctChoiceId = correctChoice ? correctChoice.id : null;
 
-                const gradeCard = document.getElementById('playing-grade-result');
-                const title = document.getElementById('grade-title');
-                const points = document.getElementById('grade-points');
-                const explainBox = document.getElementById('grade-explain-box');
-                const explainText = document.getElementById('grade-explain-text');
-                const continueBtn = document.getElementById('grade-continue-btn');
+        const gradeCard = document.getElementById('playing-grade-result');
+        const title = document.getElementById('grade-title');
+        const points = document.getElementById('grade-points');
+        const explainBox = document.getElementById('grade-explain-box');
+        const explainText = document.getElementById('grade-explain-text');
+        const continueBtn = document.getElementById('grade-continue-btn');
 
-                // Disable all answer buttons
-                document.querySelectorAll('#playing-options-grid .qv-answer-btn').forEach(btn => {
-                    btn.disabled = true;
-                    btn.style.cursor = 'not-allowed';
-                    btn.style.opacity = '0.55';
-                    btn.style.transform = 'none';
-                });
+        // Disable all answer buttons
+        document.querySelectorAll('#playing-options-grid .qv-answer-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.style.opacity = '0.55';
+            btn.style.transform = 'none';
+        });
 
-                gradeCard.className = 'qv-grade-card';
-                // Nếu user vừa submit xong (có last_submit_result) hoặc vừa refresh/đồng bộ mà đã nộp bài (có my_answer)
-                if (last_submit_result || data.my_answer) {
-                    const isCorrect = last_submit_result ? last_submit_result.is_correct : data.my_answer_correct;
-                    if (isCorrect) {
-                        gradeCard.classList.add('correct');
-                        title.textContent = 'Chúc mừng! Bạn trả lời đúng.';
-                        points.textContent = `Bạn đã gửi đáp án. Bấm tiếp tục để sang câu mới ngay khi mọi người trong phòng đều sẵn sàng.`;
-                        triggerBombIcon(false);
-                        triggerCheckIcon(true);
-                    } else {
-                        gradeCard.classList.add('wrong');
-                        title.textContent = 'Tiếc quá! Bạn trả lời sai.';
-                        points.textContent = `Bạn đã gửi đáp án. Bấm tiếp tục để sang câu mới ngay khi mọi người trong phòng đều sẵn sàng. (Đáp án đúng: ${correctChar} - ${correctText})`;
-                        triggerCheckIcon(false);
-                        triggerBombIcon(true);
-                    }
-                } else {
-                    gradeCard.classList.add('timeout');
-                    title.textContent = 'Hết giờ suy nghĩ! ⏱️';
-                    points.textContent = `Bạn đã không đưa ra đáp án. Đáp án đúng là: ${correctChar} - ${correctText}`;
-                    triggerCheckIcon(false);
-                    triggerBombIcon(true);
-                }
+        const confirmBtn = document.getElementById('qv-confirm-btn');
+        if (confirmBtn) {
+            confirmBtn.style.display = 'none';
+        }
 
-                // Show explanation if available
-                if (q.giai_thich) {
-                    explainText.textContent = q.giai_thich;
-                    explainBox.style.display = 'block';
-                } else {
-                    explainBox.style.display = 'none';
-                }
+        gradeCard.className = 'qv-grade-card';
+        // Nếu user vừa submit xong (có last_submit_result) hoặc vừa refresh/đồng bộ mà đã nộp bài (có my_answer)
+        if (last_submit_result || data.my_answer) {
+            const isCorrect = last_submit_result ? last_submit_result.is_correct : data.my_answer_correct;
+            if (isCorrect) {
+                gradeCard.classList.add('correct');
+                title.textContent = 'Chúc mừng! Bạn trả lời đúng.';
+                points.textContent = `Bạn đã gửi đáp án. Bấm tiếp tục để sang câu mới ngay khi mọi người trong phòng đều sẵn sàng.`;
+                triggerBombIcon(false);
+                triggerCheckIcon(true);
+            } else {
+                gradeCard.classList.add('wrong');
+                title.textContent = 'Tiếc quá! Bạn trả lời sai.';
+                points.textContent = `Bạn đã gửi đáp án. Bấm tiếp tục để sang câu mới ngay khi mọi người trong phòng đều sẵn sàng. (Đáp án đúng: ${correctChar} - ${correctText})`;
+                triggerCheckIcon(false);
+                triggerBombIcon(true);
+            }
+        } else {
+            gradeCard.classList.add('timeout');
+            title.textContent = 'Hết giờ suy nghĩ! ⏱️';
+            points.textContent = `Bạn đã không đưa ra đáp án. Đáp án đúng là: ${correctChar} - ${correctText}`;
+            triggerCheckIcon(false);
+            triggerBombIcon(true);
+        }
 
-                const userAnswerId = selected_choice_id || data.my_answer;
-                highlightAnswerButtons(correctChoiceId, userAnswerId);
+        // Show explanation if available
+        if (q.giai_thich) {
+            explainText.innerHTML = q.giai_thich;
+            explainBox.style.display = 'block';
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise([explainText]).catch(err => console.log('MathJax error:', err));
+            }
+        } else {
+            explainBox.style.display = 'none';
+        }
 
-                continueBtn.disabled = false;
-                gradeCard.style.display = 'block';
-            });
+        const userAnswerId = selected_choice_id || data.my_answer;
+        highlightAnswerButtons(correctChoiceId, userAnswerId);
+
+        continueBtn.disabled = false;
+        gradeCard.style.display = 'block';
     }
 
     function updateEnded(data, stateChanged) {
@@ -737,6 +827,34 @@
         .catch(err => console.error("Lỗi reset phòng: ", err));
     }
 
+    function togglePlayerReady() {
+        const btn = document.getElementById('player-ready-btn');
+        if (btn) {
+            btn.disabled = true;
+            fetch("{{ route('client.phongquiz.ready', $room->ma_phong) }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                }
+            }).then(res => res.json()).then(data => {
+                if(data.success) {
+                    btn.innerHTML = `
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        Đã sẵn sàng
+                    `;
+                    btn.style.background = '#10b981'; // green
+                    fetchStatus(); // Immediately update lobby status
+                }
+            }).catch(err => {
+                console.error(err);
+                btn.disabled = false; // Re-enable if error
+            });
+        }
+    }
+
     // ============ Student Host Game Control triggers ============
     function startRoomByHost() {
         const btn = document.getElementById('host-start-btn');
@@ -757,7 +875,7 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                fetchStatus();
+                forceFetchStatus();
             } else {
                 alert(data.message);
                 if (btn) {
@@ -803,7 +921,7 @@
         .then(data => {
             is_requesting_next = false;
             if (data.success) {
-                fetchStatus();
+                forceFetchStatus();
             } else {
                 alert(data.message);
                 if (btn) btn.disabled = false;

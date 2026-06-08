@@ -12,7 +12,7 @@ class ChuongHoc extends Model
     // Khai báo bảng số ít để khớp với phong cách các bảng khác của bạn
     protected $table = 'chuong_hoc';
 
-    protected $fillable = ['mon_hoc_id', 'ten_chuong', 'thu_tu', 'trang_thai'];
+    protected $fillable = ['mon_hoc_id', 'ten_chuong', 'thu_tu', 'trang_thai', 'nguoi_tao_id'];
 
     /**
      * Quan hệ ngược lại: Một chương thuộc về một môn học
@@ -20,6 +20,11 @@ class ChuongHoc extends Model
     public function monHoc()
     {
         return $this->belongsTo(MonHoc::class, 'mon_hoc_id');
+    }
+
+    public function nguoiTao()
+    {
+        return $this->belongsTo(User::class, 'nguoi_tao_id');
     }
     public function cauHois()
     {

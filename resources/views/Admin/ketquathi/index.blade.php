@@ -22,88 +22,49 @@
         </div>
     @endif
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <!-- MathJax config -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="{{ asset('backend/asset/css/ketquathi.css') }}">
     <style>
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 16px; }
-        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-        .stat-icon.indigo { background: rgba(79, 70, 229, 0.1); color: #4F46E5; }
-        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: #059669; }
-        .stat-icon.yellow { background: rgba(245, 158, 11, 0.1); color: #D97706; }
-        .stat-icon.red { background: rgba(239, 68, 68, 0.1); color: #DC2626; }
-        .stat-val { font-size: 26px; font-weight: 700; color: #111827; line-height: 1; }
-        .stat-lbl { font-size: 13px; color: #6B7280; margin-top: 4px; }
-        
-        .filters-section { background: white; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-        .filter-group { display: grid; gap: 16px; align-items: end; }
-        .search-box { position: relative; display: flex; align-items: center; }
-        .search-box input { width: 100%; padding: 10px 12px 10px 40px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 14px; }
-        .form-select { width: 100%; padding: 10px 12px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 14px; }
-
-        .table-section { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-        .data-table { width: 100%; border-collapse: collapse; }
-        .data-table thead th { background: #F9FAFB; padding: 12px; text-align: left; font-weight: 600; font-size: 13px; color: #6B7280; border-bottom: 2px solid #E5E7EB; }
-        .data-table tbody td { padding: 14px 12px; border-bottom: 1px solid #F3F4F6; font-size: 14px; }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; backdrop-filter: blur(4px); }
-        .modal-overlay.show { display: flex; align-items: center; justify-content: center; }
-        .modal-card { background: white; border-radius: 12px; width: 90%; max-width: 960px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; }
-        
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-        .badge-indigo { background: rgba(79, 70, 229, 0.1); color: #4F46E5; }
-        .score-bar-bg { flex: 1; height: 7px; background: #F3F4F6; border-radius: 10px; overflow: hidden; }
-        .score-bar-fill { height: 100%; border-radius: 10px; }
-        .score-bar-fill.high { background: #10B981; }
-        .score-bar-fill.mid { background: #F59E0B; }
-        .score-bar-fill.low { background: #EF4444; }
-
-        /* ===== PAGINATION ===== */
-        .pagination-wrapper nav { display: flex; justify-content: center; }
-        .pagination-wrapper .pagination {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            list-style: none;
-            margin: 0;
-            padding: 0;
+        /* Premium Code Block Styling */
+        #detailContent pre {
+            background: #1e1e2f !important;
+            color: #abb2bf !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding: 16px 20px !important;
+            border-radius: 8px !important;
+            overflow-x: auto !important;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            margin: 14px 0 !important;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
         }
-        .pagination-wrapper .pagination li { list-style: none; }
-        .pagination-wrapper .pagination li a,
-        .pagination-wrapper .pagination li span {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 36px;
-            height: 36px;
-            padding: 0 10px;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            background: #fff;
-            color: #374151;
-            font-size: 13px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.15s ease;
-            line-height: 1;
+        #detailContent code {
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+            font-size: 14px;
         }
-        .pagination-wrapper .pagination li a:hover {
-            background: #eef2ff;
-            border-color: #c7d2fe;
-            color: #4338ca;
-        }
-        .pagination-wrapper .pagination li.active span,
-        .pagination-wrapper .pagination li.active a {
-            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-            border-color: #4f46e5;
-            color: #fff;
-            font-weight: 700;
-            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
-        }
-        .pagination-wrapper .pagination li.disabled span {
-            background: #f9fafb;
-            border-color: #f3f4f6;
-            color: #d1d5db;
-            cursor: not-allowed;
+        #detailContent pre code {
+            background: transparent !important;
+            color: inherit !important;
+            padding: 0 !important;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+            font-size: 14px !important;
         }
     </style>
 
@@ -172,7 +133,14 @@
 
     {{-- Bảng dữ liệu --}}
     <section class="table-section">
-        <div class="table-responsive">
+        <div class="table-card">
+            <div class="table-header">
+                <div class="table-title">
+                    <h3>Danh sách kết quả thi</h3>
+                    <span class="count-badge">Dữ liệu hệ thống</span>
+                </div>
+            </div>
+            <div class="table-responsive">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -224,6 +192,7 @@
             <div class="pagination-wrapper">
                 {{ $thongKe->appends(request()->query())->links('pagination::bootstrap-4') }}
             </div>
+        </div>
         </div>
     </section>
 
@@ -431,6 +400,76 @@
                         const statusColor = q.is_correct_flag ? '#10B981' : '#EF4444';
                         const statusText  = q.is_correct_flag ? '✓ Đúng' : '✗ Sai';
                         
+                        let bodyHTML = '';
+                        
+                        if ((q.loai_cau_hoi === 1 || q.loai_cau_hoi === 2) && q.ds_dap_an && Array.isArray(q.ds_dap_an) && q.ds_dap_an.length > 0) {
+                            bodyHTML += `<div style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0;">`;
+                            q.ds_dap_an.forEach((da, daIdx) => {
+                                const letter = String.fromCharCode(65 + daIdx); // A, B, C, D...
+                                
+                                // Check if user selected this answer
+                                let isSelected = false;
+                                if (q.dap_an_chon_ids && Array.isArray(q.dap_an_chon_ids)) {
+                                    isSelected = q.dap_an_chon_ids.includes(da.id);
+                                } else {
+                                    isSelected = (da.id == q.dap_an_chon_id);
+                                }
+                                
+                                const isCorrect = da.is_dung;
+                                
+                                let bgStyle = 'background: #F9FAFB; border: 1px solid #E5E7EB; color: #374151;';
+                                let iconHTML = '';
+                                
+                                if (isCorrect) {
+                                    bgStyle = 'background: #ECFDF5; border: 1px solid #10B981; color: #065F46; font-weight: 500;';
+                                    iconHTML = `<i class="fas fa-check-circle" style="color: #10B981; margin-left: auto; font-size: 16px;"></i>`;
+                                } else if (isSelected) {
+                                    bgStyle = 'background: #FEF2F2; border: 1px solid #EF4444; color: #991B1B;';
+                                    iconHTML = `<i class="fas fa-times-circle" style="color: #EF4444; margin-left: auto; font-size: 16px;"></i>`;
+                                }
+                                
+                                bodyHTML += `
+                                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; ${bgStyle}">
+                                        <span style="font-weight: bold; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); border-radius: 50%; font-size: 13px; flex-shrink: 0;">${letter}</span>
+                                        <div style="flex: 1; font-size: 14px;">${da.noi_dung}</div>
+                                        ${da.hinh_anh ? `<div style="margin-left: 10px;"><img src="${da.hinh_anh}" style="max-height: 60px; border-radius: 4px; border: 1px solid #cbd5e1;"></div>` : ''}
+                                        ${iconHTML}
+                                    </div>
+                                `;
+                            });
+                            bodyHTML += `</div>`;
+                            
+                            // Thêm thông tin thời gian & bookmark phía dưới
+                            bodyHTML += `
+                                <div style="display: flex; gap: 24px; font-size: 12px; color: #6B7280; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #E5E7EB;">
+                                    <div><i class="far fa-clock" style="margin-right: 4px;"></i> Thời gian trả lời: <span style="color: #111827; font-weight: 500;">${q.thoi_gian}</span></div>
+                                    <div><i class="far fa-bookmark" style="margin-right: 4px;"></i> Đánh dấu xem lại: <span style="color: #111827; font-weight: 500;">${q.is_marked}</span></div>
+                                </div>
+                            `;
+                        } else {
+                            // Điền khuyết (3) hoặc Tự luận (4) hoặc fallback
+                            bodyHTML += `
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; background: #F9FAFB; border-radius: 6px; margin: 12px 0;">
+                                    <div>
+                                        <strong style="font-size: 12px; color: #6B7280;">Đáp án sinh viên chọn:</strong>
+                                        <p style="margin: 4px 0 0 0; color: #111827; padding: 6px; background: white; border-radius: 4px; border: 1px solid #E5E7EB;">${q.dap_an_chon}</p>
+                                    </div>
+                                    <div>
+                                        <strong style="font-size: 12px; color: #6B7280;">Đáp án đúng:</strong>
+                                        <p style="margin: 4px 0 0 0; color: #059669; font-weight: bold; padding: 6px; background: white; border-radius: 4px; border: 1px solid #A7F3D0;">${q.dap_an_dung}</p>
+                                    </div>
+                                    <div>
+                                        <strong style="font-size: 12px; color: #6B7280;">Thời gian trả lời:</strong>
+                                        <p style="margin: 4px 0 0 0; color: #111827;">${q.thoi_gian}</p>
+                                    </div>
+                                    <div>
+                                        <strong style="font-size: 12px; color: #6B7280;">Đánh dấu xem lại:</strong>
+                                        <p style="margin: 4px 0 0 0; color: #111827;">${q.is_marked}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
                         questionsHTML += `
                             <div style="border: 1px solid #E5E7EB; border-radius: 8px; padding: 16px; margin-bottom: 16px; background: white;">
                                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
@@ -445,29 +484,12 @@
                                     </div>
                                 </div>
                                 
-                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; background: #F9FAFB; border-radius: 6px; margin: 12px 0;">
-                                    <div>
-                                        <strong style="font-size: 12px; color: #6B7280;">Đáp án sinh viên chọn:</strong>
-                                        <p style="margin: 4px 0 0 0; color: #111827; padding: 6px; background: white; border-radius: 4px;">${q.dap_an_chon}</p>
-                                    </div>
-                                    <div>
-                                        <strong style="font-size: 12px; color: #6B7280;">Đáp án đúng:</strong>
-                                        <p style="margin: 4px 0 0 0; color: #059669; font-weight: bold; padding: 6px; background: white; border-radius: 4px;">${q.dap_an_dung}</p>
-                                    </div>
-                                    <div>
-                                        <strong style="font-size: 12px; color: #6B7280;">Thời gian trả lời:</strong>
-                                        <p style="margin: 4px 0 0 0; color: #111827;">${q.thoi_gian}</p>
-                                    </div>
-                                    <div>
-                                        <strong style="font-size: 12px; color: #6B7280;">Đánh dấu xem lại:</strong>
-                                        <p style="margin: 4px 0 0 0; color: #111827;">${q.is_marked}</p>
-                                    </div>
-                                </div>
+                                ${bodyHTML}
                                 
                                 ${q.giai_thich && q.giai_thich !== '—' ? `
                                     <div style="padding: 12px; background: #DBEAFE; border-left: 4px solid #3B82F6; border-radius: 4px; margin-top: 12px;">
                                         <strong style="color: #1E40AF; font-size: 12px;">📚 Giải thích:</strong>
-                                        <p style="margin: 6px 0 0 0; color: #1E40AF;">${q.giai_thich}</p>
+                                        <div style="margin: 6px 0 0 0; color: #1E40AF;">${q.giai_thich}</div>
                                     </div>
                                 ` : ''}
                             </div>
@@ -479,6 +501,18 @@
                 
                 container.innerHTML = questionsHTML;
                 content.style.display = 'block';
+                
+                // Tô màu cú pháp bằng highlight.js cho code blocks trong modal
+                if (typeof hljs !== 'undefined') {
+                    container.querySelectorAll('pre code').forEach((el) => {
+                        hljs.highlightElement(el);
+                    });
+                }
+
+                // Render công thức Toán học MathJax
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    MathJax.typesetPromise([container]).catch((err) => console.log('MathJax error:', err));
+                }
             })
             .catch(err => {
                 loading.style.display = 'none';

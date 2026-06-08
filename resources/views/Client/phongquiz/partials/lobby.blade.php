@@ -31,11 +31,11 @@
                 <div class="qv-info-badge">
                     <span id="lobby-level">
                         @if($room->muc_do_cau_hoi == 1)
-                            Mức độ: Dễ
+                            Mức độ: Nhận biết
                         @elseif($room->muc_do_cau_hoi == 2)
-                            Mức độ: Trung bình
+                            Mức độ: Thông hiểu
                         @elseif($room->muc_do_cau_hoi == 3)
-                            Mức độ: Khó
+                            Mức độ: Vận dụng
                         @else
                             Tất cả mức độ
                         @endif
@@ -46,6 +46,10 @@
                     <span id="lobby-member-count">{{ $room->thanhVien->count() }}/50</span>
                 </div>
             </div>
+        </div>
+
+        <div id="lobby-global-status" style="display: none; background: #fffbeb; border: 1.5px solid #fde047; padding: 18px 24px; border-radius: 16px; text-align: center; margin-top: 10px; margin-bottom: -10px; box-shadow: 0 4px 15px rgba(250, 204, 21, 0.15);">
+            <!-- Status message injected here -->
         </div>
 
         <div class="qv-lobby-two-column">
@@ -91,17 +95,13 @@
                 </div>
                 @if($room->chu_phong_id === $member->user_id)
                     <button id="host-start-btn" onclick="startRoomByHost()" class="qv-lobby-play-btn">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="white" stroke="none">
-                            <polygon points="5 3 19 12 5 21 5 3" />
-                        </svg>
+                        <i class="fas fa-play"></i>
                         Chơi ngay
                     </button>
                 @else
-                    <button class="qv-lobby-play-btn" disabled style="opacity: 0.6; cursor: not-allowed;">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="white" stroke="none">
-                            <polygon points="5 3 19 12 5 21 5 3" />
-                        </svg>
-                        Chờ phát
+                    <button id="player-ready-btn" class="qv-lobby-play-btn" onclick="togglePlayerReady()" style="background: #3b82f6;">
+                        <i class="fa-solid fa-thumbs-up" style="color: white; font-size: 22px;"></i>
+                        Sẵn sàng
                     </button>
                 @endif
             </div>

@@ -20,12 +20,21 @@ class ChuongHocRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                // Kiểm tra trùng tên chương trong cùng 1 môn học
-                Rule::unique('chuong_hoc', 'ten_chuong')
-                    ->where(function ($query) {
-                        return $query->where('mon_hoc_id', $this->mon_hoc_id);
-                    })
-                    ->ignore($this->id) // Bỏ qua chính nó khi cập nhật
+                function ($attribute, $value, $fail) {
+                    $normalizedValue = \Illuminate\Support\Str::slug($value);
+                    $existingChapters = \App\Models\ChuongHoc::where('mon_hoc_id', $this->mon_hoc_id)
+                        ->when($this->id, function ($query) {
+                            $query->where('id', '!=', $this->id);
+                        })
+                        ->get(['id', 'ten_chuong']);
+                    
+                    foreach ($existingChapters as $chapter) {
+                        if (\Illuminate\Support\Str::slug($chapter->ten_chuong) === $normalizedValue) {
+                            $fail('Tên chương này (hoặc tương tự) đã tồn tại trong môn học (bỏ qua dấu câu/viết hoa).');
+                            return;
+                        }
+                    }
+                }
             ],
             'thu_tu'     => 'nullable|integer|min:0',
             'trang_thai' => 'nullable', 

@@ -7,7 +7,7 @@
     </div>
     <h2>Kết quả ván đấu</h2>
     <p class="qv-ended-subtitle">
-        Phòng <strong class="code">{{ $room->ma_phong }}</strong> • {{ $room->monHoc->ten_mon_hoc }} • @if($room->muc_do_cau_hoi == 1) Dễ @elseif($room->muc_do_cau_hoi == 2) Trung bình @else Khó @endif
+        Phòng <strong class="code">{{ $room->ma_phong }}</strong> • {{ $room->monHoc->ten_mon_hoc }} • @if($room->muc_do_cau_hoi == 1) Nhận biết @elseif($room->muc_do_cau_hoi == 2) Thông hiểu @else Vận dụng @endif
     </p>
     <p class="qv-ended-matchid">matchId: {{ $matchId }}</p>
 

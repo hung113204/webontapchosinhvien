@@ -119,9 +119,21 @@ class ExamController extends FrontendController
                 ->get();
         }
 
+        // Top 10 Bảng xếp hạng (Lấy điểm cao nhất của mỗi người)
+        $topScorers = \App\Models\KetQuaThi::with('sinhVien')
+            ->select('ket_qua_thi_v2.*', \DB::raw('TIMESTAMPDIFF(SECOND, thoi_gian_vao_thi, thoi_gian_nop_bai) as time_taken'))
+            ->where('bai_kiem_tra_id', $id)
+            ->whereNotNull('diem')
+            ->orderBy('diem', 'desc')
+            ->orderBy('time_taken', 'asc')
+            ->get()
+            ->unique('user_id')
+            ->take(10)
+            ->values();
+
         $breadcrumbs = [['label' => 'Trang chủ', 'url' => route('home')], ['label' => 'Thi thử', 'url' => route('client.exams.index')], ['label' => $baiKiemTra->ten_bai]];
 
-        return view('Client.exams.show', compact('baiKiemTra', 'lichSuThi', 'coTheThi', 'lyDoKhongThe', 'soLanDaLam', 'breadcrumbs'));
+        return view('Client.exams.show', compact('baiKiemTra', 'lichSuThi', 'coTheThi', 'lyDoKhongThe', 'soLanDaLam', 'breadcrumbs', 'topScorers'));
     }
 
     // ── BƯỚC 2: Bắt đầu thi — tạo phiên ─────────────────────────────
@@ -255,6 +267,9 @@ class ExamController extends FrontendController
         $soCauDung = 0;
         $chiTietBaiLam = [];
 
+        // Tải models CauHoi để cập nhật thống kê
+        $cauHoiModels = \App\Models\CauHoi::whereIn('id', $questionIds)->get()->keyBy('id');
+
         foreach ($questionIds as $qId) {
             $userAns = $userAnswers[$qId] ?? null;
             $type = $loaiCauHoi[$qId] ?? 0;
@@ -308,6 +323,11 @@ class ExamController extends FrontendController
                 'is_correct'  => $isCorrect,
                 'diem'        => $isCorrect ? $diemCau : 0,
             ];
+
+            // Cập nhật thống kê câu hỏi
+            if (isset($cauHoiModels[$qId])) {
+                $cauHoiModels[$qId]->updateStats($isCorrect);
+            }
         }
 
         // Ép tất cả về thang điểm 10

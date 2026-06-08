@@ -59,23 +59,45 @@
                                     @foreach($chiTietCauHoi as $index => $cau)
                                         @php
                                             $userAns = $ketQua[$cau->id] ?? null;
-                                            $dapAnChon = $userAns && isset($userAns['selected']) 
-                                                ? $cau->dapAns->firstWhere('id', $userAns['selected']) 
-                                                : null;
-                                            $dapAnDung = $cau->dapAns->firstWhere('is_dung', 1);
+                                            $selected = $userAns['selected'] ?? null;
+                                            $dapAnChonHtml = '<i style="color:#94a3b8">Không chọn</i>';
+                                            $dapAnDungHtml = 'N/A';
+
+                                            if ($cau->loai_cau_hoi == 3 || $cau->loai_cau_hoi == 4) {
+                                                // Tự luận & Điền khuyết
+                                                if ($selected !== null && trim((string)$selected) !== '' && $selected !== '[]') {
+                                                    $decoded = json_decode($selected, true);
+                                                    if (is_array($decoded)) {
+                                                        $dapAnChonHtml = nl2br(htmlspecialchars(implode(', ', $decoded)));
+                                                    } else {
+                                                        $dapAnChonHtml = nl2br(htmlspecialchars($selected));
+                                                    }
+                                                }
+                                                
+                                                if ($cau->loai_cau_hoi == 4) {
+                                                    $dapAnDungObj = $cau->dapAns->firstWhere('is_dung', 1);
+                                                    $dapAnDungHtml = $dapAnDungObj ? $dapAnDungObj->noi_dung : ($cau->giai_thich ?: 'N/A');
+                                                } else {
+                                                    $dapAnDungHtml = $cau->dapAns->where('is_dung', 1)->pluck('noi_dung')->implode(', ');
+                                                }
+                                            } else {
+                                                // Trắc nghiệm & Đúng/Sai
+                                                $dapAnChonObj = $selected ? $cau->dapAns->firstWhere('id', $selected) : null;
+                                                if ($dapAnChonObj) {
+                                                    $dapAnChonHtml = $dapAnChonObj->noi_dung;
+                                                }
+                                                $dapAnDungObj = $cau->dapAns->firstWhere('is_dung', 1);
+                                                if ($dapAnDungObj) {
+                                                    $dapAnDungHtml = $dapAnDungObj->noi_dung;
+                                                }
+                                            }
                                         @endphp
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
                                             <td>{!! Str::limit(strip_tags($cau->noi_dung), 110) !!}</td>
-                                            <td>
-                                                @if($dapAnChon)
-                                                    {!! $dapAnChon->noi_dung !!}
-                                                @else
-                                                    <i style="color:#94a3b8">Không chọn</i>
-                                                @endif
-                                            </td>
+                                            <td>{!! $dapAnChonHtml !!}</td>
                                             <td style="color:#10b981">
-                                                {!! $dapAnDung ? $dapAnDung->noi_dung : 'N/A' !!}
+                                                {!! $dapAnDungHtml !!}
                                             </td>
                                             <td>
                                                 @if($userAns)

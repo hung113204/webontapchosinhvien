@@ -153,7 +153,7 @@
                                 @endif
                             </div>
                             @php
-                                $mucDoLabel = match($cauHoi->muc_do) { 1 => 'Dễ', 3 => 'Khó', default => 'Trung bình' };
+                                $mucDoLabel = match($cauHoi->muc_do) { 1 => 'Nhận biết', 3 => 'Vận dụng', default => 'Thông hiểu' };
                                 $mucDoClass = match($cauHoi->muc_do) { 1 => 'easy', 3 => 'hard', default => 'mid' };
                             @endphp
                             <span class="q-level level-{{ $mucDoClass }}">{{ $mucDoLabel }}</span>

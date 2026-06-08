@@ -21,7 +21,7 @@ class CauHoiRequest extends FormRequest
             'hinh_anh' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'goi_y' => 'nullable|string',
             'giai_thich' => 'nullable|string',
-            'muc_do' => 'required|integer|in:1,2,3', // 1: Dễ, 2: TB, 3: Khó
+            'muc_do' => 'required|integer|in:1,2,3', // 1: Nhận biết, 2: Thông hiểu, 3: Vận dụng
             'loai_cau_hoi' => 'required|integer|in:1,2,3,4', // 1: Một đáp án, 2: Nhiều đáp án
             'temp_file' => 'sometimes|required|string',
             'selected_questions' => 'nullable|array',

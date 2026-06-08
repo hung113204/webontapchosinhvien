@@ -271,9 +271,9 @@
                                 độ</label>
                             <select class="form-select" name="muc_do"
                                 style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                <option value="1">Dễ</option>
-                                <option value="2">Trung bình</option>
-                                <option value="3">Khó</option>
+                                <option value="1">Nhận biết</option>
+                                <option value="2">Thông hiểu</option>
+                                <option value="3">Vận dụng</option>
                             </select>
                         </div>
 
@@ -378,9 +378,9 @@
                                 độ</label>
                             <select class="form-select" name="muc_do" required
                                 style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                <option value="1">Dễ</option>
-                                <option value="2" selected>Trung bình</option>
-                                <option value="3">Khó</option>
+                                <option value="1">Nhận biết</option>
+                                <option value="2" selected>Thông hiểu</option>
+                                <option value="3">Vận dụng</option>
                             </select>
                         </div>
                     </div>
@@ -520,9 +520,9 @@
                             <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Mức độ</label>
                             <select class="form-select" name="muc_do" id="excel_muc_do"
                                 style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                <option value="1">Dễ</option>
-                                <option value="2" selected>Trung bình</option>
-                                <option value="3">Khó</option>
+                                <option value="1">Nhận biết</option>
+                                <option value="2" selected>Thông hiểu</option>
+                                <option value="3">Vận dụng</option>
                             </select>
                         </div>
                     </div>
@@ -721,7 +721,7 @@
             const editorConfig = {
                 toolbar: [
                     'heading', '|',
-                    'bold', 'italic', '|',
+                    'bold', 'italic', 'codeBlock', '|',
                     'link', 'insertTable', '|',
                     'bulletedList', 'numberedList', '|',
                     'undo', 'redo'

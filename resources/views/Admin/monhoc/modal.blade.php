@@ -26,10 +26,10 @@
                 <div class="form-group">
                     <label>Mức độ môn học <span style="color: red">*</span></label>
                     <select name="muc_do_mon_hoc" id="input_muc_do_mon_hoc" class="form-select" required>
-                        <option value="1">Dễ</option>
-                        <option value="2">Trung bình</option>
-                        <option value="3">Khó</option>
-                        <option value="4">Rất khó</option>
+                        <option value="1">Nhập môn</option>
+                        <option value="2">Cơ sở ngành</option>
+                        <option value="3">Chuyên ngành</option>
+                        <option value="4">Chuyên sâu</option>
                     </select>
                     <small class="text-danger" id="error_muc_do_mon_hoc"></small>
                 </div>
@@ -89,6 +89,64 @@
                     <input type="text" name="icon_class" id="input_icon_class" class="form-input"
                         placeholder="Ví dụ: fas fa-book, fas fa-calculator">
                     <small class="text-muted">Sử dụng class FontAwesome, thêm "fas fa-" trước icon</small>
+                </div>
+
+                <div class="form-group" style="grid-column: span 2; position: relative;">
+                    <label>Danh mục hiển thị</label>
+                    <div class="custom-multiselect" style="position: relative; margin-top: 8px;">
+                        <div class="multiselect-select" id="multiselectSelect" onclick="toggleMultiselect(event)" style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 10px 14px;
+                            background: #fff;
+                            border: 1px solid #cbd5e1;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-size: 0.95rem;
+                            color: #64748b;
+                            user-select: none;
+                            transition: border-color 0.2s, box-shadow 0.2s;
+                        ">
+                            <span id="multiselectPlaceholder">Chọn danh mục...</span>
+                            <i class="fas fa-chevron-down" style="font-size: 0.8rem; transition: transform 0.2s;"></i>
+                        </div>
+                        <div class="multiselect-dropdown" id="multiselectDropdown" style="
+                            display: none;
+                            position: absolute;
+                            top: 100%;
+                            left: 0;
+                            right: 0;
+                            margin-top: 4px;
+                            background: #fff;
+                            border: 1px solid #cbd5e1;
+                            border-radius: 8px;
+                            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                            z-index: 100;
+                            max-height: 200px;
+                            overflow-y: auto;
+                            padding: 8px;
+                        ">
+                            @foreach($danhMucs as $dm)
+                                <label style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 10px;
+                                    padding: 8px 12px;
+                                    margin: 2px 0;
+                                    border-radius: 6px;
+                                    cursor: pointer;
+                                    font-weight: normal;
+                                    color: #334155;
+                                    font-size: 0.9rem;
+                                    transition: background-color 0.15s;
+                                " onmouseover="this.style.backgroundColor='#f1f5f9'" onmouseout="this.style.backgroundColor='transparent'">
+                                    <input type="checkbox" name="danh_muc_ids[]" value="{{ $dm->id }}" id="dm_cb_{{ $dm->id }}" class="danh-muc-checkbox" onchange="updateMultiselectLabel()" style="width: 16px; height: 16px; accent-color: #4f46e5; cursor: pointer; margin: 0;">
+                                    <span style="font-size: 0.9rem;">{{ $dm->tieu_de }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">

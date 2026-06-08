@@ -64,9 +64,10 @@
                         <i class="fas fa-signal"></i>
                         <select id="muc-do-filter">
                             <option value="all">Tất cả mức độ</option>
-                            <option value="1">Dễ</option>
-                            <option value="2">Trung bình</option>
-                            <option value="3">Khó</option>
+                            <option value="1">Nhập môn</option>
+                            <option value="2">Cơ sở ngành</option>
+                            <option value="3">Chuyên ngành</option>
+                            <option value="4">Chuyên sâu</option>
                         </select>
                     </div>
 
@@ -86,11 +87,11 @@
                             default => 'basic',
                         };
                         $levelText = match ($mon->muc_do_mon_hoc) {
-                            1 => 'Dễ',
-                            2 => 'Trung bình',
-                            3 => 'Khó',
-                            4 => 'Rất khó',
-                            default => 'Dễ',
+                            1 => 'Nhập môn',
+                            2 => 'Cơ sở ngành',
+                            3 => 'Chuyên ngành',
+                            4 => 'Chuyên sâu',
+                            default => 'Nhập môn',
                         };
                         $brandColor = $mon->mau_sac ?? '#3b82f6';
                         $pct = $mon->progress_percent ?? 0;

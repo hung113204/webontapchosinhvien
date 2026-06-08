@@ -43,4 +43,12 @@ class danhmuctrangchu extends Model
     {
         return $query->where('trang_thai', true)->orderBy('thu_tu', 'asc');
     }
+
+    /**
+     * Một danh mục trang chủ có thể có nhiều môn học.
+     */
+    public function monHocs()
+    {
+        return $this->belongsToMany(\App\Models\MonHoc::class, 'danh_muc_mon_hoc', 'danh_muc_id', 'mon_hoc_id');
+    }
 }

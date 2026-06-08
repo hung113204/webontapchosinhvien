@@ -3,6 +3,52 @@
 
 @section('title', 'Thi thử: ' . $baiKiemTra->ten_bai)
 
+@push('styles')
+<style>
+    /* Modal Styles */
+    .config-modal-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+        z-index: 9999; display: flex; align-items: center; justify-content: center;
+        opacity: 0; visibility: hidden; transition: all 0.3s ease;
+    }
+    .config-modal-overlay.active { opacity: 1; visibility: visible; }
+    .config-modal {
+        background: #fff; border-radius: 16px; width: 100%; max-width: 450px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15); transform: translateY(20px) scale(0.95);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden;
+        margin: 20px;
+    }
+    .config-modal-overlay.active .config-modal { transform: translateY(0) scale(1); }
+    .config-modal-header {
+        padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex;
+        align-items: center; justify-content: space-between;
+    }
+    .config-modal-header h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #1e293b; }
+    .config-modal-close {
+        background: none; border: none; color: #94a3b8; font-size: 1.2rem;
+        cursor: pointer; transition: color 0.2s; padding: 0;
+    }
+    .config-modal-close:hover { color: #ef4444; }
+    .config-modal-body { padding: 24px; }
+    .config-modal-footer {
+        padding: 16px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9;
+        display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+    }
+    .btn-cancel {
+        padding: 10px 20px; border-radius: 8px; background: #fff; border: 1px solid #cbd5e1;
+        color: #475569; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-cancel:hover { background: #f1f5f9; color: #1e293b; border-color: #94a3b8; }
+    .btn-confirm {
+        padding: 10px 20px; border-radius: 8px; background: var(--blue); border: none;
+        color: #fff; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+        text-decoration: none; display: inline-flex; align-items: center;
+    }
+    .btn-confirm:hover { background: #2563eb; color: #fff; }
+</style>
+@endpush
+
 @section('content')
 
     {{-- KHÔNG dùng class exam-interface-wrap vì CSS gốc set display:none --}}
@@ -113,9 +159,9 @@
                                         <span class="q-number">Câu {{ $idx + 1 }}</span>
                                         @php
                                             $mucDoLabel = match ($cauHoi->muc_do) {
-                                                1 => 'Dễ',
-                                                3 => 'Khó',
-                                                default => 'Trung bình',
+                                                1 => 'Nhận biết',
+                                                3 => 'Vận dụng',
+                                                default => 'Thông hiểu',
                                             };
                                             $mucDoClass = match ($cauHoi->muc_do) {
                                                 1 => 'easy',
@@ -131,7 +177,14 @@
                                     </button>
                                 </div>
 
-                                <div class="question-text">{!! $cauHoi->noi_dung !!}</div>
+                                <div class="question-text">
+                                    {!! $cauHoi->noi_dung !!}
+                                    @if($cauHoi->hinh_anh)
+                                        <div style="margin-top: 15px; text-align: center;">
+                                            <img src="{{ asset('storage/' . $cauHoi->hinh_anh) }}" style="max-height: 300px; max-width: 100%; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                        </div>
+                                    @endif
+                                </div>
 
                                 <div class="options-list" id="options-{{ $idx + 1 }}">
                                     @if($cauHoi->loai_cau_hoi == 4)
@@ -227,6 +280,8 @@
                 timeLeft = TOTAL_TIME,
                 timerInterval = null;
             let isClickScrolling = false; // flag tránh observer ghi đè khi click sidebar
+            let autoSubmitTimer = null;
+            let autoSubmitSeconds = 30;
 
             function syncExamSidebarTop() {
                 const workspace = document.getElementById('exam-workspace');
@@ -238,6 +293,10 @@
             }
 
             document.addEventListener('DOMContentLoaded', () => {
+                // Kích hoạt highlight.js tô màu cú pháp các khối lệnh pre code
+                if (typeof hljs !== 'undefined') {
+                    hljs.highlightAll();
+                }
                 startTimer();
                 syncExamSidebarTop();
                 window.addEventListener('scroll', syncExamSidebarTop, { passive: true });
@@ -421,11 +480,36 @@
 
             document.getElementById('submit-exam-btn').addEventListener('click', () => {
                 const u = TOTAL_Q - Object.keys(answers).length;
-                if (confirm(u === 0 ?
-                        'Bạn đã trả lời tất cả câu hỏi.\n\nXác nhận nộp bài?' :
-                        `Bạn còn ${u} câu chưa trả lời.\n\nBạn có chắc muốn nộp bài không?`
-                    )) submitExam();
+                
+                document.getElementById('submitModal').classList.add('active');
+                
+                if (u === 0) {
+                    document.getElementById('submit-unanswered-warning').style.display = 'none';
+                    document.getElementById('submit-all-answered').style.display = 'block';
+                } else {
+                    document.getElementById('submit-unanswered-warning').style.display = 'block';
+                    document.getElementById('submit-all-answered').style.display = 'none';
+                    document.getElementById('unanswered-count').textContent = u;
+                }
+
+                autoSubmitSeconds = 30;
+                document.getElementById('auto-submit-countdown').textContent = autoSubmitSeconds;
+                
+                if(autoSubmitTimer) clearInterval(autoSubmitTimer);
+                autoSubmitTimer = setInterval(() => {
+                    autoSubmitSeconds--;
+                    document.getElementById('auto-submit-countdown').textContent = autoSubmitSeconds;
+                    if(autoSubmitSeconds <= 0) {
+                        clearInterval(autoSubmitTimer);
+                        submitExam();
+                    }
+                }, 1000);
             });
+
+            function closeSubmitModal() {
+                document.getElementById('submitModal').classList.remove('active');
+                if(autoSubmitTimer) clearInterval(autoSubmitTimer);
+            }
 
             function autoSubmit() {
                 alert('⏰ Hết thời gian! Bài thi sẽ được nộp tự động.');
@@ -435,6 +519,9 @@
             // [MỚI THÊM / SỬA LẠI] --- HÀM SUBMIT FORM ---
             function submitExam() {
                 clearInterval(timerInterval);
+                if(autoSubmitTimer) clearInterval(autoSubmitTimer);
+                
+                closeSubmitModal();
 
                 // 1. Khóa nút nộp bài tránh người dùng spam click nhiều lần
                 document.getElementById('submit-exam-btn').disabled = true;
@@ -447,5 +534,29 @@
             }
         </script>
     @endpush
+
+    <div class="config-modal-overlay" id="submitModal">
+        <div class="config-modal" style="max-width: 450px;">
+            <div class="config-modal-header" style="background: #f8fafc;">
+                <h3 style="color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Xác nhận nộp bài</h3>
+                <button type="button" class="config-modal-close" onclick="closeSubmitModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="config-modal-body" style="text-align: center;">
+                <div id="submit-unanswered-warning" style="display: none; margin-bottom: 20px; padding: 12px; background: #fef2f2; color: #b91c1c; border-radius: 8px; font-weight: 600;">
+                    Bạn còn <span id="unanswered-count" style="font-size: 1.1em;">0</span> câu chưa trả lời.
+                </div>
+                <div id="submit-all-answered" style="display: none; margin-bottom: 20px; padding: 12px; background: #f0fdf4; color: #15803d; border-radius: 8px; font-weight: 600;">
+                    Bạn đã trả lời tất cả câu hỏi!
+                </div>
+                
+                <h4 style="margin: 0 0 15px 0; font-size: 1.2rem; color: #1e293b;">Bạn có chắc chắn muốn nộp bài không?</h4>
+                <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 0;">Bài thi sẽ tự động nộp sau <strong id="auto-submit-countdown" style="color: #ef4444; font-size: 1.1rem;">30</strong> giây.</p>
+            </div>
+            <div class="config-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeSubmitModal()">Tiếp tục làm bài</button>
+                <button type="button" class="btn-confirm" style="background: #ef4444;" onclick="submitExam()">Nộp bài ngay</button>
+            </div>
+        </div>
+    </div>
 
 @endsection

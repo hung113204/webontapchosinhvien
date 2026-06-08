@@ -13,6 +13,39 @@
 {{-- ============================================================ --}}
 {{-- TAB AI: TẠO CÂU HỎI BẰNG AI                                 --}}
 {{-- ============================================================ --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+<style>
+    .ai-question-card pre {
+        background: #1e1e2f !important;
+        color: #abb2bf !important;
+        padding: 16px 20px !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        overflow-x: auto !important;
+        font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        margin: 14px 0 !important;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
+    }
+    .ai-question-card pre code {
+        background: transparent !important;
+        color: inherit !important;
+        padding: 0 !important;
+        font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+        font-size: 14px !important;
+    }
+    .ai-question-card code {
+        font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+        font-size: 14px !important;
+    }
+    .ai-question-card p {
+        margin: 0 0 8px 0;
+    }
+</style>
+
 <div id="ai-form" class="tab-content" style="display: none;">
 
     {{-- ---- Bước 1: Cấu hình sinh câu hỏi ---- --}}
@@ -62,12 +95,27 @@
             </div>
 
             <div class="form-group">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                    Bài học <span style="font-weight: 400; color: #94a3b8; font-size: 13px;">(tùy chọn)</span>
+                </label>
+                <select id="ai_bai_hoc_id"
+                    style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                    <option value="">-- Chọn bài học làm tài liệu AI --</option>
+                    @foreach ($dsBaiHoc as $bai)
+                        <option value="{{ $bai->id }}" data-chuong="{{ $bai->chuong_hoc_id }}">
+                            {{ $bai->ten_bai_hoc }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Mức độ</label>
                 <select id="ai_muc_do"
                     style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
-                    <option value="1">🟢 Dễ</option>
-                    <option value="2" selected>🟡 Trung bình</option>
-                    <option value="3">🔴 Khó</option>
+                    <option value="1">🟢 Nhận biết</option>
+                    <option value="2" selected>🟡 Thông hiểu</option>
+                    <option value="3">🔴 Vận dụng</option>
                 </select>
             </div>
 
@@ -90,6 +138,29 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Thang Bloom <span style="font-weight: 400; color: #94a3b8; font-size: 13px;">(tùy chọn)</span></label>
+                <select id="ai_bloom_level"
+                    style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                    <option value="">-- Mặc định --</option>
+                    <option value="Remember (Nhớ)">Remember (Nhớ)</option>
+                    <option value="Understand (Hiểu)">Understand (Hiểu)</option>
+                    <option value="Apply (Vận dụng)">Apply (Vận dụng)</option>
+                    <option value="Analyze (Phân tích)">Analyze (Phân tích)</option>
+                    <option value="Evaluate (Đánh giá)">Evaluate (Đánh giá)</option>
+                    <option value="Create (Sáng tạo)">Create (Sáng tạo)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Dạng câu hỏi</label>
+                <select id="ai_dang_cau_hoi"
+                    style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                    <option value="ly_thuyet" selected>📚 Lý thuyết / Khái niệm</option>
+                    <option value="code">💻 Đọc hiểu / Phân tích Code</option>
+                </select>
+            </div>
+
         </div>
 
         <div class="form-group" style="margin-bottom: 24px;">
@@ -107,11 +178,11 @@
 
         <div class="form-group" style="margin-bottom: 24px;">
             <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
-                📖 Tải lên tài liệu bài học <span style="font-weight: 400; color: #94a3b8; font-size: 13px;">(tùy chọn - Hỗ trợ Word .docx, .doc, PowerPoint .ppt, .pptx hoặc Text .txt)</span>
+                📖 Tải lên tài liệu bài học <span style="font-weight: 400; color: #94a3b8; font-size: 13px;">(tùy chọn - Hỗ trợ Word, PowerPoint, PDF hoặc Text)</span>
             </label>
             <div style="border: 2px dashed #cbd5e1; border-radius: 10px; padding: 20px; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.2s;"
                  id="ai_file_dropzone" onclick="document.getElementById('ai_tai_lieu').click()">
-                <input type="file" id="ai_tai_lieu" accept=".docx,.doc,.ppt,.pptx,.txt" style="display: none;">
+                <input type="file" id="ai_tai_lieu" accept=".docx,.doc,.ppt,.pptx,.pdf,.txt" style="display: none;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="width: 32px; height: 32px; margin: 0 auto 8px;">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                     <polyline points="14 2 14 8 20 8" />
@@ -234,6 +305,16 @@
             opt.style.display = (!monId || opt.dataset.mon === monId) ? '' : 'none';
         });
         document.getElementById('ai_chuong_hoc_id').value = '';
+        document.getElementById('ai_chuong_hoc_id').dispatchEvent(new Event('change'));
+    });
+
+    document.getElementById('ai_chuong_hoc_id').addEventListener('change', function () {
+        const chuongId = this.value;
+        document.querySelectorAll('#ai_bai_hoc_id option').forEach(opt => {
+            if (!opt.value) return; // Giữ option mặc định
+            opt.style.display = (!chuongId || opt.dataset.chuong === chuongId) ? '' : 'none';
+        });
+        document.getElementById('ai_bai_hoc_id').value = '';
     });
 
     /* ---------- Dữ liệu câu hỏi AI ---------- */
@@ -292,9 +373,12 @@
 
     async function generateAI() {
         const chuongId = document.getElementById('ai_chuong_hoc_id').value;
+        const baiHocId = document.getElementById('ai_bai_hoc_id').value;
         const mucDo    = document.getElementById('ai_muc_do').value;
+        const bloomLevel = document.getElementById('ai_bloom_level').value;
         const soLuong  = document.getElementById('ai_so_luong').value;
         const chuDe    = document.getElementById('ai_chu_de').value.trim();
+        const dangCauHoi = document.getElementById('ai_dang_cau_hoi').value;
         const taiLieu  = fileInput.files[0];
 
         if (!chuongId) {
@@ -311,9 +395,12 @@
 
         const formData = new FormData();
         formData.append('chuong_hoc_id', chuongId);
+        if (baiHocId) formData.append('bai_hoc_id', baiHocId);
         formData.append('muc_do', mucDo);
+        if (bloomLevel) formData.append('bloom_level', bloomLevel);
         formData.append('so_luong', soLuong);
         formData.append('chu_de', chuDe);
+        formData.append('dang_cau_hoi', dangCauHoi);
         if (taiLieu) {
             formData.append('tai_lieu', taiLieu);
         }
@@ -351,7 +438,7 @@
         document.getElementById('ai_result_info').textContent  =
             monHoc && chuongHoc ? `— ${monHoc} / ${chuongHoc}` : '';
 
-        const mucDoLabel = { '1': 'Dễ', '2': 'Trung bình', '3': 'Khó' };
+        const mucDoLabel = { '1': 'Nhận biết', '2': 'Thông hiểu', '3': 'Vận dụng' };
         const mucDoColor = { '1': '#22c55e', '2': '#f59e0b', '3': '#ef4444' };
         const currentMucDo = document.getElementById('ai_muc_do').value;
 
@@ -372,8 +459,8 @@
                     </span>
 
                     <div style="flex:1;">
-                        <div style="font-size:15px;font-weight:600;color:#1e293b;line-height:1.6;margin-bottom:8px;">
-                            ${escapeHtml(q.noi_dung)}
+                        <div style="font-size:15px;font-weight:600;color:#1e293b;line-height:1.6;margin-bottom:8px; overflow-x: auto;">
+                            ${q.noi_dung}
                         </div>
                         <span style="background:${mucDoColor[currentMucDo]}22;color:${mucDoColor[currentMucDo]};
                                      border:1px solid ${mucDoColor[currentMucDo]}44;
@@ -397,7 +484,7 @@
                                          background:${correct ? '#22c55e' : '#94a3b8'};color:white;">
                                 ${letter}
                             </span>
-                            <span style="font-size:14px;color:#374151;flex:1;">${escapeHtml(ans.noi_dung)}</span>
+                            <span style="font-size:14px;color:#374151;flex:1; overflow-x: auto;">${escapeHtml(ans.noi_dung)}</span>
                             ${correct ? '<span style="margin-left:auto;color:#22c55e;font-size:12px;font-weight:700;">✓ Đúng</span>' : ''}
                         </div>`;
                     }).join('')}
@@ -411,11 +498,13 @@
                     </small>
                 </div>` : ''}
 
-                ${q.goi_y ? `
-                <div style="margin-left:71px;padding:8px 14px;background:#f0fdf4;
-                             border-left:3px solid #22c55e;border-radius:0 6px 6px 0;">
-                    <small style="color:#166534;font-size:13px;">
-                        <strong>Gợi ý:</strong> ${escapeHtml(q.goi_y)}
+                ${q.phan_tich_do_kho ? `
+                <div style="margin-left:71px;padding:10px 14px;background:#f0f9ff;
+                             border-left:3px solid #0ea5e9;border-radius:0 6px 6px 0;margin-bottom:8px;">
+                    <small style="color:#0369a1;font-size:13px;">
+                        <strong>AI đánh giá độ khó:</strong> 
+                        ${q.muc_do_danh_gia ? `<span style="text-transform: uppercase; font-weight: 700;">[${escapeHtml(q.muc_do_danh_gia)}]</span>` : ''} 
+                        ${escapeHtml(q.phan_tich_do_kho)}
                     </small>
                 </div>` : ''}
             </div>`;
@@ -430,6 +519,12 @@
         setTimeout(() => {
             if (window.MathJax && window.MathJax.typesetPromise) {
                 MathJax.typesetPromise().catch((err) => console.log('MathJax error:', err));
+            }
+            // Tô màu cú pháp code block bằng highlight.js
+            if (typeof hljs !== 'undefined') {
+                document.querySelectorAll('#ai_questions_list pre code').forEach((el) => {
+                    hljs.highlightElement(el);
+                });
             }
         }, 100);
     }

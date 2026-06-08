@@ -31,6 +31,7 @@ class BaiKiemTraRequest extends FormRequest
         $rules = [
             'mon_hoc_id' => 'required|integer|exists:mon_hoc,id',
             'ten_bai' => 'required|string|max:255',
+            'mo_ta' => 'nullable|string',
             'thoi_gian_phut' => 'required|integer|min:1',
             'so_lan_lam_bai' => 'required|integer|min:1',
             'cach_tinh_diem' => 'required|integer|in:0,1,2',
@@ -86,9 +87,9 @@ class BaiKiemTraRequest extends FormRequest
             'chuong_hoc_ids.required' => 'Chưa chọn chương học.',
             'cau_hoi_ids.required' => 'Chưa chọn câu hỏi nào.',
             
-            'so_cau_de.min' => 'Số câu dễ phải lớn hơn hoặc bằng 0.',
-            'so_cau_tb.min' => 'Số câu trung bình phải lớn hơn hoặc bằng 0.',
-            'so_cau_kho.min' => 'Số câu khó phải lớn hơn hoặc bằng 0.',
+            'so_cau_de.min' => 'Số câu nhận biết phải lớn hơn hoặc bằng 0.',
+            'so_cau_tb.min' => 'Số câu thông hiểu phải lớn hơn hoặc bằng 0.',
+            'so_cau_kho.min' => 'Số câu vận dụng phải lớn hơn hoặc bằng 0.',
         ];
     }
 

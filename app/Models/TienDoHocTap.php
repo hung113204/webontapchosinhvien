@@ -16,22 +16,15 @@ class TienDoBaiHoc extends Model
         'user_id',
         'bai_hoc_id',
         'trang_thai',
-        'thoi_gian_da_hoc',
         'phan_tram_hoan_thanh',
-        'ngay_bat_dau',
         'ngay_hoan_thanh',
     ];
 
     protected $casts = [
         'trang_thai'           => 'integer',
-        'thoi_gian_da_hoc'     => 'integer',
         'phan_tram_hoan_thanh' => 'integer',
-        'ngay_bat_dau'         => 'datetime',
         'ngay_hoan_thanh'      => 'datetime',
-    ];
-
-    // ====================== RELATIONSHIPS ======================
-    
+    ];    
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -103,7 +96,6 @@ class TienDoBaiHoc extends Model
         if ($this->trang_thai === 0) {
             $this->update([
                 'trang_thai'     => 1,
-                'ngay_bat_dau'   => $this->ngay_bat_dau ?? now(),
             ]);
         }
     }
@@ -111,15 +103,13 @@ class TienDoBaiHoc extends Model
     /**
      * Cập nhật tiến độ học tập
      */
-    public function updateProgress(int $thoiGianDaHoc, int $phanTramHoanThanh): void
+    public function updateProgress(int $phanTramHoanThanh): void
     {
-        $this->thoi_gian_da_hoc = $thoiGianDaHoc;
         $this->phan_tram_hoan_thanh = max(0, min(100, $phanTramHoanThanh));
 
         // Tự động chuyển trạng thái nếu tiến độ > 0
         if ($this->phan_tram_hoan_thanh > 0 && $this->trang_thai === 0) {
             $this->trang_thai = 1;
-            $this->ngay_bat_dau = $this->ngay_bat_dau ?? now();
         }
 
         // Tự động hoàn thành nếu đạt >= 95%
@@ -149,9 +139,7 @@ class TienDoBaiHoc extends Model
     {
         $this->update([
             'trang_thai'           => 0,
-            'thoi_gian_da_hoc'     => 0,
             'phan_tram_hoan_thanh' => 0,
-            'ngay_bat_dau'         => null,
             'ngay_hoan_thanh'      => null,
         ]);
     }

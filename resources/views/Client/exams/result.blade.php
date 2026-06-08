@@ -3,6 +3,37 @@
 
 @section('title', 'Kết quả – ' . $baiKiemTra->ten_bai)
 
+@push('styles')
+<style>
+    .scroll-top-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, var(--blue, #3b82f6), #1d4ed8);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+        transition: all 0.3s ease;
+        z-index: 100;
+    }
+    .scroll-top-btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    }
+    .scroll-top-btn.show {
+        display: flex;
+    }
+</style>
+@endpush
+
 @section('content')
 
 <div class="exam-result-page">
@@ -158,14 +189,21 @@
                                 @endif
                             </div>
                             @php
-                                $mucDoLabel = match($cauHoi->muc_do) { 1=>'Dễ', 3=>'Khó', default=>'Trung bình' };
+                                $mucDoLabel = match($cauHoi->muc_do) { 1=>'Nhận biết', 3=>'Vận dụng', default=>'Thông hiểu' };
                                 $mucDoClass = match($cauHoi->muc_do) { 1=>'easy', 3=>'hard', default=>'mid' };
                             @endphp
                             <span class="q-level level-{{ $mucDoClass }}">{{ $mucDoLabel }}</span>
                         </div>
 
                         {{-- Nội dung câu hỏi --}}
-                        <div class="result-q-content">{!! $cauHoi->noi_dung !!}</div>
+                        <div class="result-q-content">
+                            {!! $cauHoi->noi_dung !!}
+                            @if($cauHoi->hinh_anh)
+                                <div style="margin-top: 15px; text-align: center;">
+                                    <img src="{{ asset('storage/' . $cauHoi->hinh_anh) }}" style="max-height: 300px; max-width: 100%; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                </div>
+                            @endif
+                        </div>
 
                         {{-- Đáp án --}}
                         @if($cauHoi->loai_cau_hoi == 4)
@@ -287,5 +325,37 @@
     });
 @endif
 </script>
+
+<button class="scroll-top-btn" id="scrollTopBtn"><i class="fas fa-arrow-up"></i></button>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tô màu cú pháp code block bằng highlight.js
+        if (typeof hljs !== 'undefined') {
+            hljs.highlightAll();
+        }
+        
+        // Render công thức Toán học MathJax
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            MathJax.typesetPromise().catch((err) => console.log('MathJax error:', err));
+        }
+        
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        if (scrollTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    scrollTopBtn.classList.add('show');
+                } else {
+                    scrollTopBtn.classList.remove('show');
+                }
+            });
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    });
+</script>
+@endpush
 
 @endsection

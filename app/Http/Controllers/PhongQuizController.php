@@ -156,12 +156,16 @@ class PhongQuizController extends FrontendController
             ->where('ma_phong', $ma_phong)
             ->firstOrFail();
 
-        // Mark members as offline if they haven't polled in the last 6 seconds
-        $threshold = Carbon::now()->subSeconds(6);
-        ThanhVienPhong::where('phong_quiz_id', $room->id)
-            ->where('is_online', true)
-            ->where('updated_at', '<', $threshold)
-            ->update(['is_online' => false]);
+        // 1. Throttle marking offline members to run at most once every 5 seconds per room to prevent database write contention
+        $cleanupCacheKey = "room_status_cleanup_{$room->id}";
+        if (!cache()->has($cleanupCacheKey)) {
+            cache()->put($cleanupCacheKey, true, 5);
+            $threshold = Carbon::now()->subSeconds(6);
+            ThanhVienPhong::where('phong_quiz_id', $room->id)
+                ->where('is_online', true)
+                ->where('updated_at', '<', $threshold)
+                ->update(['is_online' => false]);
+        }
 
         if ($request->routeIs('admin.phongquiz.status')) {
             if ($room->chu_phong_id !== auth()->id() && (!auth()->check() || !auth()->user()->isSuperAdmin())) {
@@ -177,11 +181,14 @@ class PhongQuizController extends FrontendController
                 abort(403, 'Bạn cần tham gia phòng trước khi xem trạng thái.');
             }
 
-            // Update current user's last seen and online status
-            $member->update([
-                'is_online' => true,
-                'updated_at' => Carbon::now()
-            ]);
+            // 2. Throttle user online status update: only update DB if offline or last updated > 3s ago
+            $now = Carbon::now();
+            if (!$member->is_online || !$member->updated_at || Carbon::parse($member->updated_at)->diffInSeconds($now) > 3) {
+                $member->update([
+                    'is_online' => true,
+                    'updated_at' => $now
+                ]);
+            }
         }
 
         // 1. Lấy danh sách thành viên hiện tại cùng điểm số
@@ -201,6 +208,9 @@ class PhongQuizController extends FrontendController
                     'is_ready' => (bool)$m->is_ready,
                 ];
             });
+
+        $onlineNonHostMembers = $members->filter(fn($m) => $m['is_online'] && $m['user_id'] !== $room->chu_phong_id);
+        $allReady = $onlineNonHostMembers->count() > 0 && $onlineNonHostMembers->every(fn($m) => $m['is_ready']);
 
         // 2. Xử lý câu hỏi hiện tại nếu đang thi đấu
         $currentQuestion = null;
@@ -311,6 +321,7 @@ class PhongQuizController extends FrontendController
             'answer_stats' => $answerStats,
             'my_answer' => $myAnswerId,
             'my_answer_correct' => $myAnswerIsCorrect,
+            'all_ready' => $allReady,
         ]);
     }
 
@@ -519,6 +530,11 @@ class PhongQuizController extends FrontendController
             return back()->withErrors(['ma_phong' => 'Phòng chơi không tồn tại hoặc trận đấu đã kết thúc.']);
         }
 
+        if ($request->filled('ho_ten')) {
+            session(['quiz_nickname' => $request->ho_ten]);
+            cookie()->queue('quiz_nickname', $request->ho_ten, 2628000); // 5 years
+        }
+
         $userId = $this->getQuizUserId();
 
         // Check if member already exists
@@ -537,7 +553,7 @@ class PhongQuizController extends FrontendController
                 'biem_danh' => session('quiz_nickname'),
                 'tong_diem' => 0,
                 'so_cau_dung' => 0,
-                'is_ready' => true,
+                'is_ready' => false,
                 'is_online' => true,
             ]);
         } else {
@@ -797,7 +813,7 @@ class PhongQuizController extends FrontendController
             $since = Carbon::now()->startOfMonth();
         }
 
-        $query = ThanhVienPhong::select('thanh_vien_phong.user_id', DB::raw('SUM(thanh_vien_phong.tong_diem) as total_score'))
+        $query = ThanhVienPhong::select('thanh_vien_phong.user_id', DB::raw('SUM(thanh_vien_phong.tong_diem) as total_score'), DB::raw('COUNT(thanh_vien_phong.id) as total_matches'))
             ->join('users', 'thanh_vien_phong.user_id', '=', 'users.id');
 
         if ($since) {
@@ -817,7 +833,8 @@ class PhongQuizController extends FrontendController
             $name = $latestMember?->biem_danh ?: ($latestMember?->user?->ho_ten ?? 'Học sinh');
             return [
                 'name' => $name,
-                'score' => (int)$row->total_score
+                'score' => (int)$row->total_score,
+                'matches' => (int)$row->total_matches
             ];
         });
 
@@ -856,6 +873,21 @@ class PhongQuizController extends FrontendController
                 }
             }
         }
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Học sinh bấm sẵn sàng
+     */
+    public function clientReady($ma_phong)
+    {
+        $room = PhongQuiz::where('ma_phong', $ma_phong)->firstOrFail();
+        $userId = $this->getQuizUserId();
+        
+        ThanhVienPhong::where('phong_quiz_id', $room->id)
+            ->where('user_id', $userId)
+            ->update(['is_ready' => true]);
+            
         return response()->json(['success' => true]);
     }
 

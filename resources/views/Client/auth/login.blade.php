@@ -2,6 +2,47 @@
 
 @section('title', 'Đăng nhập - IT Study Support')
 
+@push('styles')
+<style>
+    /* Ẩn icon con mắt mặc định của trình duyệt Edge/Chrome để không bị trùng 2 con mắt */
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear {
+        display: none;
+    }
+
+    /* Đồng nhất thiết kế và responsive cho nút đăng nhập Google */
+    .login-form-panel .btn-social {
+        height: 54px !important;
+        border-radius: 14px !important;
+        border: 1.5px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        font-size: 15px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .login-form-panel .btn-social:hover {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    .login-form-panel .btn-social img {
+        width: 22px !important;
+        height: 22px !important;
+    }
+</style>
+@endpush
+
 @section('content')
     <div class="login-page">
         {{-- PHẦN TRÁI: ẢNH GIF --}}

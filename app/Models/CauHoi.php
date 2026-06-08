@@ -13,7 +13,7 @@ class CauHoi extends Model
     // Khai báo tên bảng chính xác
     protected $table = 'cau_hoi';
 
-    protected $fillable = ['chuong_hoc_id', 'nguoi_tao_id','bai_hoc_id', 'noi_dung', 'hinh_anh', 'goi_y', 'giai_thich', 'muc_do', 'loai_cau_hoi', 'so_lan_su_dung', 'ty_le_dung', 'trang_thai'];
+    protected $fillable = ['chuong_hoc_id', 'nguoi_tao_id','bai_hoc_id', 'noi_dung', 'hinh_anh', 'giai_thich', 'muc_do', 'loai_cau_hoi', 'so_lan_su_dung', 'ty_le_dung', 'trang_thai'];
 
     // Ép kiểu dữ liệu để xử lý logic trong code chuẩn hơn
     protected $casts = [
@@ -82,5 +82,35 @@ class CauHoi extends Model
 
         // Nếu là Admin thì xem tất cả
         return $query;
+    }
+
+    /**
+     * Cập nhật số lần sử dụng và tỷ lệ đúng của câu hỏi
+     * Hàm này được gọi mỗi khi học sinh nộp bài làm
+     * 
+     * @param bool $isCorrect Trả lời đúng hay sai
+     * @return void
+     */
+    public function updateStats(bool $isCorrect)
+    {
+        $oldUses = (int) ($this->so_lan_su_dung ?? 0);
+        $oldRate = (float) ($this->ty_le_dung ?? 0.0);
+        
+        // Tính tổng số lượt trả lời đúng hiện tại
+        $oldCorrects = ($oldRate / 100) * $oldUses;
+        
+        // Cộng dồn
+        $newUses = $oldUses + 1;
+        $newCorrects = $oldCorrects + ($isCorrect ? 1 : 0);
+        
+        // Tính tỷ lệ mới
+        $newRate = round(($newCorrects / $newUses) * 100, 2);
+        
+        // Tránh event/timestamp update không cần thiết nếu hệ thống quá tải, 
+        // nhưng ở đây cứ dùng update() mặc định cho đơn giản và an toàn.
+        $this->update([
+            'so_lan_su_dung' => $newUses,
+            'ty_le_dung' => $newRate
+        ]);
     }
 }

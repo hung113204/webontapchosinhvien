@@ -39,7 +39,7 @@
 
     <div class="stat-card stat-warning">
         <div class="stat-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                 <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -102,33 +102,90 @@
         <div class="card-header">
             <h3>Phân bố mức độ câu hỏi</h3>
         </div>
-        <div class="difficulty-stats">
-            <div class="difficulty-item">
-                <div class="difficulty-label">
-                    <span class="dot dot-easy"></span><span>Dễ</span>
+        <div class="difficulty-pie-chart" style="position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 10px;">
+            <svg viewBox="0 0 100 100" style="width: 200px; height: 200px; transform: rotate(-90deg); filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.04)); cursor: pointer;">
+                @php
+                    $r = 36;
+                    $c = 2 * M_PI * $r;
+                    
+                    $l_de = ($phanTramDe / 100) * $c;
+                    $l_tb = ($phanTramTb / 100) * $c;
+                    $l_kho = ($phanTramKho / 100) * $c;
+                @endphp
+                
+                <!-- Nền -->
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#f3f4f6" stroke-width="14" />
+                
+                <!-- Nhận biết -->
+                @if($phanTramDe > 0)
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#10b981" stroke-width="14"
+                        stroke-dasharray="{{ $l_de }} {{ $c }}" stroke-dashoffset="0"
+                        onmousemove="showChartTooltip(event, 'Nhận biết', '{{ $phanTramDe }}%', '#10b981')" 
+                        onmouseout="hideChartTooltip()" style="transition: stroke-width 0.2s;"></circle>
+                @endif
+                
+                <!-- Thông hiểu -->
+                @if($phanTramTb > 0)
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#f59e0b" stroke-width="14"
+                        stroke-dasharray="{{ $l_tb }} {{ $c }}" stroke-dashoffset="{{ -$l_de }}"
+                        onmousemove="showChartTooltip(event, 'Thông hiểu', '{{ $phanTramTb }}%', '#f59e0b')" 
+                        onmouseout="hideChartTooltip()" style="transition: stroke-width 0.2s;"></circle>
+                @endif
+                
+                <!-- Vận dụng -->
+                @if($phanTramKho > 0)
+                <circle cx="50" cy="50" r="36" fill="none" stroke="#ef4444" stroke-width="14"
+                        stroke-dasharray="{{ $l_kho }} {{ $c }}" stroke-dashoffset="{{ -($l_de + $l_tb) }}"
+                        onmousemove="showChartTooltip(event, 'Vận dụng', '{{ $phanTramKho }}%', '#ef4444')" 
+                        onmouseout="hideChartTooltip()" style="transition: stroke-width 0.2s;"></circle>
+                @endif
+            </svg>
+
+            <!-- Tooltip nổi -->
+            <div id="chart-custom-tooltip" style="position: fixed; background: #262626; color: white; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif; pointer-events: none; opacity: 0; transition: opacity 0.1s; z-index: 1000; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div id="tooltip-title" style="font-weight: 600;">Tiêu đề</div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span id="tooltip-color" style="width: 10px; height: 10px; display: inline-block;"></span>
+                    <span id="tooltip-value">0</span>
                 </div>
-                <div class="difficulty-bar">
-                    <div class="difficulty-fill" style="width: {{ $phanTramDe }}%"></div>
-                </div>
-                <div class="difficulty-value">{{ $phanTramDe }}%</div>
             </div>
-            <div class="difficulty-item">
-                <div class="difficulty-label">
-                    <span class="dot dot-medium"></span><span>Trung bình</span>
+
+            <script>
+                function showChartTooltip(e, title, value, color) {
+                    const tooltip = document.getElementById('chart-custom-tooltip');
+                    document.getElementById('tooltip-title').innerText = title;
+                    document.getElementById('tooltip-value').innerText = value;
+                    document.getElementById('tooltip-color').style.background = color;
+                    
+                    tooltip.style.opacity = '1';
+                    tooltip.style.left = (e.clientX + 15) + 'px';
+                    tooltip.style.top = (e.clientY + 15) + 'px';
+                    
+                    // Hiệu ứng hover dày lên
+                    e.target.style.strokeWidth = '18';
+                }
+                function hideChartTooltip() {
+                    document.getElementById('chart-custom-tooltip').style.opacity = '0';
+                    // Reset độ dày
+                    document.querySelectorAll('.difficulty-pie-chart svg circle:not(:first-child)').forEach(c => {
+                        c.style.strokeWidth = '14';
+                    });
+                }
+            </script>
+
+            <div class="difficulty-legend" style="display: flex; gap: 16px; margin-top: 30px; width: 100%; justify-content: center; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: #f0fdf4; border-radius: 20px; border: 1px solid #bbf7d0;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                    <span style="font-size: 13px; font-weight: 600; color: #166534;">Nhận biết ({{ $phanTramDe }}%)</span>
                 </div>
-                <div class="difficulty-bar">
-                    <div class="difficulty-fill" style="width: {{ $phanTramTb }}%"></div>
+                <div style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: #fffbeb; border-radius: 20px; border: 1px solid #fde68a;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                    <span style="font-size: 13px; font-weight: 600; color: #92400e;">Thông hiểu ({{ $phanTramTb }}%)</span>
                 </div>
-                <div class="difficulty-value">{{ $phanTramTb }}%</div>
-            </div>
-            <div class="difficulty-item">
-                <div class="difficulty-label">
-                    <span class="dot dot-hard"></span><span>Khó</span>
+                <div style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: #fef2f2; border-radius: 20px; border: 1px solid #fecaca;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
+                    <span style="font-size: 13px; font-weight: 600; color: #991b1b;">Vận dụng ({{ $phanTramKho }}%)</span>
                 </div>
-                <div class="difficulty-bar">
-                    <div class="difficulty-fill" style="width: {{ $phanTramKho }}%"></div>
-                </div>
-                <div class="difficulty-value">{{ $phanTramKho }}%</div>
             </div>
         </div>
     </div>

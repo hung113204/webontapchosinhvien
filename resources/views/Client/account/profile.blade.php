@@ -7,7 +7,7 @@
         <div class="container">
             <div class="profile-grid-layout">
 
-                <div class="profile-sidebar-card">
+                <!-- <div class="profile-sidebar-card">
                     <div class="ps-nav-group">
                         <div class="ps-nav-title">Tài khoản</div>
                         <a href="#" class="ps-nav-link active">Thông tin cá nhân</a>
@@ -19,7 +19,8 @@
                         <div class="ps-nav-title" style="padding-top: 15px;">Hỗ trợ</div>
                         <a href="#" class="ps-nav-link">Đánh giá/góp ý của tôi</a>
                     </div>
-                </div>
+                </div> -->
+                @include('Client.account.partials.sidebar')
 
                 <div class="profile-main-area">
 
@@ -158,7 +159,7 @@
                                 <div class="p-form-group mb-24">
                                     <label class="p-form-label">Ghi chú / Giới thiệu</label>
                                     <textarea name="ghi_chu" rows="4" placeholder="Thông tin thêm (nếu có)" class="p-form-input"
-                                        style="resize: vertical;"></textarea>
+                                        style="resize: vertical;">{{ Auth::user()->ghi_chu }}</textarea>
                                 </div>
 
                                 <div class="p-card-footer">

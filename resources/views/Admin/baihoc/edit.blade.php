@@ -190,7 +190,7 @@
                                     @foreach($mon->chuongHocs as $chuong)
                                         <option value="{{ $chuong->id }}"
                                             {{ old('chuong_hoc_id', $baiHoc->chuong_hoc_id ?? '') == $chuong->id ? 'selected' : '' }}>
-                                            Chương {{ $chuong->thu_tu }}: {{ $chuong->ten_chuong }}
+                                            {{ $chuong->ten_chuong }}
                                         </option>
                                     @endforeach
                                 </optgroup>
@@ -201,16 +201,54 @@
                         @enderror
                     </div>
 
+                    @php
+                        $isVideoFile = false;
+                        if (old('video_source') === 'file') {
+                            $isVideoFile = true;
+                        } elseif (old('video_source') === 'url') {
+                            $isVideoFile = false;
+                        } elseif (isset($baiHoc) && !empty($baiHoc->video_url)) {
+                            $isVideoFile = !str_contains($baiHoc->video_url, 'youtube.com') && !str_contains($baiHoc->video_url, 'youtu.be') && !str_contains($baiHoc->video_url, 'vimeo.com');
+                        }
+                    @endphp
+
                     <div class="bf-form-group">
-                        <label class="bf-label">Link Video (Tùy chọn)</label>
-                        <input type="text"
-                               name="video_url"
-                               class="bf-input {{ $errors->has('video_url') ? 'is-invalid' : '' }}"
-                               value="{{ old('video_url', $baiHoc->video_url ?? '') }}"
-                               placeholder="URL Youtube / Vimeo...">
-                        @error('video_url')
-                            <div class="bf-error-message">{{ $message }}</div>
-                        @enderror
+                        <label class="bf-label">Video bài học (Tùy chọn)</label>
+                        
+                        <div style="margin-bottom: 10px; display: flex; gap: 15px;">
+                            <label style="font-weight: 500; font-size: 0.85rem; color: #475569; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="video_source" value="url" id="video_source_url" {{ !$isVideoFile ? 'checked' : '' }} onclick="toggleVideoInput('url')"> Link Video (YouTube / Vimeo)
+                            </label>
+                            <label style="font-weight: 500; font-size: 0.85rem; color: #475569; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="video_source" value="file" id="video_source_file" {{ $isVideoFile ? 'checked' : '' }} onclick="toggleVideoInput('file')"> Tải lên file video
+                            </label>
+                        </div>
+
+                        <div id="video_url_container" style="{{ !$isVideoFile ? 'display: block;' : 'display: none;' }}">
+                            <input type="text" name="video_url" id="video_url_input"
+                                   class="bf-input {{ $errors->has('video_url') ? 'is-invalid' : '' }}"
+                                   value="{{ !$isVideoFile ? old('video_url', $baiHoc->video_url ?? '') : '' }}"
+                                   placeholder="URL Youtube, Vimeo hoặc link video trực tiếp...">
+                            @error('video_url')
+                                <div class="bf-error-message">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div id="video_file_container" style="{{ $isVideoFile ? 'display: block;' : 'display: none;' }} margin-top: 5px;">
+                            <input type="file" name="video_file" id="video_file_input" accept="video/*"
+                                   class="bf-input {{ $errors->has('video_file') ? 'is-invalid' : '' }}"
+                                   style="padding: 7px;">
+                            @if(isset($baiHoc) && !empty($baiHoc->video_url) && $isVideoFile)
+                                <div class="bf-file-existing" style="margin-top: 8px; font-size: 0.85rem; color: #10b981; display: flex; align-items: center; gap: 5px;">
+                                    <i class="fas fa-play-circle" style="color: #3b82f6;"></i> Video hiện tại: 
+                                    <a href="{{ asset('storage/' . $baiHoc->video_url) }}" target="_blank" style="color: var(--blue); text-decoration: underline;">{{ basename($baiHoc->video_url) }}</a>
+                                </div>
+                            @endif
+                            <small style="font-size: 0.8rem; color: #64748b; display: block; margin-top: 4px;">Hỗ trợ định dạng: mp4, webm, ogg, avi, mov. Dung lượng tối đa: 100MB.</small>
+                            @error('video_file')
+                                <div class="bf-error-message">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="bf-form-group">
@@ -292,22 +330,90 @@
         </div>
     </form>
 
+    {{-- PHẦN QUẢN LÝ CÂU HỎI CỦA BÀI HỌC --}}
+    <hr style="border-top: 1px solid #e2e8f0; margin: 30px 0;">
+    
+    <div class="bf-card" style="margin-top: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h4 class="bf-card-title" style="margin: 0;">
+                <i class="fas fa-question-circle" style="color: var(--warning);"></i>
+                Danh sách câu hỏi luyện tập của bài học
+            </h4>
+            <button type="button" class="btn btn-primary" onclick="openAddQuestionModal()" style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-plus"></i> Thêm câu hỏi từ ngân hàng
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                        <th style="padding: 12px;">ID</th>
+                        <th style="padding: 12px;">Nội dung câu hỏi</th>
+                        <th style="padding: 12px;">Mức độ</th>
+                        <th style="padding: 12px; width: 100px; text-align: center;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($baiHoc->cauHois as $cauHoi)
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 12px;">#{{ $cauHoi->id }}</td>
+                            <td style="padding: 12px;">
+                                {!! Str::limit(strip_tags($cauHoi->noi_dung), 100) !!}
+                            </td>
+                            <td style="padding: 12px;">
+                                @php
+                                    $badges = [1 => 'badge-easy', 2 => 'badge-medium', 3 => 'badge-hard'];
+                                    $labels = [1 => 'Nhận biết', 2 => 'Thông hiểu', 3 => 'Vận dụng'];
+                                @endphp
+                                <span class="badge {{ $badges[$cauHoi->muc_do] ?? 'badge-draft' }}">
+                                    {{ $labels[$cauHoi->muc_do] ?? 'N/A' }}
+                                </span>
+                            </td>
+                            <td style="padding: 12px; text-align: center;">
+                                <button type="button" class="btn-action btn-delete" style="color: #ef4444; background: none; border: none; cursor: pointer;" title="Gỡ khỏi bài học" onclick="removeQuestion({{ $cauHoi->id }})">
+                                    <i class="fas fa-unlink"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 30px; color: #64748b;">
+                                Bài học này chưa có câu hỏi nào.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
+
+{{-- MODAL THÊM CÂU HỎI TỪ NGÂN HÀNG --}}
+<div id="modalAddQuestions" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="modal-card" style="background: white; border-radius: 12px; width: 90%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column;">
+        <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 18px; color: #1e293b;">Chọn câu hỏi từ ngân hàng (Chương: {{ $baiHoc->chuongHoc->ten_chuong ?? '' }})</h3>
+            <button type="button" onclick="closeAddQuestionModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b;">&times;</button>
+        </div>
+        <div class="modal-body" style="padding: 20px; overflow-y: auto; flex: 1;">
+            <div id="loadingQuestions" style="text-align: center; padding: 20px; display: none;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #4f46e5;"></i> Đang tải...
+            </div>
+            <div id="availableQuestionsList"></div>
+        </div>
+        <div class="modal-footer" style="padding: 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" onclick="closeAddQuestionModal()" style="padding: 10px 20px; border-radius: 6px; border: 1px solid #e2e8f0; background: white; cursor: pointer;">Hủy</button>
+            <button type="button" class="btn btn-primary" onclick="assignSelectedQuestions()" style="padding: 10px 20px; border-radius: 6px; border: none; background: #4f46e5; color: white; cursor: pointer;">Thêm vào bài học</button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
-<script>
-    // Load CKEditor nếu chưa load
-    (function() {
-        if (typeof ClassicEditor === 'undefined') {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js';
-            script.async = false;
-            document.head.appendChild(script);
-        }
-    })();
-</script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
     function processLatexBaiHoc(content) {
         if (!content) return content;
@@ -317,35 +423,53 @@
         return processed;
     }
 
+    function toggleVideoInput(source) {
+        const urlContainer = document.getElementById('video_url_container');
+        const fileContainer = document.getElementById('video_file_container');
+        const urlInput = document.getElementById('video_url_input');
+        const fileInput = document.getElementById('video_file_input');
+        
+        if (source === 'url') {
+            if (urlContainer) urlContainer.style.display = 'block';
+            if (fileContainer) fileContainer.style.display = 'none';
+            if (fileInput) fileInput.value = '';
+        } else {
+            if (urlContainer) urlContainer.style.display = 'none';
+            if (fileContainer) fileContainer.style.display = 'block';
+            if (urlInput) urlInput.value = '';
+        }
+    }
+
     window.addEventListener('load', function () {
+        // Khởi tạo trạng thái video ban đầu
+        const isVideoFile = @json($isVideoFile ?? false);
+        if (isVideoFile) {
+            const radioFile = document.getElementById('video_source_file');
+            if (radioFile) radioFile.checked = true;
+            toggleVideoInput('file');
+        } else {
+            const radioUrl = document.getElementById('video_source_url');
+            if (radioUrl) radioUrl.checked = true;
+            toggleVideoInput('url');
+        }
 
-        const editorConfig = {
-            toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', 'insertTable', '|', 'bulletedList', 'numberedList', '|', 'undo', 'redo'],
-            language: 'vi',
-            htmlSupport: { allow: [{ name: /.*/, attributes: true, classes: true, styles: true }] }
-        };
-
-        ClassicEditor
-            .create(document.querySelector('#editor-bai-hoc'), editorConfig)
-            .then(editor => {
-
-                editor.editing.view.document.on('clipboardInput', (evt, data) => {
-                    const html = data.dataTransfer.getData('text/html') || data.dataTransfer.getData('text/plain');
-                    if (html) {
-                        data.dataTransfer.setData('text/html', processLatexBaiHoc(html));
-                    }
-                });
-
-                editor.model.document.on('change:data', () => {
+        tinymce.init({
+            selector: '#editor-bai-hoc',
+            plugins: 'codesample code lists link table image',
+            toolbar: 'blocks | bold italic | alignleft aligncenter alignright alignjustify | codesample code | bullist numlist | link table image | undo redo',
+            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:15px } table { border-collapse: collapse; width: 100%; margin: 10px 0; border: 1px solid #e2e8f0; } table th, table td { border: 1px solid #e2e8f0; padding: 10px; } table th { background-color: #f8fafc; font-weight: bold; } table td img { max-width: 100%; height: auto; display: block; margin: 0 auto; }',
+            setup: function (editor) {
+                editor.on('change', function () {
+                    editor.save();
                     setTimeout(() => window.MathJax?.typesetPromise?.(), 100);
                 });
+            }
+        });
 
-                document.getElementById('baiHocForm').addEventListener('submit', () => {
-                    let content = editor.getData();
-                    document.querySelector('#editor-bai-hoc').value = processLatexBaiHoc(content);
-                });
-            })
-            .catch(err => console.error('CKEditor Error:', err));
+        document.getElementById('baiHocForm').addEventListener('submit', () => {
+            let content = tinymce.get('editor-bai-hoc').getContent();
+            document.querySelector('#editor-bai-hoc').value = processLatexBaiHoc(content);
+        });
 
         // Thêm / Xóa giải thích code
         const btnAdd = document.getElementById('btnAddExplain');
@@ -373,5 +497,123 @@
             });
         }
     });
+
+    // --- CÁC HÀM XỬ LÝ GÁN CÂU HỎI ---
+    const baiHocId = {{ $baiHoc->id }};
+    const chuongHocId = {{ $baiHoc->chuong_hoc_id ?? 'null' }};
+
+    function openAddQuestionModal() {
+        document.getElementById('modalAddQuestions').style.display = 'flex';
+        document.getElementById('loadingQuestions').style.display = 'block';
+        document.getElementById('availableQuestionsList').innerHTML = '';
+
+        fetch(`{{ route('admin.baihoc.api.available-questions') }}?bai_hoc_id=${baiHocId}&chuong_hoc_id=${chuongHocId}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('loadingQuestions').style.display = 'none';
+                if(data.success) {
+                    let html = '';
+                    if(data.data.length === 0) {
+                        html = '<div style="text-align: center; color: #64748b;">Không có câu hỏi nào trong chương này hoặc tất cả đã được gán.</div>';
+                    } else {
+                        html = `<table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 10px; width: 50px; text-align: center;"><input type="checkbox" id="selectAllModal" onchange="toggleSelectAllModal(this)"></th>
+                                    <th style="padding: 10px; text-align: left;">Nội dung</th>
+                                    <th style="padding: 10px; width: 100px; text-align: left;">Mức độ</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                        data.data.forEach(q => {
+                            let stripText = document.createElement('div');
+                            stripText.innerHTML = q.noi_dung;
+                            let text = stripText.innerText || stripText.textContent;
+                            text = text.length > 80 ? text.substring(0, 80) + '...' : text;
+                            
+                            html += `
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 10px; text-align: center;">
+                                        <input type="checkbox" class="modal-q-checkbox" value="${q.id}">
+                                    </td>
+                                    <td style="padding: 10px;">#${q.id} - ${text}</td>
+                                    <td style="padding: 10px;">${q.muc_do == 1 ? 'Nhận biết' : (q.muc_do == 2 ? 'Thông hiểu' : 'Vận dụng')}</td>
+                                </tr>`;
+                        });
+                        html += `</tbody></table>`;
+                    }
+                    document.getElementById('availableQuestionsList').innerHTML = html;
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(err => {
+                document.getElementById('loadingQuestions').style.display = 'none';
+                console.error(err);
+            });
+    }
+
+    function closeAddQuestionModal() {
+        document.getElementById('modalAddQuestions').style.display = 'none';
+    }
+
+    function toggleSelectAllModal(source) {
+        let checkboxes = document.querySelectorAll('.modal-q-checkbox');
+        for(var i=0, n=checkboxes.length;i<n;i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+
+    function assignSelectedQuestions() {
+        let checkboxes = document.querySelectorAll('.modal-q-checkbox:checked');
+        let ids = Array.from(checkboxes).map(cb => cb.value);
+        if(ids.length === 0) {
+            alert('Vui lòng chọn ít nhất 1 câu hỏi.');
+            return;
+        }
+
+        fetch(`{{ route('admin.baihoc.api.assign-questions') }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                bai_hoc_id: baiHocId,
+                cau_hoi_ids: ids
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                location.reload();
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        });
+    }
+
+    function removeQuestion(cauHoiId) {
+        if(!confirm('Bạn có chắc muốn gỡ câu hỏi này khỏi bài học?')) return;
+
+        fetch(`{{ route('admin.baihoc.api.remove-question') }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                cau_hoi_id: cauHoiId
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                location.reload();
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        });
+    }
 </script>
 @endpush

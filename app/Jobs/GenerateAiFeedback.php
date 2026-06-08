@@ -182,18 +182,22 @@ Trả về JSON: {\"is_correct\": boolean, \"feedback\": \"Chuỗi nhận xét c
         $tongSoCau = $ketQua->tong_so_cau;
         $phanTramDung = $tongSoCau > 0 ? round(($soCauDung / $tongSoCau) * 100, 2) : 0;
 
-        // Lấy danh sách các chương học sinh làm sai
-        $chuongSai = [];
+        // Lấy chi tiết các câu học sinh làm sai
+        $chiTietSai = [];
         foreach ($ketQua->chiTietBaiLam as $chiTiet) {
             // Câu tự luận (loại 4) chưa chấm tự động cũng sẽ lấy từ chiTietBaiLam
             if (!$chiTiet->is_correct && $chiTiet->cauHoi && $chiTiet->cauHoi->chuongHoc) {
                 $tenChuong = trim($chiTiet->cauHoi->chuongHoc->ten_chuong);
-                if (!empty($tenChuong) && !in_array($tenChuong, $chuongSai)) {
-                    $chuongSai[] = $tenChuong;
+                $tyLeDung = $chiTiet->cauHoi->ty_le_dung ?? 0;
+                
+                if (!empty($tenChuong)) {
+                    $chiTietSai[] = "- Thuộc chương: {$tenChuong} (Tỷ lệ học sinh toàn hệ thống làm đúng câu này: {$tyLeDung}%)";
                 }
             }
         }
-        $chuongSaiText = count($chuongSai) > 0 ? implode(', ', $chuongSai) : 'Không có';
+        // Loại bỏ trùng lặp nếu có quá nhiều câu cùng một chương có cùng tỷ lệ, 
+        // hoặc cứ để nguyên để AI thấy số lượng câu sai. Ở đây cứ để nguyên để AI đếm được.
+        $chuongSaiText = count($chiTietSai) > 0 ? implode("\n", $chiTietSai) : 'Không có';
 
         if ($isEnglish) {
             $prompt = "You are an English language instructor. Write a concise feedback in English (150-200 words) for the student:
@@ -225,15 +229,16 @@ Yêu cầu: Đánh giá kết quả, thái độ, động viên, khuyên cải t
 - Đúng: {$soCauDung}/{$tongSoCau} ({$phanTramDung}%)
 - Thời gian: {$ketQua->tong_thoi_gian_lam}
 - Vi phạm tab: {$ketQua->so_lan_vi_pham_tab} lần
-- Các phần kiến thức/chương làm sai cần ôn lại: {$chuongSaiText}
+- Các phần kiến thức/chương làm sai cần ôn lại chi tiết như sau:
+{$chuongSaiText}
 
 Yêu cầu bắt buộc:
 1. Toàn bộ nhận xét phải bằng tiếng Việt, không dùng tiếng Anh.
 2. Mở đầu bằng đánh giá kết quả học tập dựa trên điểm và số câu đúng.
-3. Nêu rõ điểm mạnh và phần cần cải thiện. Nếu có chương làm sai, phải chỉ đích danh các chương đó và khuyên sinh viên ôn tập lại nội dung của những chương này.
-4. Đưa ra 2-3 gợi ý học tiếp thật cụ thể.
+3. Dựa vào 'Tỷ lệ học sinh toàn hệ thống làm đúng', hãy phân tích sâu: Nếu sinh viên sai nhiều câu có tỷ lệ đúng cao (>60%), chứng tỏ sinh viên đang hổng kiến thức căn bản. Nếu sai câu có tỷ lệ đúng thấp (<40%), hãy động viên vì đó là câu khó.
+4. Chỉ đích danh các chương học sinh làm sai và đưa ra 2-3 gợi ý học tiếp thật cụ thể.
 5. Nếu có vi phạm tab, nhắc nhở nghiêm túc nhưng lịch sự.
-6. Không dùng markdown, không dùng tiêu đề dài, không liệt kê quá máy móc.";
+6. Không dùng markdown, không dùng tiêu đề dài, không liệt kê quá máy móc. Đóng vai cố vấn thân thiện.";
         $systemRole = "Bạn là cố vấn học tập. Luôn trả lời bằng tiếng Việt tự nhiên, rõ ràng và phù hợp với học sinh/sinh viên Việt Nam.";
 
         try {

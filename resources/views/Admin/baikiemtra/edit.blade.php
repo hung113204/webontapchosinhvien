@@ -231,6 +231,14 @@
                     </div>
 
                     <div class="form-group" style="grid-column: span 2;">
+                        <label>Mô tả bài kiểm tra</label>
+                        <textarea name="mo_ta" id="mo_ta" class="form-input"
+                            placeholder="VD: Bài kiểm tra giữa kỳ, bao gồm các câu hỏi về..."
+                            rows="3" style="resize: vertical;">{{ old('mo_ta', $baiKiemTra->mo_ta) }}</textarea>
+                        <span class="form-help">Không bắt buộc. Mô tả sẽ hiển thị với sinh viên trước khi vào thi.</span>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
                         <label>Chương học áp dụng <span class="required">*</span></label>
                         <div class="multi-select-container">
                             <div class="tags-wrapper" id="selected-chapters"></div>
@@ -339,12 +347,10 @@
                 <div class="form-actions" style="margin-top: 32px; display: flex; gap: 12px; justify-content: flex-end;">
                     <a href="{{ route('admin.baikiemtra.index') }}" class="btn btn-secondary">Hủy bỏ</a>
 
-                    @if ($baiKiemTra->tu_dong_lay_de == 0)
-                        <button type="button" id="btn-edit-questions" class="btn btn-primary"
-                            style="background: #8b5cf6;">
-                            Sửa danh sách câu hỏi
-                        </button>
-                    @endif
+                    <button type="button" id="btn-edit-questions" class="btn btn-primary"
+                        style="background: #8b5cf6;">
+                        Sửa danh sách câu hỏi
+                    </button>
 
                     <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                 </div>
@@ -380,7 +386,7 @@
                                             : ($cauHoi->muc_do == 2
                                                 ? 'badge-medium'
                                                 : 'badge-hard');
-                                    $badgeText = $cauHoi->muc_do == 1 ? 'Dễ' : ($cauHoi->muc_do == 2 ? 'TB' : 'Khó');
+                                    $badgeText = $cauHoi->muc_do == 1 ? 'Nhận biết' : ($cauHoi->muc_do == 2 ? 'Thông hiểu' : 'Vận dụng');
                                 @endphp
                                 <span class="badge {{ $badgeClass }}">{{ $badgeText }}</span>
                             </div>
@@ -398,9 +404,7 @@
                         <p style="margin: 0; font-size: 14px; color: #6b7280;">
                             Chưa có câu hỏi nào
                         </p>
-                        @if ($baiKiemTra->tu_dong_lay_de == 0)
-                            <small style="color: #9ca3af;">Click "Sửa danh sách câu hỏi" để thêm</small>
-                        @endif
+                        <small style="color: #9ca3af;">Click "Sửa danh sách câu hỏi" để thêm</small>
                     </div>
                 @endif
             </div>

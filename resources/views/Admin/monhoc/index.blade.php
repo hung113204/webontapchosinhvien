@@ -363,6 +363,10 @@
                     document.getElementById('input_so_tin_chi').value = "3";
                     form.action = "{{ route('admin.monhoc.storeOrUpdate') }}";
 
+                    // Reset checkboxes danh mục
+                    document.querySelectorAll('.danh-muc-checkbox').forEach(cb => cb.checked = false);
+                    updateMultiselectLabel();
+
                     // Ẩn preview image
                     const imagePreview = document.getElementById('image_preview');
                     if (imagePreview) imagePreview.style.display = 'none';
@@ -402,6 +406,16 @@
                 document.getElementById('input_icon_class').value = data.icon_class || '';
                 document.getElementById('input_is_featured').checked = !!data.is_featured;
                 document.getElementById('input_is_popular').checked = !!data.is_popular;
+
+                // Reset checkboxes danh mục & Check các danh mục đã chọn
+                document.querySelectorAll('.danh-muc-checkbox').forEach(cb => cb.checked = false);
+                if (data.danh_muc_trang_chus) {
+                    data.danh_muc_trang_chus.forEach(dm => {
+                        const cb = document.getElementById('dm_cb_' + dm.id);
+                        if (cb) cb.checked = true;
+                    });
+                }
+                updateMultiselectLabel();
 
                 // Set radio trạng thái
                 document.querySelectorAll('input[name="trang_thai"]').forEach(radio => {
@@ -559,5 +573,68 @@
                 })
                 .catch(() => alert('Có lỗi kết nối!'));
         }
+
+        // ===== CUSTOM MULTISELECT DROPDOWN =====
+        function toggleMultiselect(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('multiselectDropdown');
+            const icon = document.querySelector('#multiselectSelect i');
+            const selectBox = document.getElementById('multiselectSelect');
+            
+            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                dropdown.style.display = 'block';
+                if (icon) icon.style.transform = 'rotate(180deg)';
+                if (selectBox) {
+                    selectBox.style.borderColor = '#4f46e5';
+                    selectBox.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
+                }
+            } else {
+                dropdown.style.display = 'none';
+                if (icon) icon.style.transform = 'rotate(0deg)';
+                if (selectBox) {
+                    selectBox.style.borderColor = '#cbd5e1';
+                    selectBox.style.boxShadow = 'none';
+                }
+            }
+        }
+
+        function updateMultiselectLabel() {
+            const checkboxes = document.querySelectorAll('.danh-muc-checkbox');
+            const placeholder = document.getElementById('multiselectPlaceholder');
+            let selectedTitles = [];
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const labelText = cb.nextElementSibling.textContent.trim();
+                    selectedTitles.push(labelText);
+                }
+            });
+
+            if (placeholder) {
+                if (selectedTitles.length > 0) {
+                    placeholder.textContent = selectedTitles.join(', ');
+                    placeholder.style.color = '#1e293b';
+                    placeholder.style.fontWeight = '500';
+                } else {
+                    placeholder.textContent = 'Chọn danh mục...';
+                    placeholder.style.color = '#64748b';
+                    placeholder.style.fontWeight = 'normal';
+                }
+            }
+        }
+
+        // Đóng dropdown khi click ngoài
+        document.addEventListener('click', function (e) {
+            const dropdown = document.getElementById('multiselectDropdown');
+            const selectBox = document.getElementById('multiselectSelect');
+            const icon = document.querySelector('#multiselectSelect i');
+            
+            if (dropdown && selectBox && !selectBox.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+                if (icon) icon.style.transform = 'rotate(0deg)';
+                selectBox.style.borderColor = '#cbd5e1';
+                selectBox.style.boxShadow = 'none';
+            }
+        });
     </script>
 @endsection

@@ -34,6 +34,37 @@
 @endsection
 
 @section('content')
+    <style>
+        .paper-q-text pre, .q-content pre, .paper-answers pre, .q-select-item pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13.5px;
+            line-height: 1.5;
+            margin: 12px 0;
+            white-space: pre-wrap;
+        }
+        .paper-q-text code, .q-content code, .paper-answers code, .q-select-item code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13.5px;
+        }
+        .paper-q-text pre code, .q-content pre code, .paper-answers pre code, .q-select-item pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+    </style>
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <form action="{{ route('admin.baikiemtra.save') }}" method="POST" id="exam-form">
         @csrf
         {{-- Các hidden input giữ nguyên để đảm bảo logic lưu trữ --}}
@@ -70,9 +101,9 @@
                         </select>
                         <select class="form-select" id="filter-muc-do">
                             <option value="">Tất cả mức độ</option>
-                            <option value="1">Dễ</option>
-                            <option value="2">Trung bình</option>
-                            <option value="3">Khó</option>
+                            <option value="1">Nhận biết</option>
+                            <option value="2">Thông hiểu</option>
+                            <option value="3">Vận dụng</option>
                         </select>
                     </div>
                 </div>
@@ -94,7 +125,7 @@
                         <label class="q-select-label" for="q1">
                             <div class="q-content">
                                 <p>Nội dung câu hỏi...</p>
-                                <span class="badge badge-easy">Dễ</span>
+                                <span class="badge badge-easy">Nhận biết</span>
                             </div>
                         </label>
                     </div> --}}
@@ -115,15 +146,15 @@
                         </div>
                         <div class="stat-divider"></div>
                         <div class="stat-item">
-                            <span class="stat-label">DỄ:</span>
+                            <span class="stat-label">NHẬN BIẾT:</span>
                             <span class="stat-value stat-easy" id="easy-count">0</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">TB:</span>
+                            <span class="stat-label">THÔNG HIỂU:</span>
                             <span class="stat-value stat-medium" id="medium-count">0</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">KHÓ:</span>
+                            <span class="stat-label">VẬN DỤNG:</span>
                             <span class="stat-value stat-hard" id="hard-count">0</span>
                         </div>
                     </div>
@@ -238,7 +269,7 @@
                                     window.selectedQuestions = window.formData.cau_hois;
                                     normalizeSelectedQuestions();
                                     updatePreview(); // Vẽ lại tờ giấy thi bên phải
-                                    updateStats(); // Cập nhật số lượng câu Dễ/TB/Khó
+                                    updateStats(); // Cập nhật số lượng câu Nhận biết/Thông hiểu/Vận dụng
                                     updateHiddenInput(); // Cập nhật ID câu hỏi vào input để submit
                                 }
 
@@ -347,6 +378,11 @@
                         container.append(html);
                     });
                     attachEvents();
+                    
+                    // Render MathJax for equations
+                    if (window.MathJax && window.MathJax.typesetPromise) {
+                        window.MathJax.typesetPromise();
+                    }
                 };
 
                 function attachEvents() {
@@ -387,13 +423,13 @@
                         window.selectedQuestions.forEach((q, i) => {
                             // Xác định class mức độ dựa trên dữ liệu [cite: 3, 5]
                             let badgeClass = 'badge-easy';
-                            let badgeText = 'Dễ';
+                            let badgeText = 'Nhận biết';
                             if (q.muc_do == 2) {
                                 badgeClass = 'badge-medium';
-                                badgeText = 'TB';
+                                badgeText = 'Thông hiểu';
                             } else if (q.muc_do == 3) {
                                 badgeClass = 'badge-hard';
-                                badgeText = 'Khó';
+                                badgeText = 'Vận dụng';
                             }
 
                             // Render danh sách đáp án sử dụng class .paper-answers 
@@ -441,6 +477,11 @@
                         });
                     }
                     updateStats();
+                    
+                    // Render MathJax for equations
+                    if (window.MathJax && window.MathJax.typesetPromise) {
+                        window.MathJax.typesetPromise();
+                    }
                 };
 
                 // Hàm bổ trợ để xóa câu hỏi khi nhấn nút X
@@ -470,7 +511,7 @@
                 };
 
                 function getMucDoText(md) {
-                    return md == 1 ? 'Dễ' : (md == 2 ? 'Trung bình' : 'Khó');
+                    return md == 1 ? 'Nhận biết' : (md == 2 ? 'Thông hiểu' : 'Vận dụng');
                 }
 
                 function loadChaptersToFilter(questions) {
@@ -512,28 +553,62 @@
 
                     updateHiddenInput(); // Cập nhật cau_hoi_ids
 
-                    if (confirm('✅ Bạn có chắc chắn muốn lưu đề thi này?')) {
-                        // Nên dùng AJAX để thấy lỗi nếu có
-                        const formData = new FormData(document.getElementById('exam-form'));
-                        $.ajax({
-                            url: $('#exam-form').attr('action'),
-                            method: 'POST',
-                            data: formData,
-                            processData: false,
-                            contentType: false,
-                            success: function(res) {
-                                if (res.success) {
-                                    alert('Lưu thành công!');
-                                    window.location.href = res.redirect;
+                    Swal.fire({
+                        title: 'Xác nhận lưu',
+                        text: "Bạn có chắc chắn muốn lưu đề thi này?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#8b5cf6',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy bỏ'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                text: 'Vui lòng chờ trong giây lát',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
                                 }
-                            },
-                            error: function(xhr) {
-                                // Hiển thị lỗi Validation từ BaiKiemTraRequest
-                                const errors = xhr.responseJSON.errors;
-                                alert('Lỗi: ' + Object.values(errors).flat().join('\n'));
-                            }
-                        });
-                    }
+                            });
+
+                            const formData = new FormData(document.getElementById('exam-form'));
+                            $.ajax({
+                                url: $('#exam-form').attr('action'),
+                                method: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function(res) {
+                                    if (res.success) {
+                                        Swal.fire({
+                                            title: 'Thành công!',
+                                            text: 'Đề thi đã được lưu thành công.',
+                                            icon: 'success',
+                                            confirmButtonColor: '#10b981'
+                                        }).then(() => {
+                                            window.location.href = res.redirect;
+                                        });
+                                    }
+                                },
+                                error: function(xhr) {
+                                    let errorMsg = 'Có lỗi xảy ra trong quá trình lưu.';
+                                    if(xhr.responseJSON && xhr.responseJSON.errors) {
+                                        errorMsg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                                    } else if(xhr.responseJSON && xhr.responseJSON.message) {
+                                        errorMsg = xhr.responseJSON.message;
+                                    }
+                                    Swal.fire({
+                                        title: 'Lỗi!',
+                                        text: errorMsg,
+                                        icon: 'error',
+                                        confirmButtonColor: '#ef4444'
+                                    });
+                                }
+                            });
+                        }
+                    });
                 };
 
                 // GẮN SỰ KIỆN FILTER

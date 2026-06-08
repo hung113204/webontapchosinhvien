@@ -27,7 +27,11 @@
         border-radius: 0 !important;
         min-height: 100vh !important;
         overflow-y: auto;
+        display: flex;
+        flex-direction: column;
     }
+    :fullscreen .qv-main-panel > *:not(.qv-user-wrapper):not(.qv-modal-overlay):not(script):not(style) { margin-top: auto !important; margin-bottom: auto !important; }
+    :fullscreen .qv-user-wrapper { position: absolute; top: 24px; right: 40px; margin: 0; }
     /* X exit button shown in fullscreen */
     .qv-fs-exit-btn {
         display: none;
@@ -60,19 +64,23 @@
     :-moz-full-screen .site-header,
     :-moz-full-screen footer { display: none !important; }
     :-moz-full-screen .qv-container { max-width:100vw!important; width:100vw!important; height:100vh!important; padding:0!important; margin:0!important; display:flex; flex-direction:column; }
-    :-moz-full-screen .qv-main-panel { flex:1; border-radius:0!important; min-height:100vh!important; overflow-y:auto; }
+    :-moz-full-screen .qv-main-panel { flex:1; border-radius:0!important; min-height:100vh!important; overflow-y:auto; display: flex; flex-direction: column; }
+    :-moz-full-screen .qv-main-panel > *:not(.qv-user-wrapper):not(.qv-modal-overlay):not(script):not(style) { margin-top: auto !important; margin-bottom: auto !important; }
+    :-moz-full-screen .qv-user-wrapper { position: absolute; top: 24px; right: 40px; margin: 0; }
     :-moz-full-screen .qv-fs-exit-btn { display: flex; }
     /* Webkit prefix */
     :-webkit-full-screen .qv-top-bar,
     :-webkit-full-screen .site-header,
     :-webkit-full-screen footer { display: none !important; }
     :-webkit-full-screen .qv-container { max-width:100vw!important; width:100vw!important; height:100vh!important; padding:0!important; margin:0!important; display:flex; flex-direction:column; }
-    :-webkit-full-screen .qv-main-panel { flex:1; border-radius:0!important; min-height:100vh!important; overflow-y:auto; }
+    :-webkit-full-screen .qv-main-panel { flex:1; border-radius:0!important; min-height:100vh!important; overflow-y:auto; display: flex; flex-direction: column; }
+    :-webkit-full-screen .qv-main-panel > *:not(.qv-user-wrapper):not(.qv-modal-overlay):not(script):not(style) { margin-top: auto !important; margin-bottom: auto !important; }
+    :-webkit-full-screen .qv-user-wrapper { position: absolute; top: 24px; right: 40px; margin: 0; }
     :-webkit-full-screen .qv-fs-exit-btn { display: flex; }
 
     /* ============ ROOM CONTAINER ============ */
     .qv-container {
-        max-width: 1350px;
+        max-width: 1400px;
         margin: 0 auto;
         padding: 20px;
         box-sizing: border-box;
@@ -236,16 +244,15 @@
         letter-spacing: 0.5px;
     }
 
-    /* Central Question Card */
     .qv-question-card {
-        background: white;
+        /* background: white; */
         border-radius: 28px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+        /* border: 1px solid #e2e8f0; */
+        /* box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03); */
         padding: 40px;
         margin-bottom: 24px;
         text-align: center;
-        min-height: 380px;
+        min-height: 450px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -273,11 +280,12 @@
         border-radius: 10px;
         object-fit: contain;
     }
-
+ 
     /* Answers Grid - kahoot style colors but sleek modern rounded look */
     .qv-answers-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        grid-auto-rows: 1fr;
         gap: 16px;
     }
     .qv-answer-btn {
@@ -297,6 +305,7 @@
         text-align: left;
         font-family: inherit;
         min-height: 80px;
+        height: 100%;
         box-sizing: border-box;
     }
     .qv-answer-btn:hover {
@@ -439,7 +448,7 @@
     .qv-grade-card {
         position: relative;
         border-radius: 24px;
-        padding: 48px 40px 36px; /* slightly more top padding to accommodate the floating bomb */
+        padding: 28px 24px 20px; /* Reduced padding */
         text-align: center;
         border: 2px solid transparent;
         animation: qvSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -600,7 +609,7 @@
         font-size: 15px;
         font-weight: 500;
         color: #334155;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
         line-height: 1.5;
     }
     .qv-grade-explain-box {
@@ -666,7 +675,7 @@
         background: white;
         border-radius: 28px;
         padding: 50px 40px;
-        max-width: 720px;
+        max-width: 1000px;
         margin: 40px auto 0;
         text-align: center;
         box-shadow: 0 15px 50px rgba(0,0,0,0.05);
@@ -688,16 +697,16 @@
         100% { transform: translateY(-8px); }
     }
     .qv-ended-card h2 {
-        font-size: 38px;
+        font-size: 48px;
         font-weight: 900;
         color: #0f172a;
-        margin: 0 0 8px;
+        margin: 0 0 12px;
         letter-spacing: -1px;
     }
     .qv-ended-subtitle {
-        font-size: 16px;
+        font-size: 18px;
         color: #475569;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
         font-weight: 500;
     }
     .qv-ended-subtitle .code {
@@ -705,10 +714,10 @@
         font-weight: 800;
     }
     .qv-ended-matchid {
-        font-size: 12px;
+        font-size: 14px;
         color: #94a3b8;
         font-family: monospace;
-        margin-bottom: 30px;
+        margin-bottom: 35px;
     }
 
     /* Leaderboard container matching the image */
@@ -724,9 +733,9 @@
     .qv-ended-lb-header {
         display: flex;
         justify-content: space-between;
-        padding: 14px 24px;
+        padding: 16px 24px;
         border-bottom: 1.5px solid #e2e8f0;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 800;
         color: #64748b;
         letter-spacing: 1px;
@@ -752,14 +761,14 @@
         border-left: 4px solid #3b82f6;
     }
     .qv-ended-rank-badge {
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 800;
-        font-size: 14px;
+        font-size: 16px;
     }
     .qv-ended-rank-badge.gold {
         background: #fef08a;
@@ -781,18 +790,18 @@
         color: #64748b;
     }
     .qv-ended-player-name {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 800;
         color: #0f172a;
     }
     .qv-ended-player-sub {
-        font-size: 13px;
+        font-size: 15px;
         color: #64748b;
         margin-top: 2px;
         font-weight: 500;
     }
     .qv-ended-player-score {
-        font-size: 24px;
+        font-size: 28px;
         font-weight: 900;
         color: #0284c7;
         letter-spacing: -0.5px;
@@ -809,9 +818,9 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        padding: 14px 28px;
+        padding: 16px 32px;
         border-radius: 50px;
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 800;
         text-decoration: none;
         cursor: pointer;
@@ -972,11 +981,11 @@
     .qv-lobby-new {
         background: #eef7fb;
         border-radius: 24px;
-        padding: 40px;
+        padding: 20px;
         display: flex;
         flex-direction: column;
-        gap: 20px;
-        max-width: 900px;
+        gap: 24px;
+        max-width: 1000px;
         margin: 0 auto;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     }
@@ -1004,8 +1013,8 @@
     }
 
     .qv-lobby-back:hover {
-        color: #0f172a;
-        gap: 12px;
+        color: #2563eb;
+        transform: translateX(-4px);
     }
 
     .qv-lobby-code-badge {
@@ -1035,7 +1044,7 @@
     }
 
     .qv-lobby-code-badge .code {
-        font-size: 24px;
+        font-size: 28px;
         font-weight: 900;
         color: #0f172a;
         letter-spacing: 2px;
@@ -1062,7 +1071,7 @@
     }
 
     .qv-lobby-title-large {
-        font-size: 40px;
+        font-size: 48px;
         font-weight: 900;
         color: #0f172a;
         margin: 0 0 16px;
@@ -1081,9 +1090,9 @@
         align-items: center;
         gap: 8px;
         background: white;
-        padding: 8px 20px;
+        padding: 10px 24px;
         border-radius: 50px;
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 700;
         color: #64748b;
         box-shadow: 0 2px 10px rgba(0,0,0,0.03);
@@ -1111,7 +1120,7 @@
     }
 
     .qv-lobby-section-title {
-        font-size: 22px;
+        font-size: 26px;
         font-weight: 800;
         color: #0f172a;
         margin: 0;
@@ -1119,9 +1128,9 @@
 
     .qv-lobby-section-count {
         background: #f8fafc;
-        padding: 6px 14px;
+        padding: 8px 16px;
         border-radius: 12px;
-        font-size: 14px;
+        font-size: 16px;
         color: #64748b;
         font-weight: 700;
         margin: 0;
@@ -1140,19 +1149,19 @@
         align-items: center;
         justify-content: space-between;
         background: #eef8fc;
-        padding: 12px 16px;
+        padding: 16px 20px;
         border-radius: 12px;
     }
 
     .qv-lobby-player-avatar {
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         background: #fef08a;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
+        font-size: 24px;
         flex-shrink: 0;
     }
     
@@ -1160,23 +1169,23 @@
         background: #e2e8f0;
         color: #64748b;
         font-weight: 800;
-        font-size: 16px;
+        font-size: 18px;
     }
 
     .qv-lobby-player-info {
         flex: 1;
-        margin-left: 14px;
+        margin-left: 16px;
     }
 
     .qv-lobby-player-name {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 800;
         color: #0f172a;
         margin: 0;
     }
 
     .qv-lobby-player-status {
-        font-size: 13px;
+        font-size: 15px;
         color: #64748b;
         display: flex;
         align-items: center;
@@ -1194,11 +1203,11 @@
 
     .qv-lobby-player-rank {
         background: white;
-        padding: 6px 12px;
+        padding: 8px 14px;
         border-radius: 8px;
         font-weight: 800;
         color: #64748b;
-        font-size: 14px;
+        font-size: 16px;
         box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
@@ -1219,7 +1228,7 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        font-size: 15px;
+        font-size: 17px;
         color: #64748b;
         font-weight: 600;
     }
@@ -1234,8 +1243,8 @@
         color: white;
         border: none;
         border-radius: 12px;
-        padding: 16px;
-        font-size: 18px;
+        padding: 18px;
+        font-size: 20px;
         font-weight: 800;
         cursor: pointer;
         transition: all 0.2s;
@@ -1282,7 +1291,14 @@
         }
     }
     /* User dropdown profile in top right corner */
-    .qv-user-wrapper { position: absolute; top: 24px; right: 40px; z-index: 100; }
+    .qv-user-wrapper {
+        position: relative;
+        z-index: 100;
+        margin-left: auto;
+        width: fit-content;
+        margin-bottom: 20px;
+        margin-top: -10px;
+    }
     .qv-user-pill { background: white; border: 1.5px solid #e2e8f0; border-radius: 50px; padding: 5px 14px 5px 5px; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04); transition: all 0.2s ease; }
     .qv-user-pill:hover { background: #f8fafc; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); border-color: #cbd5e1; }
     .qv-user-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2); overflow: hidden; }

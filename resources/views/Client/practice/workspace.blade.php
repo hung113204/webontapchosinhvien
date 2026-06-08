@@ -99,15 +99,22 @@
                                 <div class="pq-card-header">
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <span class="pq-number">Câu {{ $index + 1 }}</span>
-                                        @if($cau->muc_do == 1) <span class="pq-type">Dễ</span>
-                                        @elseif($cau->muc_do == 2) <span class="pq-type" style="background:#fefce8; color:#ca8a04;">Trung bình</span>
-                                        @else <span class="pq-type" style="background:#fef2f2; color:#dc2626;">Khó</span>
+                                        @if($cau->muc_do == 1) <span class="pq-type">Nhận biết</span>
+                                        @elseif($cau->muc_do == 2) <span class="pq-type" style="background:#fefce8; color:#ca8a04;">Thông hiểu</span>
+                                        @else <span class="pq-type" style="background:#fef2f2; color:#dc2626;">Vận dụng</span>
                                         @endif
                                     </div>
                                     {{-- <div class="pq-points">ID: #{{ $cau->id }}</div> --}}
                                 </div>
 
-                                <div class="pq-text ck-content">{!! $cau->noi_dung !!}</div>
+                                <div class="pq-text ck-content">
+                                    {!! $cau->noi_dung !!}
+                                    @if($cau->hinh_anh)
+                                        <div style="margin-top: 15px; text-align: center;">
+                                            <img src="{{ asset('storage/' . $cau->hinh_anh) }}" style="max-height: 300px; max-width: 100%; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                        </div>
+                                    @endif
+                                </div>
 
                                 <div class="pq-options">
                                     @if($cau->loai_cau_hoi == 4)
@@ -251,9 +258,22 @@
     let secondsElapsed    = 0;
     let timerInterval;
 
+    // Time limit logic
+    const isTimeLimited = {{ $phien->gioi_han_thoi_gian ? 'true' : 'false' }};
+    @php
+        $remainingSeconds = 0;
+        if ($phien->gioi_han_thoi_gian && $phien->thoi_gian_phut > 0) {
+            $elapsedServer = now()->diffInSeconds($phien->thoi_gian_bat_dau);
+            $remainingSeconds = max(0, ($phien->thoi_gian_phut * 60) - $elapsedServer);
+        }
+    @endphp
+    let timeRemaining = {{ $remainingSeconds }};
+
     document.addEventListener("DOMContentLoaded", function () {
         if (typeof hljs !== 'undefined') hljs.highlightAll();
-        if (window.MathJax) MathJax.typesetPromise();
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            MathJax.typesetPromise().catch((err) => console.log('MathJax error:', err));
+        }
         startTimer();
         updateUI();
     });
@@ -261,12 +281,65 @@
     // ── ĐỒNG HỒ ──
     function startTimer() {
         const display = document.getElementById('timer-display');
-        timerInterval = setInterval(() => {
-            secondsElapsed++;
-            const m = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
-            const s = (secondsElapsed % 60).toString().padStart(2, '0');
-            display.innerText = `${m}:${s}`;
-        }, 1000);
+        
+        if (isTimeLimited) {
+            if (timeRemaining <= 0) {
+                display.innerText = "00:00";
+                display.style.color = "#ef4444";
+                handleTimeUp();
+                return;
+            }
+            
+            renderTime(timeRemaining, display);
+            
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                secondsElapsed++;
+                
+                renderTime(timeRemaining, display);
+                
+                if (timeRemaining <= 60) {
+                    display.style.color = "#ef4444";
+                    display.style.opacity = (timeRemaining % 2 === 0) ? 0.5 : 1;
+                }
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    display.style.opacity = 1;
+                    handleTimeUp();
+                }
+            }, 1000);
+        } else {
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                renderTime(secondsElapsed, display);
+            }, 1000);
+        }
+    }
+
+    function renderTime(seconds, display) {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        display.innerText = `${m}:${s}`;
+    }
+
+    function handleTimeUp() {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Hết giờ!',
+            text: 'Thời gian làm bài đã kết thúc. Hệ thống sẽ tự động nộp bài.',
+            showConfirmButton: false,
+            timer: 2000,
+            allowOutsideClick: false
+        }).then(() => {
+            forceSubmit();
+        });
+    }
+
+    function forceSubmit() {
+        document.getElementById('elapsed_seconds').value = secondsElapsed;
+        document.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = false);
+        document.getElementById('practice-form').submit();
     }
 
     // ── ĐIỀU HƯỚNG CÂU HỎI ──

@@ -179,6 +179,8 @@ class PracticeController extends FrontendController
                 'chuong_hoc_id' => $chuongId === 'all' ? null : $chuongId,
                 'so_cau_hoi' => count($questionIds),
                 'che_do' => $request->che_do === 'learn' ? 1 : 2,
+                'gioi_han_thoi_gian' => $request->che_do === 'test' ? 1 : 0,
+                'thoi_gian_phut' => $request->che_do === 'test' ? count($questionIds) : null,
                 'thoi_gian_bat_dau' => now(),
                 'trang_thai' => 0,
                 'danh_sach_cau_hoi' => json_encode($questionIds),
@@ -261,25 +263,40 @@ class PracticeController extends FrontendController
                 
                 // KIỂM TRA TRƯỚC: Nếu điền khuyết và khớp chính xác thì không cần gọi AI
                 $isStrictMatch = false;
-                if ($cau->loai_cau_hoi == 3 && is_array($selectedId)) {
-                    $corrects = $cau->dapAns->where('is_dung', 1)->values();
-                    $matchCount = 0;
-                    foreach ($corrects as $idx => $cAns) {
-                        $sAns = $selectedId[$idx] ?? '';
-                        if (trim(strtolower($sAns)) === trim(strtolower($cAns->noi_dung))) {
-                            $matchCount++;
+                $hasAnswer = false; // Add variable to track if the student actually answered
+
+                if ($cau->loai_cau_hoi == 3) {
+                    if (is_array($selectedId)) {
+                        $corrects = $cau->dapAns->where('is_dung', 1)->values();
+                        $matchCount = 0;
+                        foreach ($corrects as $idx => $cAns) {
+                            $sAns = $selectedId[$idx] ?? '';
+                            if (trim($sAns) !== '') {
+                                $hasAnswer = true;
+                            }
+                            if (trim(strtolower($sAns)) === trim(strtolower($cAns->noi_dung))) {
+                                $matchCount++;
+                            }
                         }
+                        if ($matchCount === $corrects->count() && $corrects->count() > 0) {
+                            $isStrictMatch = true;
+                            $isCorrect = true;
+                            $aiFeedback = "Chính xác tuyệt đối!";
+                        }
+                    } else {
+                        if (trim((string)$selectedId) !== '') $hasAnswer = true;
                     }
-                    if ($matchCount === $corrects->count() && $corrects->count() > 0) {
-                        $isStrictMatch = true;
-                        $isCorrect = true;
-                        $aiFeedback = "Chính xác tuyệt đối!";
-                    }
+                } elseif ($cau->loai_cau_hoi == 4) {
+                    if (trim((string)$selectedId) !== '') $hasAnswer = true;
                 }
 
                 $shouldGradeWithAi = !$isStrictMatch
                     && !empty($referenceText)
-                    && ($cau->loai_cau_hoi == 4 || !empty($studentText));
+                    && $hasAnswer; // Only grade with AI if they provided some answer
+
+                if (!$isStrictMatch && !$hasAnswer) {
+                    $aiFeedback = "Bạn chưa trả lời câu hỏi này.";
+                }
 
                 if ($shouldGradeWithAi) {
                     try {
@@ -324,6 +341,9 @@ class PracticeController extends FrontendController
                 'time' => $request->input("times.{$cau->id}") ?? 0,
                 'ai_feedback' => $aiFeedback,
             ];
+
+            // Cập nhật thống kê câu hỏi
+            $cau->updateStats($isCorrect);
         }
         $total = count($cauHoiIds);
         $diemSo = $total > 0 ? round(($soCauDung / $total) * 10, 2) : 0;

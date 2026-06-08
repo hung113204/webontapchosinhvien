@@ -693,11 +693,14 @@
                                         <i class="fas fa-chart-line"></i>
                                         <span>Mức độ câu hỏi</span>
                                     </div>
+                                    @php
+                                        $selectedMucDo = old('muc_do', in_array((string) $mucDoMacDinh, ['1', '2', '3'], true) ? (string) $mucDoMacDinh : 'all');
+                                    @endphp
                                     <select name="muc_do" class="custom-select" required>
-                                        <option value="all">Ngẫu nhiên (Trộn đều)</option>
-                                        <option value="1" {{ old('muc_do') == '1' ? 'selected' : '' }}>Dễ - Cơ bản</option>
-                                        <option value="2" {{ old('muc_do') == '2' ? 'selected' : '' }}>Trung bình - Vận dụng</option>
-                                        <option value="3" {{ old('muc_do') == '3' ? 'selected' : '' }}>Khó - Nâng cao</option>
+                                        <option value="all" {{ $selectedMucDo === 'all' ? 'selected' : '' }}>Ngẫu nhiên (Trộn đều)</option>
+                                        <option value="1" {{ $selectedMucDo === '1' ? 'selected' : '' }}>Nhận biết</option>
+                                        <option value="2" {{ $selectedMucDo === '2' ? 'selected' : '' }}>Thông hiểu</option>
+                                        <option value="3" {{ $selectedMucDo === '3' ? 'selected' : '' }}>Vận dụng</option>
                                     </select>
                                 </div>
 

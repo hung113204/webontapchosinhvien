@@ -29,9 +29,6 @@ class UserRequest extends FormRequest
 
             'so_dien_thoai' => 'nullable|string|max:20',
             'vai_tro_id'    => 'required|exists:roles,id',
-            'gioi_tinh'     => 'nullable|in:MALE,FEMALE',
-            'ngay_sinh'     => 'nullable|date',
-            'dia_chi'       => 'nullable|string',
 
             // ✅ FIX: Khi thêm mới ($id = null) → required
             //         Khi cập nhật ($id có giá trị) → nullable (để trống = không đổi mật khẩu)
@@ -40,6 +37,7 @@ class UserRequest extends FormRequest
 
             'avatar_url'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'trang_thai'  => 'nullable|in:0,1',
+            'ghi_chu'     => 'nullable|string',
         ];
     }
 
@@ -53,8 +51,10 @@ class UserRequest extends FormRequest
             'vai_tro_id.required'   => 'Vui lòng chọn vai trò.',
             'vai_tro_id.exists'     => 'Vai trò không hợp lệ.',
             'mat_khau.required'     => 'Mật khẩu là bắt buộc khi tạo mới.',
-            'mat_khau.min'          => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'mat_khau.min'          => 'Mật khẩu phải có ít nhất 8 ký tự.',
             'mat_khau.confirmed'    => 'Xác nhận mật khẩu không khớp.',
+            'mat_khau_confirmation.required' => 'Vui lòng xác nhận lại mật khẩu.',
+            'mat_khau_confirmation.min'      => 'Xác nhận mật khẩu phải có ít nhất 8 ký tự.',
             'avatar_url.image'      => 'File tải lên phải là ảnh.',
             'avatar_url.mimes'      => 'Ảnh phải có định dạng: jpeg, png, jpg, gif.',
             'avatar_url.max'        => 'Ảnh không được vượt quá 2MB.',

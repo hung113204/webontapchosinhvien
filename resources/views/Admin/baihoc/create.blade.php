@@ -189,7 +189,7 @@
                                         @foreach ($mon->chuongHocs as $chuong)
                                             <option value="{{ $chuong->id }}"
                                                 {{ old('chuong_hoc_id') == $chuong->id ? 'selected' : '' }}>
-                                                Chương {{ $chuong->thu_tu }}: {{ $chuong->ten_chuong }}
+                                                {{ $chuong->ten_chuong }}
                                             </option>
                                         @endforeach
                                     </optgroup>
@@ -203,13 +203,35 @@
                         </div>
 
                         <div class="bf-form-group">
-                            <label class="bf-label">Link Video (Tùy chọn)</label>
-                            <input type="text" name="video_url"
-                                class="bf-input {{ $errors->has('video_url') ? 'is-invalid' : '' }}"
-                                value="{{ old('video_url') }}" placeholder="URL Youtube / Vimeo...">
-                            @error('video_url')
-                                <div class="bf-error-message">{{ $message }}</div>
-                            @enderror
+                            <label class="bf-label">Video bài học (Tùy chọn)</label>
+                            
+                            <div style="margin-bottom: 10px; display: flex; gap: 15px;">
+                                <label style="font-weight: 500; font-size: 0.85rem; color: #475569; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                                    <input type="radio" name="video_source" value="url" id="video_source_url" checked onclick="toggleVideoInput('url')"> Link Video (YouTube / Vimeo)
+                                </label>
+                                <label style="font-weight: 500; font-size: 0.85rem; color: #475569; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                                    <input type="radio" name="video_source" value="file" id="video_source_file" onclick="toggleVideoInput('file')"> Tải lên file video
+                                </label>
+                            </div>
+
+                            <div id="video_url_container">
+                                <input type="text" name="video_url" id="video_url_input"
+                                    class="bf-input {{ $errors->has('video_url') ? 'is-invalid' : '' }}"
+                                    value="{{ old('video_url') }}" placeholder="URL Youtube, Vimeo hoặc link video trực tiếp...">
+                                @error('video_url')
+                                    <div class="bf-error-message">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div id="video_file_container" style="display: none; margin-top: 5px;">
+                                <input type="file" name="video_file" id="video_file_input" accept="video/*"
+                                    class="bf-input {{ $errors->has('video_file') ? 'is-invalid' : '' }}"
+                                    style="padding: 7px;">
+                                <small style="font-size: 0.8rem; color: #64748b; display: block; margin-top: 4px;">Hỗ trợ định dạng: mp4, webm, ogg, avi, mov. Dung lượng tối đa: 100MB.</small>
+                                @error('video_file')
+                                    <div class="bf-error-message">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
 
                         <div class="bf-form-group">
@@ -264,18 +286,7 @@
 @endsection
 
 @push('scripts')
-    <script>
-        // Load CKEditor nếu chưa load
-        (function() {
-            if (typeof ClassicEditor === 'undefined') {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js';
-                script.async = false;
-                document.head.appendChild(script);
-            }
-        })();
-    </script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         function processLatexBaiHoc(content) {
             if (!content) return content;
@@ -286,45 +297,53 @@
             return processed;
         }
 
+        function toggleVideoInput(source) {
+            const urlContainer = document.getElementById('video_url_container');
+            const fileContainer = document.getElementById('video_file_container');
+            const urlInput = document.getElementById('video_url_input');
+            const fileInput = document.getElementById('video_file_input');
+            
+            if (source === 'url') {
+                if (urlContainer) urlContainer.style.display = 'block';
+                if (fileContainer) fileContainer.style.display = 'none';
+                if (fileInput) fileInput.value = '';
+            } else {
+                if (urlContainer) urlContainer.style.display = 'none';
+                if (fileContainer) fileContainer.style.display = 'block';
+                if (urlInput) urlInput.value = '';
+            }
+        }
+
         window.addEventListener('load', function() {
+            // Khởi tạo trạng thái video ban đầu
+            const oldSource = @json(old('video_source'));
+            if (oldSource === 'file') {
+                const radioFile = document.getElementById('video_source_file');
+                if (radioFile) radioFile.checked = true;
+                toggleVideoInput('file');
+            } else {
+                const radioUrl = document.getElementById('video_source_url');
+                if (radioUrl) radioUrl.checked = true;
+                toggleVideoInput('url');
+            }
 
-            const editorConfig = {
-                toolbar: ['heading', '|', 'bold', 'italic', '|', 'link', 'insertTable', '|', 'bulletedList',
-                    'numberedList', '|', 'undo', 'redo'
-                ],
-                language: 'vi',
-                htmlSupport: {
-                    allow: [{
-                        name: /.*/,
-                        attributes: true,
-                        classes: true,
-                        styles: true
-                    }]
-                }
-            };
-
-            ClassicEditor
-                .create(document.querySelector('#editor-bai-hoc'), editorConfig)
-                .then(editor => {
-
-                    editor.editing.view.document.on('clipboardInput', (evt, data) => {
-                        const html = data.dataTransfer.getData('text/html') || data.dataTransfer
-                            .getData('text/plain');
-                        if (html) {
-                            data.dataTransfer.setData('text/html', processLatexBaiHoc(html));
-                        }
-                    });
-
-                    editor.model.document.on('change:data', () => {
+            tinymce.init({
+                selector: '#editor-bai-hoc',
+                plugins: 'codesample code lists link table image',
+                toolbar: 'blocks | bold italic | alignleft aligncenter alignright alignjustify | codesample code | bullist numlist | link table image | undo redo',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:15px } table { border-collapse: collapse; width: 100%; margin: 10px 0; border: 1px solid #e2e8f0; } table th, table td { border: 1px solid #e2e8f0; padding: 10px; } table th { background-color: #f8fafc; font-weight: bold; } table td img { max-width: 100%; height: auto; display: block; margin: 0 auto; }',
+                setup: function (editor) {
+                    editor.on('change', function () {
+                        editor.save();
                         setTimeout(() => window.MathJax?.typesetPromise?.(), 100);
                     });
+                }
+            });
 
-                    document.getElementById('baiHocForm').addEventListener('submit', () => {
-                        let content = editor.getData();
-                        document.querySelector('#editor-bai-hoc').value = processLatexBaiHoc(content);
-                    });
-                })
-                .catch(err => console.error('CKEditor Error:', err));
+            document.getElementById('baiHocForm').addEventListener('submit', () => {
+                let content = tinymce.get('editor-bai-hoc').getContent();
+                document.querySelector('#editor-bai-hoc').value = processLatexBaiHoc(content);
+            });
 
             // Thêm / Xóa giải thích code
             const btnAdd = document.getElementById('btnAddExplain');

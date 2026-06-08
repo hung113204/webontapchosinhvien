@@ -24,7 +24,11 @@
         flex: 1;
         border-radius: 0 !important;
         min-height: 100vh !important;
+        display: flex;
+        flex-direction: column;
     }
+    :fullscreen .qv-main-panel > *:not(.qv-user-wrapper):not(.qv-modal-overlay):not(script):not(style) { margin-top: auto !important; margin-bottom: auto !important; }
+    :fullscreen .qv-user-wrapper { position: absolute; top: 24px; right: 40px; margin: 0; }
     .qv-fs-exit-btn {
         display: none;
         position: fixed;
@@ -49,11 +53,15 @@
     :fullscreen .qv-fs-exit-btn { display: flex; }
     :-moz-full-screen .qv-top-bar, :-moz-full-screen .site-header, :-moz-full-screen footer { display: none !important; }
     :-moz-full-screen .qv-container { max-width:100vw!important; width:100vw!important; height:100vh!important; padding:0!important; margin:0!important; display:flex; flex-direction:column; }
-    :-moz-full-screen .qv-main-panel { flex:1; border-radius:0!important; min-height:100vh!important; }
+    :-moz-full-screen .qv-main-panel { flex:1; border-radius:0!important; min-height:100vh!important; display: flex; flex-direction: column; }
+    :-moz-full-screen .qv-main-panel > *:not(.qv-user-wrapper):not(.qv-modal-overlay):not(script):not(style) { margin-top: auto !important; margin-bottom: auto !important; }
+    :-moz-full-screen .qv-user-wrapper { position: absolute; top: 24px; right: 40px; margin: 0; }
     :-moz-full-screen .qv-fs-exit-btn { display: flex; }
     :-webkit-full-screen .qv-top-bar, :-webkit-full-screen .site-header, :-webkit-full-screen footer { display: none !important; }
     :-webkit-full-screen .qv-container { max-width:100vw!important; width:100vw!important; height:100vh!important; padding:0!important; margin:0!important; display:flex; flex-direction:column; }
-    :-webkit-full-screen .qv-main-panel { flex:1; border-radius:0!important; min-height:100vh!important; }
+    :-webkit-full-screen .qv-main-panel { flex:1; border-radius:0!important; min-height:100vh!important; display: flex; flex-direction: column; }
+    :-webkit-full-screen .qv-main-panel > *:not(.qv-user-wrapper):not(.qv-modal-overlay):not(script):not(style) { margin-top: auto !important; margin-bottom: auto !important; }
+    :-webkit-full-screen .qv-user-wrapper { position: absolute; top: 24px; right: 40px; margin: 0; }
     :-webkit-full-screen .qv-fs-exit-btn { display: flex; }
 
     /* ============ IMMERSIVE QUIZ VUI LAYOUT ============ */
@@ -101,7 +109,7 @@
     .qv-main-panel {
         background: linear-gradient(180deg, #dbebff 0%, #f0f7ff 100%);
         border-radius: 24px;
-        padding: 24px 40px 40px 40px;
+        /* padding: 24px 40px 40px 40px; */
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
         position: relative;
         min-height: 600px;
@@ -110,19 +118,37 @@
         overflow-y: auto;
     }
 
-    /* Scrollbar styling cho qv-main-panel */
+    /* Scrollbar styling cho qv-main-panel (Giống ảnh 1) */
     .qv-main-panel::-webkit-scrollbar {
-        width: 8px;
+        width: 16px;
     }
     .qv-main-panel::-webkit-scrollbar-track {
         background: transparent;
     }
     .qv-main-panel::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
+        background-color: #9ca3af;
         border-radius: 10px;
+        border: 4px solid transparent;
+        background-clip: padding-box;
     }
     .qv-main-panel::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
+        background-color: #6b7280;
+    }
+    
+    /* Nút cuộn (mũi tên lên/xuống) */
+    .qv-main-panel::-webkit-scrollbar-button:vertical:decrement {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%239ca3af"><polygon points="8,5 13,11 3,11"/></svg>') no-repeat center center;
+        height: 24px;
+        cursor: pointer;
+    }
+    .qv-main-panel::-webkit-scrollbar-button:vertical:increment {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%239ca3af"><polygon points="8,11 3,5 13,5"/></svg>') no-repeat center center;
+        height: 24px;
+        cursor: pointer;
+    }
+    .qv-main-panel::-webkit-scrollbar-button:vertical:decrement:hover,
+    .qv-main-panel::-webkit-scrollbar-button:vertical:increment:hover {
+        background-color: rgba(0,0,0,0.05);
     }
 
     /* User dropdown profile in top right corner */
@@ -624,6 +650,27 @@
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+
+    /* BACK BUTTON (Create/Join Form) */
+    .qv-back-btn {
+        position: absolute;
+        left: 0;
+        background: none;
+        border: none;
+        color: #475569;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0;
+        transition: all 0.2s ease;
+    }
+    .qv-back-btn:hover {
+        color: #2563eb;
+        transform: translateX(-3px);
     }
 
     @keyframes qvFadeIn {

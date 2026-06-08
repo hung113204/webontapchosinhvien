@@ -121,7 +121,7 @@
 <div class="history-header">
     <div class="stats-mini">
         <div class="stat-mini-card">
-            <div class="stat-mini-icon">
+            <div class="stat-mini-icon" style="background: #eef2ff; color: #4f46e5;">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                     <path d="M2 17l10 5 10-5"/>
@@ -134,7 +134,7 @@
             </div>
         </div>
         <div class="stat-mini-card">
-            <div class="stat-mini-icon">
+            <div class="stat-mini-icon" style="background: #dcfce7; color: #16a34a;">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"/>
                     <path d="M12 6v6l4 2"/>
@@ -148,7 +148,7 @@
             </div>
         </div>
         <div class="stat-mini-card">
-            <div class="stat-mini-icon">
+            <div class="stat-mini-icon" style="background: #fef3c7; color: #d97706;">
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                 </svg>
@@ -251,11 +251,20 @@
         </tbody>
     </table>
 
-    @if($history->hasPages())
-        <div class="pagination-wrapper">
-            {{ $history->appends(request()->query())->links() }}
+    <div class="table-footer" style="padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eef2f6;">
+        <div class="showing-info" style="font-size: 13px; color: #6b7280;">
+            Hiển thị {{ $history->firstItem() ?? 0 }}-{{ $history->lastItem() ?? 0 }} trong tổng số
+            {{ $history->total() }} phiên
         </div>
-    @endif
+        @if($history->hasPages())
+        <div class="pagination" style="list-style: none; margin: 0;">
+            <style>
+                .pagination ul, .pagination li { list-style: none !important; margin: 0; padding: 0; }
+            </style>
+            {{ $history->appends(request()->query())->links('pagination::bootstrap-4') }}
+        </div>
+        @endif
+    </div>
 </div>
 
 <script>

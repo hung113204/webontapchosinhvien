@@ -39,11 +39,11 @@
     @endif
 
     <style>
-        .filters-section {
+       /*  .filters-section {
             background: white; border-radius: 12px;
             padding: 24px; margin-bottom: 24px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+        } */
         .filter-group { display: grid; gap: 16px; align-items: end; }
         .filter-item label { display: block; font-weight: 500; margin-bottom: 8px; color: #374151; font-size: 14px; }
         .search-box { position: relative; display: flex; align-items: center; }
@@ -66,7 +66,7 @@
         .btn-primary:hover { background: #4338CA; }
         .btn-secondary { background: #F3F4F6; color: #374151; }
         .btn-secondary:hover { background: #E5E7EB; }
-        .table-section { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+       /*  .table-section { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); } */
         .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .table-title { display: flex; align-items: center; gap: 12px; }
         .table-title h3 { margin: 0; font-size: 20px; font-weight: 600; color: #111827; }
@@ -191,15 +191,16 @@
                             <th>Họ tên</th>
                             <th>Mã SV/GV</th>
                             <th>Email</th>
-                            <th>SĐT / Giới tính</th>
+                            <th>Số điện thoại</th>
                             <th>Vai trò</th>
+                            <th>Ghi chú</th>
                             <th>Trạng thái</th>
                             <th width="120">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($dsUser as $user)
-                            <tr class="{{ $user->trashed() ? 'row-trashed' : '' }}">
+                            <tr class="{{ $user->trashed() ? 'row-trashed' : '' }}" data-user-row="{{ $user->id }}">
                                 <td>{{ $user->id }}</td>
                                 <td>
                                     <div class="avatar-wrapper">
@@ -227,13 +228,6 @@
                                 <td>{{ $user->email }}</td>
                                 <td>
                                     <div>{{ $user->so_dien_thoai ?? 'N/A' }}</div>
-                                    <div style="margin-top: 4px;">
-                                        @if ($user->gioi_tinh)
-                                            <span class="badge badge-{{ $user->gioi_tinh == 'MALE' ? 'male' : 'female' }}">
-                                                {{ $user->gioi_tinh == 'MALE' ? 'Nam' : 'Nữ' }}
-                                            </span>
-                                        @endif
-                                    </div>
                                 </td>
                                 <td>
                                     <span class="badge badge-{{ strtolower($user->role->ma_vai_tro ?? 'student') }}">
@@ -241,6 +235,11 @@
                                     </span>
                                 </td>
                                 <td>
+                                    <div style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $user->ghi_chu }}">
+                                        {{ $user->ghi_chu ?? 'N/A' }}
+                                    </div>
+                                </td>
+                                <td data-user-status>
                                     @if ($user->trashed())
                                         <span class="badge badge-deleted">
                                             <i class="fas fa-trash-alt"></i> Đã xóa mềm
@@ -251,7 +250,7 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td>
+                                <td data-user-actions>
                                     <div class="action-buttons">
                                         @if ($user->trashed())
                                             <button class="btn-action btn-restore"
@@ -379,23 +378,10 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Giới tính</label>
-                        <select name="gioi_tinh" id="input_gioi_tinh" class="form-select">
-                            <option value="">-- Chọn giới tính --</option>
-                            <option value="MALE">Nam</option>
-                            <option value="FEMALE">Nữ</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Ngày sinh</label>
-                        <input type="date" name="ngay_sinh" id="input_ngay_sinh" class="form-input">
-                    </div>
 
                     <div class="form-group" style="grid-column: span 2">
-                        <label>Địa chỉ</label>
-                        <textarea name="dia_chi" id="input_dia_chi" class="form-input" rows="2"></textarea>
+                        <label>Ghi chú</label>
+                        <textarea name="ghi_chu" id="input_ghi_chu" class="form-input" rows="3" placeholder="Nhập ghi chú..."></textarea>
                     </div>
 
                     <div class="form-group" style="grid-column: span 2">
@@ -445,6 +431,7 @@
 
             // ✅ Đảm bảo input_id rỗng khi thêm mới
             document.getElementById('input_id').value = "";
+            document.getElementById('input_ghi_chu').value = "";
             document.getElementById('avatar_preview').style.display = 'none';
             document.getElementById('status_active').checked = true;
 
@@ -473,10 +460,7 @@
                         document.getElementById('input_email').value         = data.email || '';
                         document.getElementById('input_so_dien_thoai').value = data.so_dien_thoai || '';
                         document.getElementById('input_vai_tro_id').value    = data.vai_tro_id || '';
-                        document.getElementById('input_gioi_tinh').value     = data.gioi_tinh || '';
-                        document.getElementById('input_ngay_sinh').value     = data.ngay_sinh || '';
-                        document.getElementById('input_dia_chi').value       = data.dia_chi || '';
-
+                        document.getElementById('input_ghi_chu').value       = data.ghi_chu || '';
                         // Trạng thái
                         document.getElementById(data.trang_thai ? 'status_active' : 'status_inactive').checked = true;
 
@@ -530,14 +514,95 @@
         }
 
         // ─── XÓA MỀM ───
+        function userRow(id) {
+            return document.querySelector(`[data-user-row="${id}"]`);
+        }
+
+        function setUserRowBusy(id, busy) {
+            const row = userRow(id);
+            if (!row) return;
+
+            row.style.opacity = busy ? '0.55' : '';
+            row.querySelectorAll('button').forEach(button => {
+                button.disabled = busy;
+            });
+
+            if (busy) {
+                window.setTimeout(() => setUserRowBusy(id, false), 10000);
+            }
+        }
+
+        function escapeJsString(value) {
+            return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        }
+
+        function markUserDeleted(id, name) {
+            const row = userRow(id);
+            if (!row) return;
+
+            row.classList.add('row-trashed');
+            row.querySelector('[data-user-status]').innerHTML = `
+                <span class="badge badge-deleted">
+                    <i class="fas fa-trash-alt"></i> Đã xóa mềm
+                </span>
+            `;
+            row.querySelector('[data-user-actions]').innerHTML = `
+                <div class="action-buttons">
+                    <button class="btn-action btn-restore" onclick="restoreUser(${id}, '${escapeJsString(name)}')" title="Khôi phục">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                    </button>
+                    <button class="btn-action btn-delete" onclick="forceDeleteUser(${id}, '${escapeJsString(name)}')" title="Xóa vĩnh viễn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                            <line x1="18" y1="9" x2="12" y2="15"></line>
+                            <line x1="12" y1="9" x2="18" y2="15"></line>
+                        </svg>
+                    </button>
+                </div>
+            `;
+        }
+
+        function markUserRestored(id, name) {
+            const row = userRow(id);
+            if (!row) return;
+
+            row.classList.remove('row-trashed');
+            row.querySelector('[data-user-status]').innerHTML = `<span class="badge badge-active">Hoạt động</span>`;
+            row.querySelector('[data-user-actions]').innerHTML = `
+                <div class="action-buttons">
+                    <button class="btn-action btn-edit" onclick="editUser(${id})" title="Sửa">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-action btn-delete" onclick="deleteUser(${id}, '${escapeJsString(name)}')" title="Xóa">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </button>
+                </div>
+            `;
+        }
+
+        function removeUserRow(id) {
+            const row = userRow(id);
+            if (row) row.remove();
+        }
+
         function deleteUser(id, name) {
             if (confirm(`Bạn có chắc chắn muốn đưa "${name}" vào thùng rác?`)) {
+                setUserRowBusy(id, true);
                 fetch(`/admin/users/destroy/${id}`, {
                     method: 'DELETE',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' }
                 })
                 .then(res => res.json())
-                .then(data => { if (data.success) location.reload(); else alert(data.message); })
+                .then(data => { if (data.success) markUserDeleted(id, name); else { alert(data.message); setUserRowBusy(id, false); } })
                 .catch(() => alert('Lỗi kết nối máy chủ!'));
             }
         }
@@ -545,12 +610,13 @@
         // ─── KHÔI PHỤC ───
         function restoreUser(id, name) {
             if (confirm(`Bạn có chắc chắn muốn khôi phục tài khoản của "${name}"?`)) {
+                setUserRowBusy(id, true);
                 fetch(`/admin/users/restore/${id}`, {
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' }
                 })
                 .then(res => res.json())
-                .then(data => { if (data.success) location.reload(); else alert(data.message); })
+                .then(data => { if (data.success) markUserRestored(id, name); else { alert(data.message); setUserRowBusy(id, false); } })
                 .catch(() => alert('Lỗi kết nối máy chủ!'));
             }
         }
@@ -558,12 +624,13 @@
         // ─── XÓA VĨNH VIỄN ───
         function forceDeleteUser(id, name) {
             if (confirm(`CẢNH BÁO: Bạn chuẩn bị xóa vĩnh viễn "${name}" khỏi Database. Hành động này không thể hoàn tác!\n\nBạn có chắc chắn không?`)) {
+                setUserRowBusy(id, true);
                 fetch(`/admin/users/force-delete/${id}`, {
                     method: 'DELETE',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' }
                 })
                 .then(res => res.json())
-                .then(data => { if (data.success) location.reload(); else alert(data.message); })
+                .then(data => { if (data.success) removeUserRow(id); else { alert(data.message); setUserRowBusy(id, false); } })
                 .catch(() => alert('Lỗi kết nối máy chủ!'));
             }
         }

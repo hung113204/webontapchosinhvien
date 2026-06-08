@@ -1,7 +1,23 @@
+{{-- 
 <div class="sidebar-header">
     <div class="logo" style="justify-content: center;">
         <img src="{{ asset('backend/asset/images/t2.png') }}" alt="Logo Ôn Tập CNTT" class="custom-logo">
     </div>
+</div>
+--}}
+
+<div class="sidebar-brand" style="display: flex; align-items: center; gap: 10px; justify-content: space-between; padding: 20px 20px;">
+    <a href="{{ route('admin.dashboard') }}" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; flex: 1; overflow: hidden; min-width: 0;">
+        <img src="{{ asset('backend/asset/images/t2.png') }}" alt="IT Study Support" class="sidebar-brand-logo" style="flex-shrink: 0;">
+        <span class="sidebar-brand-name" style="white-space: nowrap;">IT Study Support</span>
+    </a>
+    <button type="button" id="sidebar-toggle" style="background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'" title="Thu gọn/Mở rộng">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
 </div>
 <nav class="sidebar-nav">
     <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -24,6 +40,16 @@
             <line x1="9" y1="21" x2="9" y2="9" />
         </svg>
         <span>Danh mục trang chủ</span>
+    </a>
+    
+    <a href="{{ route('admin.faq.index') }}"
+        class="nav-item {{ request()->routeIs('admin.faq.*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span>Câu hỏi thường gặp</span>
     </a>
     @endif
 
@@ -73,7 +99,7 @@
         <div class="nav-group-title">Ngân hàng câu hỏi</div>
         <a href="{{ route('admin.cauhoi.index') }}"
             class="nav-item {{ request()->routeIs('admin.cauhoi.*') ? 'active' : '' }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                 <line x1="12" y1="17" x2="12.01" y2="17" />

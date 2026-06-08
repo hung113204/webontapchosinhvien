@@ -111,11 +111,11 @@
                                 {{-- Mức độ --}}
                                 <td>
                                     @if($item->muc_do_cau_hoi === 1)
-                                        <span class="badge" style="background: #ecfdf5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">Dễ</span>
+                                        <span class="badge" style="background: #ecfdf5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">Nhận biết</span>
                                     @elseif($item->muc_do_cau_hoi === 2)
-                                        <span class="badge" style="background: #fffbeb; color: #92400e; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">Trung bình</span>
+                                        <span class="badge" style="background: #fffbeb; color: #92400e; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">Thông hiểu</span>
                                     @elseif($item->muc_do_cau_hoi === 3)
-                                        <span class="badge" style="background: #fef2f2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">Khó</span>
+                                        <span class="badge" style="background: #fef2f2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">Vận dụng</span>
                                     @else
                                         <span class="badge" style="background: #f3f4f6; color: #374151; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">Hỗn hợp</span>
                                     @endif
@@ -293,9 +293,9 @@
                             <select name="muc_do_cau_hoi" id="input_muc_do_cau_hoi" class="form-select"
                                 style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; outline: none; background-color: white;">
                                 <option value="">Hỗn hợp tất cả</option>
-                                <option value="1">Dễ</option>
-                                <option value="2">Trung bình</option>
-                                <option value="3">Khó</option>
+                                <option value="1">Nhận biết</option>
+                                <option value="2">Thông hiểu</option>
+                                <option value="3">Vận dụng</option>
                             </select>
                             <small class="text-danger" id="error_muc_do_cau_hoi" style="color: #ef4444; font-size: 12px; margin-top: 4px; display: none;"></small>
                         </div>

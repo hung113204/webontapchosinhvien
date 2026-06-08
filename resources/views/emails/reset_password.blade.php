@@ -17,11 +17,12 @@
                     <tr>
                         <td style="background: linear-gradient(135deg, #0f2a4a 0%, #163860 100%);
                                    padding: 32px 40px 28px; text-align: center;">
+                            <img src="{{ $message->embed(public_path('frontend/asset/images/t2.png')) }}" alt="AI Logo" style="width: 70px; height: auto; margin-bottom: 12px; display: inline-block;" />
                             <div style="color:#ffffff; font-size:1.1rem; font-weight:800;">
                                 IT Study Support
                             </div>
                             <div style="color:rgba(255,255,255,0.5); font-size:0.72rem; margin-top:2px;">
-                                Khoa Công nghệ Thông tin – ĐH Văn Hiến
+                                Khoa Công nghệ Thông tin – Học Viện Nông Nghiệp Việt Nam
                             </div>
                         </td>
                     </tr>

@@ -31,7 +31,9 @@ class BaiHocRequest extends FormRequest
             'ngon_ngu_code'      => 'nullable|string|max:50',
             
             // URL & File
-            'video_url'          => 'nullable|url|max:255',
+            'video_source'       => 'nullable|string|in:url,file',
+            'video_url'          => 'nullable|string|max:255',
+            'video_file'         => 'nullable|file|mimes:mp4,webm,ogg,avi,mov|max:102400',
             'tai_lieu_dinh_kem'  => 'nullable|array',
             'tai_lieu_dinh_kem.*'=> 'nullable|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:10240', 
             
@@ -56,8 +58,10 @@ class BaiHocRequest extends FormRequest
             'ten_file_code.max'         => 'Tên file code không được vượt quá 100 ký tự.',
             'ngon_ngu_code.max'         => 'Ngôn ngữ code không được vượt quá 50 ký tự.',
             
-            'video_url.url'             => 'Link video không đúng định dạng (phải là một đường dẫn URL hợp lệ).',
             'video_url.max'             => 'Link video quá dài.',
+            'video_file.file'           => 'Video tải lên phải là một tệp tin hợp lệ.',
+            'video_file.mimes'          => 'Định dạng video không hỗ trợ (chỉ nhận mp4, webm, ogg, avi, mov).',
+            'video_file.max'            => 'Dung lượng video không được vượt quá 100MB.',
             
             'tai_lieu_dinh_kem'         => 'nullable|array',
             'tai_lieu_dinh_kem.*'       => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:10240',

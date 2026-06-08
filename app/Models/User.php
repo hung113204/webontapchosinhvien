@@ -15,11 +15,11 @@ class User extends Authenticatable
 
     protected $table = 'users';
 
-    protected $fillable = ['ma_sv', 'ho_ten', 'email', 'mat_khau', 'google_id', 'gioi_tinh', 'ngay_sinh', 'dia_chi', 'user_token', 'vai_tro_id', 'so_dien_thoai', 'avatar_url', 'trang_thai', 'is_first_login', 'last_login_at'];
+    protected $fillable = ['ma_sv', 'ho_ten', 'email', 'mat_khau', 'google_id', 'vai_tro_id', 'so_dien_thoai', 'avatar_url', 'trang_thai', 'is_first_login', 'last_login_at', 'ghi_chu'];
 
     protected $authPasswordName = 'mat_khau';
 
-    protected $hidden = ['mat_khau', 'remember_token', 'user_token'];
+    protected $hidden = ['mat_khau', 'remember_token'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',

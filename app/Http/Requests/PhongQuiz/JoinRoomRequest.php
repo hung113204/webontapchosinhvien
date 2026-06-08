@@ -35,6 +35,7 @@ class JoinRoomRequest extends FormRequest
                     }
                 }
             ],
+            'ho_ten' => 'nullable|string|max:30',
         ];
     }
 

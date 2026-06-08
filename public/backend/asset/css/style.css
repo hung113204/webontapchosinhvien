@@ -111,9 +111,86 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
+.sidebar {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content {
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Collapsed Sidebar State */
+.sidebar.collapsed {
+    width: 80px;
+}
+.sidebar.collapsed + .main-content,
+.sidebar.collapsed ~ .main-content {
+    margin-left: 80px;
+}
+.sidebar.collapsed .sidebar-brand-name,
+.sidebar.collapsed .nav-group-title,
+.sidebar.collapsed .nav-item span,
+.sidebar.collapsed .user-info,
+.sidebar.collapsed .logout-btn {
+    display: none;
+}
+.sidebar.collapsed .sidebar-brand {
+    padding: 20px 10px !important;
+    flex-direction: column;
+    gap: 15px !important;
+}
+.sidebar.collapsed .sidebar-brand > a {
+    justify-content: center;
+}
+.sidebar.collapsed .sidebar-brand-logo {
+    width: 36px;
+    height: 36px;
+}
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: 12px 0;
+}
+.sidebar.collapsed .nav-item::before {
+    display: none;
+}
+.sidebar.collapsed .nav-group {
+    margin-bottom: 15px;
+}
+.sidebar.collapsed .user-profile {
+    padding: 10px 0;
+    justify-content: center;
+    background: transparent;
+}
+.sidebar.collapsed .user-avatar {
+    margin: 0 auto;
+}
+
 .sidebar-header {
     padding: 28px 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-brand-logo {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    flex: 0 0 auto;
+    border-radius: 8px;
+}
+
+.sidebar-brand-name {
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.2;
 }
 
 .logo {
@@ -123,8 +200,8 @@ body {
     width: 100%;
 }
 .custom-logo {
-    width: 150%;
-    max-width: 200px;
+    width: 72px;
+    max-width: 72px;
     height: auto;
     object-fit: contain;
     border-radius: 8px; /* Thêm bo góc nhẹ cho đẹp nếu muốn */
@@ -367,11 +444,11 @@ body {
     content: "";
     position: absolute;
     top: 0;
+    bottom: 0;
     left: 0;
-    right: 0;
-    height: 4px;
+    width: 4px;
     background: linear-gradient(
-        90deg,
+        180deg,
         var(--gradient-start),
         var(--gradient-end)
     );

@@ -57,7 +57,36 @@
     {{-- Form Tìm kiếm --}}
     <section class="filters-section">
         <form action="{{ route('admin.baihoc.index') }}" method="GET" class="filter-group">
-            <div class="filter-item" style="grid-column: span 3">
+            
+            <div class="filter-item">
+                <label>Môn học</label>
+                <select name="mon_hoc_id" class="form-select" onchange="this.form.submit()">
+                    <option value="">Tất cả môn học</option>
+                    @foreach($monHocs as $monHoc)
+                        <option value="{{ $monHoc->id }}" {{ request('mon_hoc_id') == $monHoc->id ? 'selected' : '' }}>
+                            {{ $monHoc->ten_mon_hoc }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label>Chương học</label>
+                <select name="chuong_hoc_id" class="form-select" onchange="this.form.submit()">
+                    @if(request('mon_hoc_id'))
+                        <option value="">Tất cả chương</option>
+                        @foreach($chuongHocs as $chuong)
+                            <option value="{{ $chuong->id }}" {{ request('chuong_hoc_id') == $chuong->id ? 'selected' : '' }}>
+                                {{ $chuong->ten_chuong }}
+                            </option>
+                        @endforeach
+                    @else
+                        <option value="">Vui lòng chọn môn học trước</option>
+                    @endif
+                </select>
+            </div>
+
+            <div class="filter-item" style="grid-column: span 1">
                 <label>Tìm kiếm bài học</label>
                 <div class="search-box">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -67,10 +96,11 @@
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Nhập tên bài học cần tìm..." />
                 </div>
             </div>
-            @if(request('search'))
+            
+            @if(request('search') || request('mon_hoc_id') || request('chuong_hoc_id'))
                 <div class="filter-item" style="display: flex; align-items: flex-end;">
-                    <a href="{{ route('admin.baihoc.index') }}" class="btn btn-secondary" style="height: 42px; display: flex; align-items: center; padding: 0 15px; border-radius: 6px; border: 1px solid #ddd; background: #f9f9f9; color: #ef4444; text-decoration: none;">
-                        Xóa lọc
+                    <a href="{{ route('admin.baihoc.index') }}" class="btn btn-secondary" style="height: 42px; display: flex; align-items: center; justify-content: center; padding: 0 15px; border-radius: 6px; border: 1px solid #ddd; background: #f9f9f9; color: #ef4444; text-decoration: none;">
+                        Xóa bộ lọc
                     </a>
                 </div>
             @endif
@@ -101,7 +131,7 @@
                     </thead>
                     <tbody>
                         @forelse($baiHocs as $index => $item)
-                        <tr>
+                        <tr id="row-baihoc-{{ $item->id }}">
                             <td><input type="checkbox" class="checkbox" /></td>
                             <td><span class="id-badge">{{ $baiHocs->firstItem() + $index }}</span></td>
                             
@@ -141,18 +171,13 @@
                                         </svg>
                                     </a>
                                     
-                                    {{-- Nút Xóa - DÙNG FORM DELETE --}}
-                                    <form action="{{ route('admin.baihoc.destroy', $item->id) }}" method="POST" style="display: inline;" 
-                                          onsubmit="return confirm('Bạn có chắc muốn xóa bài học này? Tất cả file đính kèm sẽ bị xóa!')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn-action btn-delete" title="Xóa">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <polyline points="3 6 5 6 21 6" />
-                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    {{-- Nút Xóa bằng Ajax --}}
+                                    <button type="button" class="btn-action btn-delete" title="Xóa" onclick="deleteBaiHoc({{ $item->id }})">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -197,5 +222,64 @@
             setTimeout(() => alert.remove(), 500);
         });
     }, 5000);
+
+    function deleteBaiHoc(id) {
+        Swal.fire({
+            title: 'Xóa bài học?',
+            text: 'Bạn có chắc muốn xóa bài học này? Tất cả file đính kèm sẽ bị xóa!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Đồng ý, Xóa!',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const btn = document.querySelector(`#row-baihoc-${id} .btn-delete`);
+                if (btn) btn.disabled = true;
+
+                fetch(`/admin/bai-hoc/xoa/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Xóa dòng khỏi bảng
+                        const row = document.getElementById(`row-baihoc-${id}`);
+                        if (row) {
+                            row.style.transition = 'all 0.5s ease';
+                            row.style.opacity = '0';
+                            setTimeout(() => row.remove(), 500);
+                        }
+                        
+                        // Cập nhật lại số lượng
+                        const totalElem = document.querySelector('.stat-mini-info h4');
+                        if (totalElem) {
+                            let total = parseInt(totalElem.innerText, 10);
+                            if (!isNaN(total) && total > 0) {
+                                totalElem.innerText = String(total - 1).padStart(2, '0');
+                            }
+                        }
+                        
+                        Swal.fire('Đã xóa!', data.message, 'success');
+                    } else {
+                        Swal.fire('Lỗi!', data.message || 'Có lỗi xảy ra khi xóa bài học!', 'error');
+                        if (btn) btn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Lỗi!', 'Có lỗi xảy ra, vui lòng thử lại sau.', 'error');
+                    if (btn) btn.disabled = false;
+                });
+            }
+        });
+    }
 </script>
 @endsection

@@ -144,8 +144,34 @@
                     </tbody>
                 </table>
             </div>
-            <div class="table-footer">
-                {{ $danhMuc->appends(request()->query())->links() }}
+            <div class="table-footer" style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; margin-top: 20px; border-top: 1px solid #e2e8f0;">
+                <div class="showing-info" style="color: #64748b; font-size: 14px;">
+                    Hiển thị {{ $danhMuc->firstItem() ?? 0 }}-{{ $danhMuc->lastItem() ?? 0 }} trong tổng số {{ $danhMuc->total() }} danh mục
+                </div>
+                <div class="custom-pagination">
+                    <style>
+                        .custom-pagination nav { display: flex; align-items: center; }
+                        .custom-pagination ul { display: flex; list-style: none !important; margin: 0; padding: 0; gap: 8px; }
+                        .custom-pagination li { list-style: none !important; }
+                        .custom-pagination .page-item .page-link {
+                            display: flex; align-items: center; justify-content: center;
+                            min-width: 36px; height: 36px; padding: 0 10px;
+                            border-radius: 8px; background: #fff; border: 1px solid #e2e8f0;
+                            color: #475569; text-decoration: none; font-size: 14px; font-weight: 600;
+                            transition: all 0.2s;
+                        }
+                        .custom-pagination .page-item.active .page-link {
+                            background: #3b82f6; color: #fff; border-color: #3b82f6;
+                        }
+                        .custom-pagination .page-item.disabled .page-link {
+                            background: #f8fafc; color: #cbd5e1; cursor: not-allowed;
+                        }
+                        .custom-pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+                            background: #f1f5f9; border-color: #cbd5e1;
+                        }
+                    </style>
+                    {{ $danhMuc->appends(request()->query())->links('pagination::bootstrap-4') }}
+                </div>
             </div>
         </div>
     </section>

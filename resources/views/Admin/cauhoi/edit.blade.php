@@ -68,8 +68,6 @@
             <form action="{{ route('admin.cauhoi.save', $cauHoi->id) }}" method="POST" enctype="multipart/form-data"
                 id="edit-question-form" novalidate>
                 @csrf
-
-
                 <div class="form-grid"
                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px;">
                     <div class="form-group">
@@ -119,9 +117,9 @@
                         <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Mức độ</label>
                         <select class="form-select" name="muc_do"
                             style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px;">
-                            <option value="1" {{ $cauHoi->muc_do == 1 ? 'selected' : '' }}>Dễ</option>
-                            <option value="2" {{ $cauHoi->muc_do == 2 ? 'selected' : '' }}>Trung bình</option>
-                            <option value="3" {{ $cauHoi->muc_do == 3 ? 'selected' : '' }}>Khó</option>
+                            <option value="1" {{ $cauHoi->muc_do == 1 ? 'selected' : '' }}>Nhận biết</option>
+                            <option value="2" {{ $cauHoi->muc_do == 2 ? 'selected' : '' }}>Thông hiểu</option>
+                            <option value="3" {{ $cauHoi->muc_do == 3 ? 'selected' : '' }}>Vận dụng</option>
                         </select>
                     </div>
 
@@ -138,10 +136,17 @@
                     </div>
                 </div>
 
+                @php
+                    $hasCode = strpos($cauHoi->noi_dung, '<pre') !== false || strpos($cauHoi->noi_dung, '<code') !== false;
+                @endphp
                 <div class="form-group" style="margin-bottom: 25px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">Nội dung câu hỏi
-                        <span style="color:red">*</span></label>
-                    <textarea id="editor-cau-hoi" name="noi_dung">{!! $cauHoi->noi_dung !!}</textarea>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                        Nội dung câu hỏi <span style="color:red">*</span>
+                        @if($hasCode)
+                            <span style="font-size: 13px; color: #d97706; font-weight: normal; margin-left: 10px; background: #fefce8; padding: 4px 8px; border-radius: 4px; border: 1px solid #fde68a;">⚠️ Chế độ mã nguồn (HTML) được bật để bảo toàn Code</span>
+                        @endif
+                    </label>
+                    <textarea id="editor-cau-hoi" name="noi_dung" class="{{ $hasCode ? 'raw-html-editor' : '' }}" @if($hasCode) style="width: 100%; min-height: 250px; padding: 15px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; color: #1e293b; line-height: 1.5; font-size: 14px;" @endif>{!! $cauHoi->noi_dung !!}</textarea>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 25px;">
@@ -179,8 +184,13 @@
                                     <button type="button" class="btn-delete-ans"
                                         onclick="removeAnswer('ans_existing_{{ $index }}')">Xóa</button>
                                 </div>
-                                {{-- Tên field phải đồng nhất: dap_ans[index][noi_dung] --}}
-                                <textarea name="dap_ans[{{ $index }}][noi_dung]" id="editor_ans_existing_{{ $index }}">{!! $dapAn->noi_dung !!}</textarea>
+                                @php
+                                    $ansHasCode = strpos($dapAn->noi_dung, '<pre') !== false || strpos($dapAn->noi_dung, '<code') !== false;
+                                @endphp
+                                @if($ansHasCode)
+                                    <div style="font-size: 12px; color: #d97706; margin-bottom: 5px;">⚠️ Mã nguồn HTML</div>
+                                @endif
+                                <textarea name="dap_ans[{{ $index }}][noi_dung]" id="editor_ans_existing_{{ $index }}" class="{{ $ansHasCode ? 'raw-html-editor' : '' }}" @if($ansHasCode) style="width: 100%; min-height: 100px; padding: 12px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; color: #1e293b; line-height: 1.5;" @endif>{!! $dapAn->noi_dung !!}</textarea>
                                 <input type="hidden" name="dap_ans[{{ $index }}][id]"
                                     value="{{ $dapAn->id }}">
                                 <div style="margin-top: 12px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed #cbd5e1;">
@@ -213,8 +223,8 @@
 
                 <div class="form-actions"
                     style="margin-top: 30px; display: flex; justify-content: flex-end; border-top: 1px solid #f1f5f9; padding-top: 20px; gap: 15px;">
-                    <button type="button" onclick="window.location.reload()" class="btn btn-secondary"
-                        style="padding: 12px 24px; border-radius: 8px; cursor: pointer;">Hủy thay đổi</button>
+                    <a href="{{ route('admin.cauhoi.index', ['chuong_hoc_id' => $cauHoi->chuong_hoc_id]) }}" class="btn btn-secondary"
+                        style="padding: 12px 24px; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; background: white; border: 1px solid #cbd5e1; color: #475569; font-weight: 500;">Hủy thay đổi</a>
                     <button type="submit" class="btn btn-primary"
                         style="padding: 12px 48px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Cập
                         nhật câu hỏi</button>
@@ -228,20 +238,62 @@
         // Khởi tạo count dựa trên số lượng đáp án hiện có
         let answerCount = {{ $cauHoi->dapAns->count() }};
 
+        const editorConfig = {
+            toolbar: [
+                'heading', '|',
+                'bold', 'italic', 'codeBlock', '|',
+                'link', 'insertTable', '|',
+                'bulletedList', 'numberedList', '|',
+                'undo', 'redo'
+            ],
+            language: 'vi',
+            htmlSupport: {
+                allow: [
+                    {
+                        name: /.*/,
+                        attributes: true,
+                        classes: true,
+                        styles: true
+                    }
+                ]
+            }
+        };
+
+        const answerEditorConfig = {
+            toolbar: ['bold', 'italic', '|', 'undo', 'redo'],
+            language: 'vi',
+            htmlSupport: {
+                allow: [
+                    {
+                        name: /.*/,
+                        attributes: true,
+                        classes: true,
+                        styles: true
+                    }
+                ]
+            }
+        };
+
         function initExistingEditors() {
             // Chính câu hỏi
-            ClassicEditor.create(document.querySelector('#editor-cau-hoi')).then(editor => {
-                editors['main-question'] = editor;
-            });
+            const qEditor = document.querySelector('#editor-cau-hoi');
+            if (!qEditor.classList.contains('raw-html-editor')) {
+                ClassicEditor.create(qEditor, editorConfig).then(editor => {
+                    editors['main-question'] = editor;
+                });
+            }
             // Giải thích
-            ClassicEditor.create(document.querySelector('#editor-giai-thich')).then(editor => {
+            ClassicEditor.create(document.querySelector('#editor-giai-thich'), editorConfig).then(editor => {
                 editors['main-explain'] = editor;
             });
             // Các đáp án hiện có
             @foreach ($cauHoi->dapAns as $index => $dapAn)
-                ClassicEditor.create(document.querySelector('#editor_ans_existing_{{ $index }}')).then(editor => {
-                    editors['ans_existing_{{ $index }}'] = editor;
-                });
+                const aEditor_{{ $index }} = document.querySelector('#editor_ans_existing_{{ $index }}');
+                if (!aEditor_{{ $index }}.classList.contains('raw-html-editor')) {
+                    ClassicEditor.create(aEditor_{{ $index }}, answerEditorConfig).then(editor => {
+                        editors['ans_existing_{{ $index }}'] = editor;
+                    });
+                }
             @endforeach
         }
 
@@ -274,7 +326,7 @@
     </div>`;
 
             document.getElementById('answers-container').insertAdjacentHTML('beforeend', html);
-            ClassicEditor.create(document.querySelector(`#editor_${id}`)).then(editor => {
+            ClassicEditor.create(document.querySelector(`#editor_${id}`), answerEditorConfig).then(editor => {
                 editors[id] = editor;
             });
         }
@@ -304,18 +356,61 @@
         });
 
         // Logic lọc chương học theo môn học
-        document.getElementById('mon_hoc_id').addEventListener('change', function() {
-            const monId = this.value;
-            const chuongSelect = document.getElementById('chuong_hoc_id');
-            chuongSelect.querySelectorAll('option').forEach(opt => {
-                opt.style.display = opt.getAttribute('data-mon') == monId ? "block" : "none";
-            });
-            // Chọn chương đầu tiên khả dụng
-            const firstAvailable = chuongSelect.querySelector(`option[data-mon="${monId}"]`);
-            if (firstAvailable) chuongSelect.value = firstAvailable.value;
-        });
+        const monSelect = document.getElementById('mon_hoc_id');
+        const chuongSelect = document.getElementById('chuong_hoc_id');
+        const baiSelect = document.getElementById('bai_hoc_id');
 
-        window.onload = initExistingEditors;
+        function filterChuongHoc() {
+            const monId = monSelect.value;
+            let firstVisible = null;
+            let currentVal = chuongSelect.value;
+            let valueExists = false;
+
+            chuongSelect.querySelectorAll('option').forEach(opt => {
+                if (opt.value === "") return; // Bỏ qua option mặc định nếu có
+                const isMatch = opt.getAttribute('data-mon') == monId;
+                opt.style.display = isMatch ? "block" : "none";
+                
+                if (isMatch) {
+                    if (!firstVisible) firstVisible = opt.value;
+                    if (opt.value == currentVal) valueExists = true;
+                }
+            });
+
+            if (!valueExists && firstVisible) {
+                chuongSelect.value = firstVisible;
+            }
+            filterBaiHoc(); // Cập nhật luôn bài học
+        }
+
+        function filterBaiHoc() {
+            const chuongId = chuongSelect.value;
+            let currentVal = baiSelect.value;
+            let valueExists = false;
+
+            baiSelect.querySelectorAll('option').forEach(opt => {
+                if (opt.value === "") return; // Option "-- Dùng chung cho Chương --"
+                const isMatch = opt.getAttribute('data-chuong') == chuongId;
+                opt.style.display = isMatch ? "block" : "none";
+
+                if (isMatch && opt.value == currentVal) {
+                    valueExists = true;
+                }
+            });
+
+            // Nếu giá trị hiện tại không thuộc chương này thì reset về mặc định
+            if (currentVal !== "" && !valueExists) {
+                baiSelect.value = "";
+            }
+        }
+
+        monSelect.addEventListener('change', filterChuongHoc);
+        chuongSelect.addEventListener('change', filterBaiHoc);
+
+        window.onload = function() {
+            initExistingEditors();
+            filterChuongHoc();
+        };
     </script>
     @include('Admin.cauhoi.dien_khuyet_script')
     @include('Admin.cauhoi.tu_luan_script')

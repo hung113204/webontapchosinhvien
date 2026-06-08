@@ -3,8 +3,8 @@
     {{-- Left: Question + Controls --}}
     <div class="qv-playing-section">
 
-        {{-- My Score Pill --}}
-        <div class="qv-my-score-pill">
+        {{-- My Score Pill (Hidden but kept for JS functionality) --}}
+        <div style="display: none;">
             <div style="flex:1;">
                 <div class="label">Điểm của bạn</div>
                 <div class="value" id="my-score-display">0</div>

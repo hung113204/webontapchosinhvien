@@ -56,20 +56,20 @@
         <div class="footer-nav-col">
           <h4>Khám phá</h4>
           <ul>
-            <li><a href="#">Học phần</a></li>
-            <li><a href="#">Lý thuyết</a></li>
-            <li><a href="#">Luyện tập</a></li>
-            <li><a href="#">Thi thử</a></li>
+            <li><a href="{{ route('client.subjects.index') }}">Học phần</a></li>
+            <!-- <li><a href="{{ route('client.subjects.index') }}">Lý thuyết</a></li> -->
+            <li><a href="{{ route('client.practice.index') }}">Luyện tập</a></li>
+            <li><a href="{{ route('client.exams.index') }}">Thi thử</a></li>
           </ul>
         </div>
 
         <div class="footer-nav-col">
           <h4>Tính năng</h4>
           <ul>
-            <li><a href="#">Hỏi đáp AI</a></li>
-            <li><a href="#">Theo dõi tiến độ</a></li>
-            <li><a href="#">Bảng xếp hạng</a></li>
-            <li><a href="#">Tài liệu ôn tập</a></li>
+            <li><a href="{{ route('client.ai.index') }}">Hỏi đáp AI</a></li>
+            <li><a href="{{ route('profile.history') }}">Theo dõi tiến độ</a></li>
+            <li><a href="{{ route('client.phongquiz.join') }}">Quiz vui</a></li>
+            <!-- <li><a href="#">Tài liệu ôn tập</a></li> -->
           </ul>
         </div>
 
@@ -87,7 +87,7 @@
       Chủ quản: <strong>Khoa Công nghệ Thông tin – Trường Đại học </strong>.<br />
       Website hỗ trợ ôn tập học phần dành riêng cho sinh viên CNTT.<br />
       Chịu trách nhiệm nội dung: Bộ môn CNTT &nbsp;|&nbsp; Điện thoại: 099999999<br />
-      Địa chỉ: Số 778 Điện Biên Phủ, P.25, Q. Bình Thạnh, Hà Nội.<br />
+      <!-- Địa chỉ: Số 778 Điện Biên Phủ, P.25, Q. Bình Thạnh, Hà Nội.<br /> -->
       © {{ date('Y') }} IT Study Support – Khoa CNTT, Trường Đại học . Bảo lưu mọi quyền.
     </div>
   </div>

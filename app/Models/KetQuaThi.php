@@ -10,7 +10,7 @@ class KetQuaThi extends Model
     use HasFactory;
 
     // Khai báo chính xác tên bảng theo Migration của bạn
-    protected $table = 'ket_qua_thi';
+    protected $table = 'ket_qua_thi_v2';
 
     protected $fillable = [
         'user_id',

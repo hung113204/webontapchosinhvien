@@ -192,8 +192,16 @@
                                         </button>
                                     @else
                                         {{-- Nếu bài thi đang hoạt động bình thường --}}
+                                        <button onclick="viewExam({{ $item->id }})"
+                                            class="btn-action btn-view" title="Xem chi tiết đề thi" style="padding: 8px; border-radius: 6px;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </button>
+
                                         <a href="{{ route('admin.baikiemtra.edit', $item->id) }}"
-                                            class="btn-action btn-edit" style="padding: 8px; border-radius: 6px;">
+                                            class="btn-action btn-edit" style="padding: 8px; border-radius: 6px;" title="Chỉnh sửa cấu hình">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                 stroke-width="2" style="width: 16px; height: 16px;">
                                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -285,9 +293,141 @@
         </div>
     </section>
 
+    <!-- Modal Xem Chi Tiết Đề Thi -->
+    <div id="modalViewExam" class="modal-overlay" onclick="closeModal('modalViewExam')" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-card" onclick="event.stopPropagation()" style="background: white; width: 90%; max-width: 800px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="padding: 16px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #111827;">Chi tiết đề thi: <span id="view_exam_title" style="color: #4f46e5;"></span></h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalViewExam')" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 24px; overflow-y: auto; flex: 1; background: #f9fafb;">
+                <div style="display: flex; gap: 20px; margin-bottom: 24px; background: white; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <div style="flex: 1;">
+                        <span style="display: block; font-size: 12px; color: #6b7280; font-weight: 500; text-transform: uppercase;">Môn học</span>
+                        <strong id="view_exam_subject" style="color: #111827; font-size: 15px;"></strong>
+                    </div>
+                    <div style="width: 1px; background: #e5e7eb;"></div>
+                    <div style="flex: 1;">
+                        <span style="display: block; font-size: 12px; color: #6b7280; font-weight: 500; text-transform: uppercase;">Thời gian làm bài</span>
+                        <strong style="color: #111827; font-size: 15px;"><span id="view_exam_time"></span> phút</strong>
+                    </div>
+                    <div style="width: 1px; background: #e5e7eb;"></div>
+                    <div style="flex: 1;">
+                        <span style="display: block; font-size: 12px; color: #6b7280; font-weight: 500; text-transform: uppercase;">Số lượng câu hỏi</span>
+                        <strong style="color: #111827; font-size: 15px;"><span id="view_exam_count"></span> câu</strong>
+                    </div>
+                </div>
+                <div id="view_exam_questions_list">
+                    <div style="text-align:center; padding:20px; color:#6b7280;">Đang tải dữ liệu...</div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 16px 24px; border-top: 1px solid #e5e7eb; text-align: right; background: white; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalViewExam')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #d1d5db; background: white; color: #374151; font-weight: 500; cursor: pointer;">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
+            // Hàm mở modal xem chi tiết
+            function viewExam(id) {
+                const modal = document.getElementById('modalViewExam');
+                modal.style.display = 'flex';
+                
+                // Hiển thị trạng thái loading
+                document.getElementById('view_exam_title').textContent = 'Đang tải...';
+                document.getElementById('view_exam_subject').textContent = '...';
+                document.getElementById('view_exam_time').textContent = '...';
+                document.getElementById('view_exam_count').textContent = '...';
+                document.getElementById('view_exam_questions_list').innerHTML = '<div style="text-align:center; padding:40px; color:#6b7280;"><div class="spinner-border" style="width: 24px; height: 24px; border: 2px solid #ccc; border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>Đang tải dữ liệu...</div>';
+
+                // Fetch dữ liệu đề thi
+                fetch(`/admin/baikiemtra/edit/${id}`, {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Accept": "application/json"
+                    }
+                })
+                .then(res => res.json())
+                .then(response => {
+                    if (response.success) {
+                        const data = response.data;
+                        
+                        document.getElementById('view_exam_title').textContent = data.ten_bai;
+                        document.getElementById('view_exam_subject').textContent = data.mon_hoc?.ten_mon_hoc || 'N/A';
+                        document.getElementById('view_exam_time').textContent = data.thoi_gian_phut;
+                        
+                        const questions = data.cau_hois || [];
+                        document.getElementById('view_exam_count').textContent = questions.length;
+                        
+                        const listContainer = document.getElementById('view_exam_questions_list');
+                        
+                        if (questions.length === 0) {
+                            listContainer.innerHTML = '<div style="text-align:center; padding:40px; background:white; border-radius:8px; color:#6b7280;">Đề thi này chưa có câu hỏi nào.</div>';
+                            return;
+                        }
+                        
+                        let html = '';
+                        questions.forEach((q, index) => {
+                            let answersHtml = '';
+                            if (q.dap_ans && q.dap_ans.length > 0) {
+                                answersHtml = '<div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">';
+                                q.dap_ans.forEach((ans, aIdx) => {
+                                    const char = String.fromCharCode(65 + aIdx);
+                                    const isDung = ans.is_dung == 1;
+                                    const bg = isDung ? '#ecfdf5' : 'transparent';
+                                    const border = isDung ? '#10b981' : '#e5e7eb';
+                                    
+                                    answersHtml += `
+                                        <div style="padding: 8px 12px; border-radius: 6px; border: 1px solid ${border}; background: ${bg}; display: flex; align-items: flex-start; gap: 8px;">
+                                            <strong style="color: ${isDung ? '#059669' : '#374151'};">${char}.</strong>
+                                            <div style="flex: 1; color: #374151;">${ans.noi_dung}</div>
+                                            ${isDung ? '<span style="color: #10b981;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' : ''}
+                                        </div>
+                                    `;
+                                });
+                                answersHtml += '</div>';
+                            }
+                            
+                            html += `
+                                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                                        <div style="background: #f3f4f6; color: #374151; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">${index + 1}</div>
+                                        <div style="flex: 1; font-weight: 500; color: #111827; line-height: 1.5;">${q.noi_dung}</div>
+                                    </div>
+                                    <div style="padding-left: 40px;">
+                                        ${answersHtml}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        listContainer.innerHTML = html;
+                    } else {
+                        document.getElementById('view_exam_questions_list').innerHTML = '<div style="color: #ef4444; padding: 20px; text-align: center;">Không thể tải dữ liệu đề thi.</div>';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('view_exam_questions_list').innerHTML = '<div style="color: #ef4444; padding: 20px; text-align: center;">Có lỗi xảy ra khi tải dữ liệu.</div>';
+                });
+            }
+
+            function closeModal(id) {
+                const modal = document.getElementById(id);
+                if (modal) modal.style.display = 'none';
+            }
+            
+            // Thêm style cho spinner
+            if (!document.getElementById('spinner-style')) {
+                const style = document.createElement('style');
+                style.id = 'spinner-style';
+                style.innerHTML = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
+                document.head.appendChild(style);
+            }
+
             // Xóa mềm (Soft Delete)
             function deleteExam(id, name) {
                 Swal.fire({

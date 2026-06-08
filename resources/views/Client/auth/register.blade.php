@@ -38,6 +38,12 @@
     .register-form-panel .input-wrap i.input-icon-right:hover {
         color: var(--blue);
     }
+    
+    /* Ẩn icon con mắt mặc định của trình duyệt Edge/Chrome để không bị trùng 2 con mắt */
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear {
+        display: none;
+    }
 </style>
 @endpush
 
@@ -91,10 +97,12 @@
         </div>
 
         @if ($errors->any())
-            <div class="alert-error">
-                <ul>
+            <div style="background:#fee2e2; border:1px solid #fca5a5; color:#dc2626; padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:14px;">
+                <ul style="margin:0; padding:0; list-style-type:none;">
                     @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
+                        <li style="{{ !$loop->last ? 'margin-bottom:6px;' : '' }}">
+                            <i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>{{ $error }}
+                        </li>
                     @endforeach
                 </ul>
             </div>
@@ -129,6 +137,7 @@
                     <input type="password" name="password" id="reg-password" placeholder="Tối thiểu 8 ký tự" required oninput="checkStrength(this.value)" />
                     <i class="fas fa-eye input-icon-right" id="toggle-reg-pw" onclick="togglePassword('reg-password', this)"></i>
                 </div>
+                {{-- 
                 <div class="strength-bar-wrap">
                     <div class="strength-bar" id="bar1"></div>
                     <div class="strength-bar" id="bar2"></div>
@@ -136,6 +145,7 @@
                     <div class="strength-bar" id="bar4"></div>
                 </div>
                 <div class="strength-label" id="strength-label"></div>
+                --}}
             </div>
 
             {{-- Xác nhận mật khẩu --}}
@@ -154,8 +164,8 @@
         </form>
 
         <div class="form-note">
-            <i class="fas fa-info-circle"></i>
-            <span>Sau khi đăng ký, hãy kiểm tra email để xác thực tài khoản trước khi đăng nhập.</span>
+            <i class="fas fa-check-circle"></i>
+            <span>Đăng ký thành công là có thể đăng nhập và vào thi ngay!</span>
         </div>
     </div>
 </div>
